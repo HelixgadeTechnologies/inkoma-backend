@@ -5,7 +5,13 @@ import { Volume2, VolumeX, Play, Pause, FastForward, Sparkles, Mic } from "lucid
 import { Button } from "@/components/ui/button";
 import { useSpeech } from "@/hooks/useSpeech";
 
-export function AudioPlayer({ textToRead }: { textToRead: string }) {
+export function AudioPlayer({
+  textToRead = "Welcome to Inkoma oral storytelling.",
+  title,
+}: {
+  textToRead?: string;
+  title?: string;
+}) {
   const { isSpeaking, isSupported, rate, setRate, speak, stop } = useSpeech();
   const [ambientAudio, setAmbientAudio] = React.useState(false);
 
@@ -32,7 +38,7 @@ export function AudioPlayer({ textToRead }: { textToRead: string }) {
         </div>
         <div className="hidden sm:flex flex-col">
           <span className="text-[11px] font-bold text-amber-900 leading-none">
-            Griot Voice
+            {title ? title : "Griot Voice"}
           </span>
           <span className="text-[9px] text-stone-500 font-medium">Oral Narration</span>
         </div>
@@ -59,27 +65,29 @@ export function AudioPlayer({ textToRead }: { textToRead: string }) {
         )}
       </Button>
 
-      {/* Speed Multiplier */}
+      {/* Speed Rate Control */}
       <Button
-        variant="ghost"
+        variant="outline"
         size="sm"
         onClick={cycleRate}
-        className="h-8 px-2 text-xs text-stone-700 hover:text-folklore-amber hover:bg-stone-100 font-semibold"
+        className="text-[11px] h-8 px-2.5 rounded-lg border-stone-300 font-mono text-stone-700 hover:bg-stone-100"
       >
         {rate}x
       </Button>
 
-      {/* Ambient Drums Toggle */}
+      {/* Ambient Forest / Fire FX Toggle */}
       <Button
         variant="ghost"
         size="sm"
         onClick={() => setAmbientAudio(!ambientAudio)}
-        className="h-8 px-2 text-xs gap-1 text-stone-700 hover:text-folklore-amber hover:bg-stone-100"
-        title="Ambient Kalimba & Djembe Background"
+        className={`h-8 px-2 rounded-lg text-xs ${
+          ambientAudio ? "text-amber-800 bg-amber-100" : "text-stone-500 hover:text-stone-900"
+        }`}
+        title="Night Fireplace Ambiance"
       >
-        <Sparkles className="h-3.5 w-3.5 text-folklore-amber" />
-        <span className="hidden md:inline text-[11px] font-medium">
-          {ambientAudio ? "Drums On" : "Ambient"}
+        <Sparkles className="h-3.5 w-3.5 mr-1 text-amber-600" />
+        <span className="text-[10px] hidden md:inline">
+          {ambientAudio ? "Hearth Fire ON" : "Hearth FX"}
         </span>
       </Button>
     </div>

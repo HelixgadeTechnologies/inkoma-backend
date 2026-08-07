@@ -1,122 +1,163 @@
-'use client';
+"use client";
 
-import * as React from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AuthCard } from "@/components/features/auth/auth-card";
 import { SocialAuth } from "@/components/features/auth/social-auth";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/features/auth/password-input";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Feather } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ArrowRight, Loader2, Sparkles, BookOpen } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
-  const [role, setRole] = React.useState<'reader' | 'storyteller'>('storyteller');
-  const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
+  const [name, setName] = useState("");
+  const [penName, setPenName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState<"reader" | "writer">("reader");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setIsLoading(true);
+    // Simulate user registration and proceed to onboarding
     setTimeout(() => {
-      setLoading(false);
-      router.push("/explore");
-    }, 1000);
+      setIsLoading(false);
+      router.push("/onboarding");
+    }, 800);
   };
 
   return (
     <AuthCard
       title="Join the Griot Circle"
-      description="Create an account to read branching African folklore, choose story endings, or write your own lore."
-      footerText="Already part of the guild?"
-      footerLinkText="Sign in to your account"
-      footerLinkHref="/login"
+      description="Begin your journey as a reader or traditional storyteller in our digital folklore archive."
     >
-      {/* Role Selector */}
-      <div className="grid grid-cols-2 gap-2 p-1 bg-stone-100 rounded-xl border border-stone-200 mb-4">
-        <button
-          type="button"
-          onClick={() => setRole('reader')}
-          className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
-            role === 'reader'
-              ? 'bg-white text-stone-900 font-bold shadow-sm border border-stone-200'
-              : 'text-stone-600 hover:text-stone-900'
-          }`}
-        >
-          <BookOpen className="h-3.5 w-3.5 text-folklore-amber" />
-          <span>Explorer / Reader</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setRole('storyteller')}
-          className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
-            role === 'storyteller'
-              ? 'bg-white text-stone-900 font-bold shadow-sm border border-stone-200'
-              : 'text-stone-600 hover:text-stone-900'
-          }`}
-        >
-          <Feather className="h-3.5 w-3.5 text-folklore-amber" />
-          <span>Griot / Author</span>
-        </button>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-3.5">
-        <div>
-          <label className="text-xs font-bold text-stone-700 block mb-1">
-            Storyteller Alias / Full Name
-          </label>
-          <Input
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Kwaku Anansi or Amina Diallo"
-          />
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Role Toggle */}
+        <div className="grid grid-cols-2 gap-2 p-1 bg-stone-100 rounded-xl border border-stone-200">
+          <button
+            type="button"
+            onClick={() => setRole("reader")}
+            className={`flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-lg transition-all ${
+              role === "reader"
+                ? "bg-white text-stone-900 shadow-sm"
+                : "text-stone-500 hover:text-stone-800"
+            }`}
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            I want to Read
+          </button>
+          <button
+            type="button"
+            onClick={() => setRole("writer")}
+            className={`flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-lg transition-all ${
+              role === "writer"
+                ? "bg-white text-stone-900 shadow-sm"
+                : "text-stone-500 hover:text-stone-800"
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+            I want to Write
+          </button>
         </div>
 
-        <div>
-          <label className="text-xs font-bold text-stone-700 block mb-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-stone-700">
+              Full Name
+            </label>
+            <Input
+              type="text"
+              placeholder="Kwame Asante"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="bg-white border-stone-300 text-stone-900 placeholder:text-stone-400"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-stone-700">
+              Pen Name <span className="text-stone-400 font-normal">(Optional)</span>
+            </label>
+            <Input
+              type="text"
+              placeholder="Griot Kwame"
+              value={penName}
+              onChange={(e) => setPenName(e.target.value)}
+              className="bg-white border-stone-300 text-stone-900 placeholder:text-stone-400"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wider text-stone-700">
             Email Address
           </label>
           <Input
             type="email"
-            required
+            placeholder="griot@inkoma.org"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="storyteller@inkoma.app"
+            required
+            className="bg-white border-stone-300 text-stone-900 placeholder:text-stone-400"
           />
         </div>
 
-        <div>
-          <label className="text-xs font-bold text-stone-700 block mb-1">
-            Secret Key (Password)
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wider text-stone-700">
+            Password
           </label>
-          <Input
-            type="password"
-            required
+          <PasswordInput
+            placeholder="At least 8 characters"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Minimum 8 characters"
+            required
+            minLength={8}
           />
         </div>
 
-        <Button type="submit" variant="folklore" className="w-full h-11 text-sm mt-2" disabled={loading}>
-          {loading ? "Forging Griot Scroll..." : "Initiate Guild Membership"}
+        <p className="text-[11px] text-stone-500 leading-tight">
+          By continuing, you agree to Inkoma&apos;s Terms of Lore Preservation and Privacy Policy.
+        </p>
+
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-semibold shadow-md py-5"
+        >
+          {isLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+          ) : (
+            <>
+              Create Account
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </>
+          )}
         </Button>
       </form>
 
-      <div className="relative my-4">
+      <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-stone-200" />
+          <div className="w-full border-t border-stone-200" />
         </div>
-        <div className="relative flex justify-center text-[10px] uppercase">
-          <span className="bg-white px-2 text-stone-500 font-medium">Or register with</span>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-stone-50 px-2 text-stone-500 font-medium">Or sign up with</span>
         </div>
       </div>
 
       <SocialAuth />
+
+      <p className="text-center text-xs text-stone-600 mt-6">
+        Already have an account?{" "}
+        <Link
+          href="/login"
+          className="text-amber-700 hover:text-amber-800 font-semibold underline underline-offset-4"
+        >
+          Sign in
+        </Link>
+      </p>
     </AuthCard>
   );
 }

@@ -1,372 +1,403 @@
-'use client';
+"use client";
 
-import * as React from "react";
+import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useParams } from "next/navigation";
+import { useStory } from "@/hooks/useStory";
+import { useLibrary } from "@/hooks/useLibrary";
+import { MOCK_CURRENT_USER } from "@/config/mock-data";
+import { SupportAuthorDialog } from "@/components/features/story-details/support-author-dialog";
 import {
   BookOpen,
-  GitBranch,
-  ArrowLeft,
+  Heart,
   Bookmark,
   Share2,
-  Heart,
+  Volume2,
+  Clock,
+  Eye,
   MessageSquare,
   Sparkles,
-  RotateCcw,
-  List,
+  GitFork,
+  ArrowRight,
+  Play,
+  UserCheck,
+  UserPlus,
+  ShieldCheck,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AudioPlayer } from "@/components/features/reader/audio-player";
-import { TypographyCustomizer } from "@/components/features/reader/typography-customizer";
-import { ChoicePrompt } from "@/components/features/reader/choice-prompt";
-import { ChapterNavigator } from "@/components/features/reader/chapter-navigator";
-import { useStoryStore } from "@/hooks/useStory";
-import { useBookmark } from "@/hooks/useBookmark";
-import { Story, StoryChoice, StoryNode } from "@/types";
 
-// Rich Mock Story Data for Anansi Tale
-const ANANSI_STORY: Story = {
-  id: "anansi-and-the-pot-of-wisdom",
-  slug: "anansi-and-the-pot-of-wisdom",
-  title: "Anansi and the Pot of Wisdom",
-  subtitle: "The pride of Kwaku Anansi and the high baobab tree",
-  synopsis: "The spider Kwaku Anansi sought to gather all the world's wisdom into a clay calabash, only to discover wisdom cannot be hoarded alone on a high tree.",
-  coverImage: "",
-  tradition: "Ashanti/Akan",
-  genres: ["trickster-tales", "moral-fables"],
-  tags: ["Anansi", "Wisdom", "Baobab", "Akan"],
-  difficulty: "Intermediate",
-  authorId: "user-kwame-01",
-  authorName: "Kwame Asante",
-  publishedAt: "2026-01-10",
-  updatedAt: "2026-02-01",
-  estimatedReadTime: 6,
-  totalChapters: 2,
-  totalBranches: 8,
-  upvotesCount: 428,
-  bookmarksCount: 156,
-  commentsCount: 38,
-  isInteractive: true,
-  hasAudioNarration: true,
-  status: "published",
-  chapters: [
-    {
-      id: "chap-1",
-      number: 1,
-      title: "The Gathering of the Calabash",
-      summary: "Anansi visits the villages across the forest to hoard every crumb of wisdom.",
-      rootNodeId: "node-1-gather",
-      readTimeMinutes: 3,
-      nodes: {
-        "node-1-gather": {
-          id: "node-1-gather",
-          title: "The Golden Clay Pot of Nyame",
-          content: `In the ancient days, wisdom was scattered like river pebbles across all the villages of the forest. Every elder possessed a few drops, every child held a seed of truth, and every blacksmith understood the temper of iron.
-
-Kwaku Anansi, the spider, looked upon this and grew envious. "If I alone possess all wisdom," thought he, "then every chief, king, and creature will come kneeling at my web."
-
-So Anansi fashioned a sacred clay calabash, sealed with tree resin, and set out with his web-ropes. As he walked toward the great Baobab, he heard two voices in dispute near the river bend.`,
-          choices: [
-            {
-              id: "choice-1a",
-              label: "Conceal the calabash and listen quietly to steal their insight",
-              targetNodeId: "node-2-listen",
-              consequenceHint: "Stealth reveals hidden village secrets...",
-            },
-            {
-              id: "choice-1b",
-              label: "Intervene boldly as a self-proclaimed judge to demand their wisdom",
-              targetNodeId: "node-2-judge",
-              consequenceHint: "Pride stirs the attention of the Sky God Nyame...",
-            },
-          ],
-        },
-        "node-2-listen": {
-          id: "node-2-listen",
-          title: "Whispers by the Volta Water",
-          content: `Hiding behind the broad elephant-ear leaves, Anansi caught the dispute between the fisherman and the weaver. Through patience, he captured the secret of weaving moonlit threads into untearable nets.
-
-With a sly grin, Anansi sealed the secret inside his pot. His clay calabash was now brimming with every shred of thought, craft, and counsel on earth.
-
-Now came the final challenge: Where could he hide such boundless power so no thief could ever touch it? Above him towered the Great Baobab, its branches reaching toward the celestial sphere of Nyame.`,
-          choices: [
-            {
-              id: "choice-2a",
-              label: "Tie the pot to his belly and climb the rough bark immediately",
-              targetNodeId: "node-3-climb-belly",
-              consequenceHint: "Haste often blinds the cunning mind...",
-            },
-            {
-              id: "choice-2b",
-              label: "Consult his young son Ntikuma who watches from the thicket",
-              targetNodeId: "node-3-consult-son",
-              consequenceHint: "Humility may reveal what pride conceals...",
-            },
-          ],
-        },
-        "node-2-judge": {
-          id: "node-2-judge",
-          title: "The Hubris of the Web",
-          content: `Anansi leaped onto a high stone and waved his eight legs. "Fools!" cried he. "Cease your bickering and pour your knowledge into my jar, for I shall govern your truth!"
-
-The villagers laughed in chorus. "How can a spider carry the weight of human sorrow and joy in a single pot?" Yet Anansi tricked them with honeyed words and trapped their philosophies inside.
-
-Now full of arrogance, Anansi marched to the Baobab tree, determined to hoist the wisdom to the heavens.`,
-          choices: [
-            {
-              id: "choice-2c",
-              label: "Tie the pot in front of his belly and attempt the climb",
-              targetNodeId: "node-3-climb-belly",
-              consequenceHint: "The pot blocks your eight nimble arms...",
-            },
-          ],
-        },
-        "node-3-climb-belly": {
-          id: "node-3-climb-belly",
-          title: "The Clumsy Ascent of Pride",
-          content: `Anansi tied the heavy clay pot firmly to his stomach. He reached for the lowest branch of the Baobab, but the bulky calabash bumped against the trunk at every step!
-
-He slipped. He scraped his knees. He tried once, twice, ten times, but could not get past the first knot of bark.
-
-From below, his young son Ntikuma chuckled softly: "Father, if you have all the wisdom of the world in that pot, why do you not tie it to your back instead of your belly so your arms can grip the tree?"
-
-Anansi froze in shame. Even with a pot full of wisdom, a child had just taught him common sense! In sheer frustration, Anansi lost his grip. The pot plunged down, shattering against the stones, releasing wisdom back into the four winds for all humankind to share.`,
-          isEnding: true,
-          endingType: "lesson",
-          moralLesson: "No single creature can hold all the wisdom in the universe; wisdom belongs to everyone.",
-          choices: [],
-        },
-        "node-3-consult-son": {
-          id: "node-3-consult-son",
-          title: "The Path of Shared Counsel",
-          content: `Anansi paused and called out to Ntikuma. "Son, tell me how you would carry such a treasure to the stars?"
-
-Ntikuma smiled: "Tie it behind your shoulders, father, and allow the village elders to each plant a seed of baobab beneath."
-
-Anansi followed his son's advice and successfully climbed to the highest fork. There, instead of locking the wisdom away, he opened the lid slightly every morning at dawn, letting the morning breezes blow gentle inspiration across every hearth in Ghana.`,
-          isEnding: true,
-          endingType: "triumph",
-          moralLesson: "True wisdom is multiplied when shared through generations of counsel.",
-          choices: [],
-        },
-      },
-    },
-  ],
-};
-
-export default function StoryReaderPage() {
+export default function StoryDetailsPage() {
   const params = useParams();
-  const {
-    currentStory,
-    setStory,
-    currentNodeId,
-    chooseBranch,
-    goToPreviousNode,
-    resetStoryProgress,
-    fontSize,
-    readingTheme,
-    historyPath,
-  } = useStoryStore();
+  const storyId = params?.storyId as string;
+  const { currentStory } = useStory(storyId);
+  const { isBookmarked, toggleBookmark, isFavorited, toggleFavorite } = useLibrary();
 
-  const [chapterNavOpen, setChapterNavOpen] = React.useState(false);
-  const { isBookmarked, toggleBookmark } = useBookmark("anansi-and-the-pot-of-wisdom");
-  const [upvotes, setUpvotes] = React.useState(ANANSI_STORY.upvotesCount);
-  const [hasUpvoted, setHasUpvoted] = React.useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(currentStory?.likesCount || 0);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [showSupportModal, setShowSupportModal] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
-  // Initialize story on mount
-  React.useEffect(() => {
-    setStory(ANANSI_STORY);
-  }, [setStory]);
+  if (!currentStory) {
+    return (
+      <div className="text-center py-20 bg-white rounded-3xl border border-stone-200 p-8 space-y-4">
+        <h2 className="text-2xl font-bold text-stone-900 font-serif">Story Not Found</h2>
+        <p className="text-stone-500 text-sm">
+          The requested folklore manuscript could not be found in our digital archives.
+        </p>
+        <Link href="/explore">
+          <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+            Return to Explore
+          </Button>
+        </Link>
+      </div>
+    );
+  }
 
-  const activeStory = currentStory || ANANSI_STORY;
-  const currentChapter = activeStory.chapters?.[0];
-  const activeNode: StoryNode | undefined =
-    currentChapter?.nodes[currentNodeId || currentChapter.rootNodeId];
+  const bookmarked = isBookmarked(currentStory.id);
+  const favorited = isFavorited(currentStory.id);
 
-  const handleUpvote = () => {
-    if (hasUpvoted) {
-      setUpvotes(upvotes - 1);
-      setHasUpvoted(false);
+  const handleLikeToggle = () => {
+    if (isLiked) {
+      setIsLiked(false);
+      setLikesCount((prev) => prev - 1);
     } else {
-      setUpvotes(upvotes + 1);
-      setHasUpvoted(true);
+      setIsLiked(true);
+      setLikesCount((prev) => prev + 1);
     }
   };
 
-  const fontSizeClasses = {
-    sm: "text-base leading-relaxed",
-    md: "text-lg leading-loose",
-    lg: "text-xl leading-loose",
-    xl: "text-2xl leading-loose",
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: currentStory.title,
+        text: currentStory.synopsis,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2500);
+    }
   };
 
-  const themeClasses = {
-    night: "bg-[#1C1917] text-stone-100 border-stone-800",
-    parchment: "bg-[#F5EFEB] text-[#2C1D11] border-amber-200/70 shadow-sm",
-    sandstone: "bg-white text-stone-900 border-stone-200 shadow-sm",
-  };
+  const chapters = currentStory.chapters || [
+    {
+      id: "chap-1",
+      number: 1,
+      title: "Chapter 1: The First Crossing",
+      summary: currentStory.synopsis,
+      readTimeMinutes: currentStory.estimatedReadTime,
+      status: "published" as const,
+      likesCount: currentStory.likesCount,
+      commentsCount: currentStory.commentsCount,
+      updatedAt: currentStory.updatedAt,
+      rootNodeId: "node-1",
+      nodes: {},
+    },
+  ];
 
   return (
-    <div className="pb-24 max-w-4xl mx-auto space-y-6">
-      {/* Top Header & Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-stone-200">
-        <Link
-          href="/explore"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-folklore-amber transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Back to Library</span>
-        </Link>
+    <div className="space-y-10 pb-16">
+      {/* Story Header Hero */}
+      <div className="relative overflow-hidden bg-white rounded-3xl border border-stone-200 p-6 sm:p-10 shadow-sm space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+          {/* Cover Art */}
+          <div className="md:col-span-4 lg:col-span-3 space-y-3">
+            <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden border border-stone-200 shadow-md bg-stone-100">
+              <Image
+                src={currentStory.coverImage}
+                alt={currentStory.title}
+                fill
+                priority
+                className="object-cover"
+              />
+              <div className="absolute top-3 left-3">
+                <Badge className="bg-stone-900/80 text-white backdrop-blur-xs text-[10px]">
+                  {currentStory.tradition}
+                </Badge>
+              </div>
+            </div>
 
-        <div className="flex items-center gap-2">
-          {/* Chapter Drawer Toggle */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setChapterNavOpen(true)}
-            className="gap-1.5 text-xs h-9 rounded-xl border-stone-200 bg-white text-stone-800 hover:bg-stone-50"
-          >
-            <List className="h-3.5 w-3.5" />
-            <span>Chapters</span>
-          </Button>
+            {/* Read CTA button under cover */}
+            <Link href={`/story/${currentStory.id}/read`} className="block">
+              <Button className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-bold py-6 text-sm rounded-xl shadow-md">
+                <Play className="w-4 h-4 fill-white mr-2" />
+                Start Reading (Chap 1)
+              </Button>
+            </Link>
+          </div>
 
-          {/* Typography Customizer */}
-          <TypographyCustomizer />
-
-          {/* Bookmark Button */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={toggleBookmark}
-            className={`gap-1.5 text-xs h-9 rounded-xl border-stone-200 bg-white text-stone-800 hover:bg-stone-50 ${
-              isBookmarked ? "text-amber-800 border-amber-400 bg-amber-50" : ""
-            }`}
-          >
-            <Bookmark className={`h-3.5 w-3.5 ${isBookmarked ? "fill-current text-amber-700" : ""}`} />
-            <span className="hidden sm:inline">{isBookmarked ? "Saved" : "Save"}</span>
-          </Button>
-        </div>
-      </div>
-
-      {/* Story Metadata Banner */}
-      <div className="space-y-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="gold">{activeStory.tradition}</Badge>
-          <Badge variant="secondary">{activeStory.difficulty}</Badge>
-          <span className="text-xs text-stone-500 font-medium">
-            Path Step {historyPath.length} of narrative tree
-          </span>
-        </div>
-
-        <h1 className="text-3xl sm:text-4xl font-serif font-extrabold text-stone-900">
-          {activeStory.title}
-        </h1>
-        <p className="text-sm text-stone-600 italic">
-          Recorded by Griot {activeStory.authorName}
-        </p>
-      </div>
-
-      {/* Audio Narration Bar */}
-      {activeNode && (
-        <div className="sticky top-20 z-30">
-          <AudioPlayer textToRead={`${activeNode.title}. ${activeNode.content}`} />
-        </div>
-      )}
-
-      {/* Interactive Story Reader Box */}
-      <div
-        className={`rounded-3xl border p-6 sm:p-10 transition-all duration-300 ${
-          themeClasses[readingTheme]
-        }`}
-      >
-        {activeNode ? (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between pb-3 border-b border-stone-200/60">
-              <h2 className="text-xl font-serif font-bold text-amber-900">
-                {activeNode.title}
-              </h2>
-              {historyPath.length > 1 && (
-                <button
-                  onClick={goToPreviousNode}
-                  className="inline-flex items-center gap-1 text-xs text-stone-500 hover:text-stone-900 transition-colors font-medium"
+          {/* Details & Metadata */}
+          <div className="md:col-span-8 lg:col-span-9 space-y-6">
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge className="bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold">
+                  {currentStory.mainGenre}
+                </Badge>
+                <span
+                  className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${
+                    currentStory.status === "completed"
+                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                      : "bg-amber-50 text-amber-700 border border-amber-200"
+                  }`}
                 >
-                  <RotateCcw className="h-3 w-3" />
-                  <span>Undo Choice</span>
-                </button>
+                  {currentStory.status === "completed" ? "Completed Story" : "Ongoing Manuscript"}
+                </span>
+                <span className="text-xs text-stone-400">•</span>
+                <span className="text-xs text-stone-500 flex items-center gap-1">
+                  <Clock className="w-3 h-3" /> {currentStory.estimatedReadTime} min read
+                </span>
+              </div>
+
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-stone-900 font-serif tracking-tight">
+                {currentStory.title}
+              </h1>
+              {currentStory.subtitle && (
+                <p className="text-base text-stone-500 font-serif italic">
+                  {currentStory.subtitle}
+                </p>
               )}
             </div>
 
-            {/* Story Prose */}
-            <div
-              className={`font-serif whitespace-pre-line tracking-wide ${
-                fontSizeClasses[fontSize]
-              }`}
-            >
-              {activeNode.content}
-            </div>
-
-            {/* Ending Condition Card */}
-            {activeNode.isEnding && (
-              <div className="mt-8 rounded-2xl border-2 border-amber-300 bg-amber-50/80 p-6 text-center space-y-3">
-                <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-900">
-                  <Sparkles className="h-4 w-4 text-amber-700" />
-                  Tale Concluded — Moral Lesson
-                </div>
-                <p className="text-lg font-serif italic text-stone-900">
-                  &quot;{activeNode.moralLesson}&quot;
-                </p>
-                <div className="pt-2 flex justify-center gap-3">
-                  <Button variant="folklore" size="sm" onClick={resetStoryProgress}>
-                    Re-explore Other Branches
-                  </Button>
+            {/* Author Profile Row */}
+            <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-stone-50 rounded-2xl border border-stone-200">
+              <div className="flex items-center gap-3">
+                <Link href={`/profile/kwame_griot`} className="relative w-12 h-12 rounded-full overflow-hidden border border-amber-300">
+                  <Image
+                    src={
+                      currentStory.authorAvatar ||
+                      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"
+                    }
+                    alt={currentStory.authorName}
+                    fill
+                    className="object-cover"
+                  />
+                </Link>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <Link
+                      href={`/profile/kwame_griot`}
+                      className="text-sm font-bold text-stone-900 hover:text-amber-700 font-serif"
+                    >
+                      {currentStory.authorPenName || currentStory.authorName}
+                    </Link>
+                    <span className="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded font-medium">
+                      Griot
+                    </span>
+                  </div>
+                  <p className="text-xs text-stone-500 line-clamp-1 max-w-sm">
+                    {currentStory.authorBio || "Living folklore archivist and traditional storyteller."}
+                  </p>
                 </div>
               </div>
-            )}
 
-            {/* Choice Decision Forks */}
-            {!activeNode.isEnding && (
-              <ChoicePrompt
-                choices={activeNode.choices}
-                onSelectChoice={(choice: StoryChoice) => chooseBranch(choice)}
-              />
-            )}
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setIsFollowing(!isFollowing)}
+                  className={`border-stone-300 text-xs rounded-xl ${
+                    isFollowing
+                      ? "bg-amber-50 border-amber-300 text-amber-900 font-semibold"
+                      : "bg-white text-stone-700"
+                  }`}
+                >
+                  {isFollowing ? (
+                    <>
+                      <UserCheck className="w-3.5 h-3.5 mr-1 text-amber-600" /> Following
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="w-3.5 h-3.5 mr-1" /> Follow Author
+                    </>
+                  )}
+                </Button>
+
+                <Button
+                  size="sm"
+                  onClick={() => setShowSupportModal(true)}
+                  className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-xl shadow-xs"
+                >
+                  <Heart className="w-3.5 h-3.5 mr-1 fill-white" />
+                  Support Author
+                </Button>
+              </div>
+            </div>
+
+            {/* Synopsis */}
+            <div className="space-y-2">
+              <h2 className="text-xs font-bold text-stone-900 uppercase tracking-wider">
+                Synopsis
+              </h2>
+              <p className="text-stone-700 text-sm leading-relaxed whitespace-pre-line">
+                {currentStory.synopsis}
+              </p>
+            </div>
+
+            {/* Sub-genres & Tags */}
+            <div className="space-y-2">
+              <span className="text-xs font-bold text-stone-900 uppercase tracking-wider block">
+                Sub-genres & Folklore Themes
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {currentStory.subGenres.map((sub) => (
+                  <span
+                    key={sub}
+                    className="text-xs px-2.5 py-1 bg-stone-100 text-stone-700 rounded-lg border border-stone-200 font-medium"
+                  >
+                    {sub}
+                  </span>
+                ))}
+                {currentStory.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-xs px-2.5 py-1 bg-stone-50 text-stone-500 rounded-lg border border-stone-200"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Interactive Metrics & Social Actions */}
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-stone-100 text-xs">
+              <div className="flex items-center gap-4 text-stone-600 font-medium">
+                <span className="flex items-center gap-1.5">
+                  <Eye className="w-4 h-4 text-stone-400" />
+                  <strong className="text-stone-900">{currentStory.readsCount.toLocaleString()}</strong> Reads
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Heart className="w-4 h-4 text-amber-600" />
+                  <strong className="text-stone-900">{likesCount}</strong> Likes
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <MessageSquare className="w-4 h-4 text-stone-400" />
+                  <strong className="text-stone-900">{currentStory.commentsCount}</strong> Comments
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleLikeToggle}
+                  className={`border-stone-300 rounded-xl ${
+                    isLiked ? "bg-red-50 border-red-300 text-red-600" : "bg-white text-stone-700"
+                  }`}
+                >
+                  <Heart className={`w-3.5 h-3.5 mr-1.5 ${isLiked ? "fill-red-500 text-red-500" : ""}`} />
+                  {isLiked ? "Liked" : "Like"}
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => toggleBookmark(currentStory.id)}
+                  className={`border-stone-300 rounded-xl ${
+                    bookmarked ? "bg-amber-50 border-amber-300 text-amber-900 font-semibold" : "bg-white text-stone-700"
+                  }`}
+                >
+                  <Bookmark className={`w-3.5 h-3.5 mr-1.5 ${bookmarked ? "fill-amber-600 text-amber-600" : ""}`} />
+                  {bookmarked ? "Bookmarked" : "Bookmark"}
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => toggleFavorite(currentStory.id)}
+                  className={`border-stone-300 rounded-xl ${
+                    favorited ? "bg-amber-50 border-amber-300 text-amber-900 font-semibold" : "bg-white text-stone-700"
+                  }`}
+                >
+                  <Sparkles className={`w-3.5 h-3.5 mr-1.5 ${favorited ? "fill-amber-500 text-amber-600" : ""}`} />
+                  {favorited ? "Favorited" : "Favorite"}
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleShare}
+                  className="border-stone-300 bg-white text-stone-700 rounded-xl"
+                >
+                  {isCopied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 mr-1.5 text-emerald-600" /> Copied
+                    </>
+                  ) : (
+                    <>
+                      <Share2 className="w-3.5 h-3.5 mr-1.5" /> Share
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
           </div>
-        ) : (
-          <div className="text-center py-12 text-stone-500">Loading tale nodes...</div>
-        )}
+        </div>
       </div>
 
-      {/* Chapter Drawer */}
-      <ChapterNavigator
-        chapters={activeStory.chapters || []}
-        isOpen={chapterNavOpen}
-        onClose={() => setChapterNavOpen(false)}
-      />
-
-      {/* Reader Interaction Footer */}
-      <div className="flex items-center justify-between pt-6 border-t border-stone-200">
-        <button
-          onClick={handleUpvote}
-          className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-xs font-bold transition-all ${
-            hasUpvoted
-              ? "border-amber-600 bg-amber-100/70 text-amber-900"
-              : "border-stone-200 bg-white text-stone-700 hover:border-amber-300 hover:bg-stone-50 shadow-sm"
-          }`}
-        >
-          <Heart className={`h-4 w-4 ${hasUpvoted ? "fill-current text-folklore-terracotta" : "text-stone-500"}`} />
-          <span>{upvotes} Blessings</span>
-        </button>
-
-        <div className="flex items-center gap-3">
-          <Link href="/community">
-            <Button variant="outline" size="sm" className="gap-1.5 text-xs bg-white border-stone-200 text-stone-800 hover:bg-stone-50">
-              <MessageSquare className="h-3.5 w-3.5" />
-              <span>Discuss Lore</span>
+      {/* Chapter List & Table of Contents */}
+      <div className="space-y-4 bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm">
+        <div className="flex items-center justify-between border-b border-stone-100 pb-4">
+          <div className="space-y-0.5">
+            <h2 className="text-xl font-bold text-stone-900 font-serif">
+              Chapters & Oral Episodes ({chapters.length})
+            </h2>
+            <p className="text-xs text-stone-500">
+              Select any chapter to begin or resume your interactive narrative.
+            </p>
+          </div>
+          <Link href={`/story/${currentStory.id}/read`}>
+            <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white rounded-xl">
+              Read Chapter 1
             </Button>
           </Link>
         </div>
+
+        <div className="divide-y divide-stone-100">
+          {chapters.map((chapter) => (
+            <Link
+              key={chapter.id}
+              href={`/story/${currentStory.id}/read`}
+              className="flex items-center justify-between p-4 hover:bg-stone-50 rounded-2xl transition-all group"
+            >
+              <div className="flex items-center gap-4 min-w-0">
+                <div className="w-10 h-10 rounded-xl bg-amber-100 border border-amber-300 text-amber-900 flex items-center justify-center font-bold text-sm shrink-0 font-serif">
+                  {chapter.number}
+                </div>
+                <div className="space-y-1 min-w-0">
+                  <h3 className="text-sm font-bold text-stone-900 group-hover:text-amber-700 transition-colors truncate">
+                    {chapter.title}
+                  </h3>
+                  <p className="text-xs text-stone-500 truncate max-w-xl">
+                    {chapter.summary}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 text-xs text-stone-400 shrink-0 ml-4">
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5" /> {chapter.readTimeMinutes}m
+                </span>
+                <span className="flex items-center gap-1">
+                  <Heart className="w-3.5 h-3.5 text-stone-300 group-hover:text-amber-600" /> {chapter.likesCount}
+                </span>
+                <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-amber-600 group-hover:translate-x-1 transition-all" />
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
+
+      {/* Support Author Dialog */}
+      <SupportAuthorDialog
+        story={currentStory}
+        isOpen={showSupportModal}
+        onClose={() => setShowSupportModal(false)}
+      />
     </div>
   );
 }

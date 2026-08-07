@@ -8,15 +8,18 @@ export interface NavItem {
 
 export const marketingNav: NavItem[] = [
   { title: "Explore Tales", href: "/explore" },
-  { title: "Creator Studio", href: "/studio" },
-  { title: "Community Lore", href: "/community" },
-  { title: "About Oral Heritage", href: "/about" },
-  { title: "Pricing & Guilds", href: "/pricing" },
+  { title: "Personal Library", href: "/library" },
+  { title: "Writer Studio", href: "/studio" },
+  { title: "Support INKOMA", href: "/support" },
+  { title: "Admin Console", href: "/admin" },
 ];
 
 export const platformSidebarNav: NavItem[] = [
   { title: "Discover & Explore", href: "/explore", icon: "Compass" },
-  { title: "Storyteller Studio", href: "/studio", icon: "Feather", badge: "Creator" },
-  { title: "Lore Community", href: "/community", icon: "Users" },
-  { title: "My Griot Profile", href: "/profile/anansi_apprentice", icon: "User" },
+  { title: "My Library", href: "/library", icon: "BookOpen" },
+  { title: "Writer Dashboard", href: "/studio", icon: "Feather", badge: "Studio" },
+  { title: "My Griot Profile", href: "/profile/kwame_griot", icon: "User" },
+  { title: "Circle Settings", href: "/settings", icon: "Sliders" },
+  { title: "Support & FAQs", href: "/support", icon: "HelpCircle" },
+  { title: "Admin Console", href: "/admin", icon: "ShieldAlert", badge: "Admin" },
 ];

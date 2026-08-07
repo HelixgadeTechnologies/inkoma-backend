@@ -1,100 +1,129 @@
-import { create } from 'zustand';
-import { Story, StoryNode, StoryChoice } from '@/types';
+"use client";
 
-interface StoryState {
-  currentStory: Story | null;
+import { useState, useMemo } from 'react';
+import { create } from 'zustand';
+import { Story, StoryFilterOptions, StoryChapter, StoryNode } from '@/types';
+import { MOCK_STORIES } from '@/config/mock-data';
+
+interface StoryStoreState {
   activeChapterIndex: number;
-  currentNodeId: string | null;
-  historyPath: string[]; // array of node IDs visited
-  visitedNodesCount: number;
+  currentNodeId: string;
   fontSize: 'sm' | 'md' | 'lg' | 'xl';
   readingTheme: 'parchment' | 'night' | 'sandstone';
-  isPlayingAudio: boolean;
-  
-  // Actions
-  setStory: (story: Story) => void;
   setChapterIndex: (index: number) => void;
-  chooseBranch: (choice: StoryChoice) => void;
-  goToPreviousNode: () => void;
-  resetStoryProgress: () => void;
+  setCurrentNodeId: (nodeId: string) => void;
   setFontSize: (size: 'sm' | 'md' | 'lg' | 'xl') => void;
   setReadingTheme: (theme: 'parchment' | 'night' | 'sandstone') => void;
-  toggleAudioNarration: () => void;
 }
 
-export const useStoryStore = create<StoryState>((set, get) => ({
-  currentStory: null,
+export const useStoryStore = create<StoryStoreState>((set) => ({
   activeChapterIndex: 0,
-  currentNodeId: null,
-  historyPath: [],
-  visitedNodesCount: 0,
+  currentNodeId: 'node-1',
   fontSize: 'md',
-  readingTheme: 'night',
-  isPlayingAudio: false,
-
-  setStory: (story: Story) => {
-    const firstChapter = story.chapters?.[0];
-    const initialNodeId = firstChapter ? firstChapter.rootNodeId : null;
-
-    set({
-      currentStory: story,
-      activeChapterIndex: 0,
-      currentNodeId: initialNodeId,
-      historyPath: initialNodeId ? [initialNodeId] : [],
-      visitedNodesCount: 1,
-    });
-  },
-
-  setChapterIndex: (index: number) => {
-    const { currentStory } = get();
-    if (!currentStory || !currentStory.chapters?.[index]) return;
-
-    const chapter = currentStory.chapters[index];
-    set({
-      activeChapterIndex: index,
-      currentNodeId: chapter.rootNodeId,
-      historyPath: [chapter.rootNodeId],
-      visitedNodesCount: 1,
-    });
-  },
-
-  chooseBranch: (choice: StoryChoice) => {
-    const { historyPath, visitedNodesCount } = get();
-    set({
-      currentNodeId: choice.targetNodeId,
-      historyPath: [...historyPath, choice.targetNodeId],
-      visitedNodesCount: visitedNodesCount + 1,
-    });
-  },
-
-  goToPreviousNode: () => {
-    const { historyPath } = get();
-    if (historyPath.length <= 1) return;
-
-    const newPath = [...historyPath];
-    newPath.pop();
-    const previousNodeId = newPath[newPath.length - 1];
-
-    set({
-      currentNodeId: previousNodeId,
-      historyPath: newPath,
-    });
-  },
-
-  resetStoryProgress: () => {
-    const { currentStory, activeChapterIndex } = get();
-    if (!currentStory) return;
-    const chapter = currentStory.chapters?.[activeChapterIndex];
-    const initialNodeId = chapter ? chapter.rootNodeId : null;
-
-    set({
-      currentNodeId: initialNodeId,
-      historyPath: initialNodeId ? [initialNodeId] : [],
-      visitedNodesCount: 1,
-    });
-  },
-
-  setFontSize: (fontSize) => set({ fontSize }),
-  setReadingTheme: (readingTheme) => set({ readingTheme }),
-  toggleAudioNarration: () => set((state) => ({ isPlayingAudio: !state.isPlayingAudio })),
+  readingTheme: 'parchment',
+  setChapterIndex: (index) => set({ activeChapterIndex: index }),
+  setCurrentNodeId: (nodeId) => set({ currentNodeId: nodeId }),
+  setFontSize: (size) => set({ fontSize: size }),
+  setReadingTheme: (theme) => set({ readingTheme: theme }),
 }));
+
+export function useStory(storyId?: string) {
+  const [stories, setStories] = useState<Story[]>(MOCK_STORIES);
+  const [filters, setFilters] = useState<StoryFilterOptions>({
+    sortBy: 'trending',
+  });
+
+  const currentStory = useMemo(() => {
+    if (!storyId) return undefined;
+    return stories.find((s) => s.id === storyId || s.slug === storyId);
+  }, [stories, storyId]);
+
+  const filteredStories = useMemo(() => {
+    return stories.filter((story) => {
+      if (filters.searchQuery) {
+        const query = filters.searchQuery.toLowerCase();
+        const matchesTitle = story.title.toLowerCase().includes(query);
+        const matchesAuthor = (story.authorPenName || story.authorName).toLowerCase().includes(query);
+        const matchesGenre = story.mainGenre.toLowerCase().includes(query) || story.subGenres.some(sg => sg.toLowerCase().includes(query));
+        const matchesTag = story.tags.some(t => t.toLowerCase().includes(query));
+        if (!matchesTitle && !matchesAuthor && !matchesGenre && !matchesTag) {
+          return false;
+        }
+      }
+
+      if (filters.tradition && filters.tradition !== 'all') {
+        if (story.tradition !== filters.tradition) return false;
+      }
+
+      if (filters.genre) {
+        if (story.mainGenre !== filters.genre && !story.subGenres.includes(filters.genre)) {
+          return false;
+        }
+      }
+
+      if (filters.status && filters.status !== 'all') {
+        if (story.status !== filters.status) return false;
+      }
+
+      if (filters.interactiveOnly && !story.isInteractive) {
+        return false;
+      }
+
+      if (filters.audioOnly && !story.hasAudioNarration) {
+        return false;
+      }
+
+      return true;
+    }).sort((a, b) => {
+      if (filters.sortBy === 'newest') {
+        return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+      }
+      if (filters.sortBy === 'most_read') {
+        return b.readsCount - a.readsCount;
+      }
+      if (filters.sortBy === 'most_liked') {
+        return b.likesCount - a.likesCount;
+      }
+      if (filters.sortBy === 'readTime') {
+        return a.estimatedReadTime - b.estimatedReadTime;
+      }
+      // default trending
+      return (b.readsCount + b.likesCount * 3) - (a.readsCount + a.likesCount * 3);
+    });
+  }, [stories, filters]);
+
+  const featuredStories = useMemo(() => stories.filter((s) => s.isFeatured), [stories]);
+  const recentlyUpdated = useMemo(() => stories.filter((s) => s.isRecentlyUpdated || s.status === 'ongoing'), [stories]);
+  const newReleases = useMemo(() => stories.filter((s) => s.isNewRelease || new Date(s.publishedAt).getFullYear() === 2026), [stories]);
+
+  const getChapter = (chapterIdOrNum: string | number): StoryChapter | undefined => {
+    if (!currentStory?.chapters) return undefined;
+    if (typeof chapterIdOrNum === 'number') {
+      return currentStory.chapters.find((c) => c.number === chapterIdOrNum);
+    }
+    return currentStory.chapters.find((c) => c.id === chapterIdOrNum);
+  };
+
+  const getNode = (nodeId: string): StoryNode | undefined => {
+    if (!currentStory?.chapters) return undefined;
+    for (const chapter of currentStory.chapters) {
+      if (chapter.nodes[nodeId]) {
+        return chapter.nodes[nodeId];
+      }
+    }
+    return undefined;
+  };
+
+  return {
+    stories,
+    currentStory,
+    filteredStories,
+    featuredStories,
+    recentlyUpdated,
+    newReleases,
+    filters,
+    setFilters,
+    getChapter,
+    getNode,
+  };
+}

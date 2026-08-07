@@ -10,6 +10,7 @@ export type Tradition =
   | 'Pan-African';
 
 export type StoryDifficulty = 'Beginner' | 'Intermediate' | 'Elderly / Complex';
+export type StoryStatus = 'draft' | 'ongoing' | 'completed' | 'published';
 
 export interface StoryChoice {
   id: string;
@@ -37,45 +38,71 @@ export interface StoryChapter {
   number: number;
   title: string;
   summary: string;
+  content?: string;
   rootNodeId: string;
   nodes: Record<string, StoryNode>;
   readTimeMinutes: number;
+  status: 'draft' | 'published';
+  likesCount: number;
+  commentsCount?: number;
+  publishedAt?: string;
+  updatedAt: string;
 }
 
 export interface Story {
   id: string;
-  slug: string;
+  slug?: string;
   title: string;
   subtitle?: string;
   synopsis: string;
   coverImage: string;
   tradition: Tradition;
-  genres: string[];
+  mainGenre: string;
+  subGenres: string[];
   tags: string[];
   difficulty: StoryDifficulty;
+  status: StoryStatus;
+  
+  // Author
   authorId: string;
   authorName: string;
+  authorPenName?: string;
   authorAvatar?: string;
+  authorBio?: string;
+  
+  // Metrics & Chapters
+  createdAt?: string;
   publishedAt: string;
   updatedAt: string;
   estimatedReadTime: number; // in minutes
   totalChapters: number;
   chapters?: StoryChapter[];
   totalBranches: number;
-  upvotesCount: number;
+  rootNodeId?: string;
+  content?: string;
+  
+  // Engagement
+  readsCount: number;
+  likesCount: number;
   bookmarksCount: number;
+  favoritesCount?: number;
   commentsCount: number;
+  
+  // Flags
   isFeatured?: boolean;
+  isRecentlyUpdated?: boolean;
+  isNewRelease?: boolean;
   isInteractive: boolean;
   hasAudioNarration: boolean;
-  status: 'draft' | 'published' | 'archived';
 }
 
 export interface StoryFilterOptions {
-  genre?: string;
-  tradition?: Tradition | 'all';
   searchQuery?: string;
+  genre?: string;
+  subGenre?: string;
+  tradition?: Tradition | 'all';
+  status?: StoryStatus | 'all';
   interactiveOnly?: boolean;
   audioOnly?: boolean;
-  sortBy?: 'trending' | 'newest' | 'upvotes' | 'readTime';
+  sortBy?: 'trending' | 'newest' | 'most_read' | 'most_liked' | 'readTime';
 }
