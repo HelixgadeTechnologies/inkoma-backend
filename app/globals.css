@@ -13,7 +13,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 24 25% 12%;
 
-    --primary: 25 85% 45%;
+    --primary: 3 87% 22%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 38 25% 92%;
@@ -22,7 +22,7 @@
     --muted: 38 20% 92%;
     --muted-foreground: 24 15% 40%;
 
-    --accent: 38 90% 45%;
+    --accent: 3 87% 22%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
@@ -30,7 +30,7 @@
 
     --border: 35 20% 86%;
     --input: 35 20% 86%;
-    --ring: 25 85% 45%;
+    --ring: 3 87% 22%;
 
     --radius: 0.75rem;
 
@@ -48,8 +48,8 @@
     --popover: 222 18% 10%;
     --popover-foreground: 45 30% 96%;
 
-    --primary: 38 92% 50%;
-    --primary-foreground: 220 20% 6%;
+    --primary: 3 87% 22%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 220 14% 16%;
     --secondary-foreground: 45 30% 96%;
@@ -57,7 +57,7 @@
     --muted: 220 14% 18%;
     --muted-foreground: 220 10% 60%;
 
-    --accent: 14 65% 50%;
+    --accent: 3 87% 22%;
     --accent-foreground: 45 30% 96%;
 
     --destructive: 0 84.2% 60.2%;
@@ -65,7 +65,7 @@
 
     --border: 220 14% 18%;
     --input: 220 14% 18%;
-    --ring: 38 92% 50%;
+    --ring: 3 87% 22%;
   }
 }
 
@@ -74,9 +74,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    background-image: radial-gradient(circle at 50% 0%, rgba(217, 119, 6, 0.05) 0%, transparent 60%),
-                      radial-gradient(circle at 100% 100%, rgba(194, 89, 63, 0.04) 0%, transparent 50%);
+    @apply bg-[#FAF8F5] text-foreground font-sans antialiased;
     min-height: 100vh;
   }
 }
@@ -92,28 +90,24 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(180, 83, 9, 0.35);
+  background: rgba(104, 12, 7, 0.4);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(180, 83, 9, 0.6);
+  background: rgba(104, 12, 7, 0.7);
 }
 
 .text-gold-gradient {
-  background: linear-gradient(135deg, #B45309 0%, #D97706 50%, #E5A93C 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #680C07;
 }
 
 .text-terracotta-gradient {
-  background: linear-gradient(135deg, #9B3821 0%, #C2593F 50%, #D97706 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #680C07;
 }
 
 .folklore-pattern {
   background-color: #FAF8F5;
-  background-image: radial-gradient(rgba(180, 83, 9, 0.08) 1.5px, transparent 0);
+  background-image: radial-gradient(rgba(104, 12, 7, 0.06) 1.5px, transparent 0);
   background-size: 24px 24px;
 }

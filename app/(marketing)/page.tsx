@@ -17,14 +17,14 @@ export default function HomePage() {
   return (
     <div className="space-y-12 pb-16">
       {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#F5EFEB] to-white border border-stone-200 p-8 sm:p-14 text-center space-y-6 shadow-sm">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100/80 border border-amber-300 text-amber-900 text-xs font-semibold uppercase tracking-wider">
-          <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+      <section className="relative overflow-hidden rounded-3xl bg-white border border-stone-200 p-8 sm:p-14 text-center space-y-6 shadow-sm">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] text-xs font-semibold uppercase tracking-wider">
+          <Sparkles className="w-3.5 h-3.5 text-[#680C07]" />
           The Living Hearth of African Mythology
         </div>
 
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-stone-900 tracking-tight font-serif max-w-3xl mx-auto leading-tight">
-          Where Ancient Lore Meets <span className="text-amber-700">Interactive Destiny</span>
+          Where Ancient Lore Meets <span className="text-[#680C07]">Interactive Destiny</span>
         </h1>
 
         <p className="text-stone-600 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
@@ -33,7 +33,7 @@ export default function HomePage() {
 
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
           <Link href="/explore">
-            <Button className="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-7 py-6 text-sm rounded-xl shadow-md">
+            <Button className="bg-[#680C07] hover:bg-[#520905] text-white font-semibold px-7 py-6 text-sm rounded-xl shadow-md">
               <Compass className="w-4 h-4 mr-2" />
               Explore Stories
               <ArrowRight className="w-4 h-4 ml-2" />
@@ -44,7 +44,7 @@ export default function HomePage() {
               variant="outline"
               className="border-stone-300 text-stone-800 hover:bg-stone-100 font-semibold px-6 py-6 text-sm rounded-xl"
             >
-              <Flame className="w-4 h-4 mr-2 text-amber-600" />
+              <Flame className="w-4 h-4 mr-2 text-[#680C07]" />
               Griot Story Studio
             </Button>
           </Link>
@@ -53,28 +53,28 @@ export default function HomePage() {
         {/* Feature Highlights */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8 border-t border-stone-200/80 text-left">
           <div className="flex items-center gap-3 p-3 bg-white/70 rounded-2xl border border-stone-200">
-            <Volume2 className="w-5 h-5 text-amber-600 shrink-0" />
+            <Volume2 className="w-5 h-5 text-[#680C07] shrink-0" />
             <div>
               <p className="text-xs font-bold text-stone-900">Oral Griot Audio</p>
               <p className="text-[10px] text-stone-500">Traditional cadence</p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 bg-white/70 rounded-2xl border border-stone-200">
-            <Compass className="w-5 h-5 text-amber-600 shrink-0" />
+            <Compass className="w-5 h-5 text-[#680C07] shrink-0" />
             <div>
               <p className="text-xs font-bold text-stone-900">Branching Tales</p>
               <p className="text-[10px] text-stone-500">Choice-driven endings</p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 bg-white/70 rounded-2xl border border-stone-200">
-            <BookOpen className="w-5 h-5 text-amber-600 shrink-0" />
+            <BookOpen className="w-5 h-5 text-[#680C07] shrink-0" />
             <div>
               <p className="text-xs font-bold text-stone-900">Living Library</p>
               <p className="text-[10px] text-stone-500">Save quotes & lore</p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 bg-white/70 rounded-2xl border border-stone-200">
-            <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0" />
+            <ShieldCheck className="w-5 h-5 text-[#680C07] shrink-0" />
             <div>
               <p className="text-xs font-bold text-stone-900">Creator Support</p>
               <p className="text-[10px] text-stone-500">Direct Paystack tip</p>

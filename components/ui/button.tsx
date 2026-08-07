@@ -8,17 +8,17 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-folklore-terracotta text-white shadow hover:bg-folklore-clay hover:shadow-md",
+          "bg-[#680C07] text-white shadow hover:bg-[#520905] hover:shadow-md",
         folklore:
-          "bg-gradient-to-r from-folklore-terracotta to-folklore-amber text-white font-semibold shadow-md hover:shadow-lg hover:brightness-105",
+          "bg-[#680C07] text-white font-semibold shadow-md hover:bg-[#520905] hover:shadow-lg",
         gold:
-          "bg-folklore-gold text-white font-semibold hover:bg-folklore-amber shadow hover:shadow-md",
+          "bg-[#680C07] text-white font-semibold hover:bg-[#520905] shadow hover:shadow-md",
         outline:
-          "border border-stone-300 bg-white/90 text-stone-800 hover:bg-amber-50 hover:border-folklore-amber hover:text-stone-900 shadow-sm",
+          "border border-stone-300 bg-white/90 text-stone-800 hover:bg-[#680C07]/10 hover:border-[#680C07] hover:text-stone-900 shadow-sm",
         secondary:
           "bg-stone-100/90 border border-stone-200 text-stone-800 hover:bg-stone-200/80 hover:text-stone-950",
-        ghost: "text-stone-700 hover:bg-amber-100/50 hover:text-stone-950",
-        link: "text-folklore-amber font-semibold underline-offset-4 hover:underline",
+        ghost: "text-stone-700 hover:bg-[#680C07]/10 hover:text-stone-950",
+        link: "text-[#680C07] font-semibold underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",

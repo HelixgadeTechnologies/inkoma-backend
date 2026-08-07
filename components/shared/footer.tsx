@@ -9,7 +9,7 @@ export function Footer() {
           {/* Brand Col */}
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center space-x-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-folklore-terracotta to-folklore-amber text-white shadow-sm">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#680C07] text-white shadow-sm">
                 <Sparkles className="h-4 w-4 fill-current" />
               </div>
               <span className="font-serif text-xl font-bold tracking-tight text-stone-900">
@@ -20,7 +20,7 @@ export function Footer() {
               Preserving and reimagining African oral heritage, trickster folklore, and mythological wisdom through branching interactive narratives and oral voice experiences.
             </p>
             <div className="flex items-center space-x-3 text-xs text-stone-600">
-              <span className="inline-flex items-center gap-1 text-folklore-amber font-semibold">
+              <span className="inline-flex items-center gap-1 text-[#680C07] font-semibold">
                 <Globe className="h-3.5 w-3.5" />
                 Pan-African Lore Initiative
               </span>

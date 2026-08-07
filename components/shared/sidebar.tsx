@@ -38,7 +38,7 @@ export function Sidebar() {
       {/* Quick Action */}
       <div className="mb-6">
         <Link href="/studio">
-          <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 px-4 py-2.5 text-sm font-semibold text-white shadow-md hover:scale-[1.02] transition-all">
+          <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#680C07] hover:bg-[#520905] px-4 py-2.5 text-sm font-semibold text-white shadow-md hover:scale-[1.02] transition-all">
             <PlusCircle className="h-4 w-4" />
             <span>Forge New Tale</span>
           </button>

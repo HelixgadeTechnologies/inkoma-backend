@@ -54,8 +54,8 @@ export default function LibraryPage() {
     <div className="space-y-8 pb-16">
       {/* Header */}
       <div className="space-y-1.5">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold uppercase tracking-wider">
-          <BookOpen className="w-3.5 h-3.5 text-amber-600" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] text-xs font-semibold uppercase tracking-wider">
+          <BookOpen className="w-3.5 h-3.5 text-[#680C07]" />
           Personal Archive
         </div>
         <h1 className="text-3xl font-extrabold text-stone-900 font-serif tracking-tight">
@@ -73,7 +73,7 @@ export default function LibraryPage() {
           onClick={() => setActiveTab("continue")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "continue"
-              ? "bg-amber-600 text-white shadow-sm"
+              ? "bg-[#680C07] text-white shadow-sm"
               : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
           }`}
         >
@@ -86,7 +86,7 @@ export default function LibraryPage() {
           onClick={() => setActiveTab("bookmarks")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "bookmarks"
-              ? "bg-amber-600 text-white shadow-sm"
+              ? "bg-[#680C07] text-white shadow-sm"
               : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
           }`}
         >
@@ -99,7 +99,7 @@ export default function LibraryPage() {
           onClick={() => setActiveTab("favorites")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "favorites"
-              ? "bg-amber-600 text-white shadow-sm"
+              ? "bg-[#680C07] text-white shadow-sm"
               : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
           }`}
         >
@@ -112,7 +112,7 @@ export default function LibraryPage() {
           onClick={() => setActiveTab("history")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "history"
-              ? "bg-amber-600 text-white shadow-sm"
+              ? "bg-[#680C07] text-white shadow-sm"
               : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
           }`}
         >
@@ -125,7 +125,7 @@ export default function LibraryPage() {
           onClick={() => setActiveTab("quotes")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "quotes"
-              ? "bg-amber-600 text-white shadow-sm"
+              ? "bg-[#680C07] text-white shadow-sm"
               : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
           }`}
         >
@@ -145,7 +145,7 @@ export default function LibraryPage() {
                 Explore the archive to start your first interactive folklore journey.
               </p>
               <Link href="/explore">
-                <Button className="bg-amber-600 hover:bg-amber-700 text-white text-xs">
+                <Button className="bg-[#680C07] hover:bg-[#520905] text-white text-xs">
                   Explore Stories
                 </Button>
               </Link>
@@ -168,7 +168,7 @@ export default function LibraryPage() {
 
                   <div className="flex-1 min-w-0 space-y-2">
                     <div>
-                      <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider">
+                      <span className="text-[10px] font-bold text-[#680C07] uppercase tracking-wider">
                         Chapter {item.lastChapterNumber}
                       </span>
                       <h3 className="text-sm font-bold text-stone-900 truncate font-serif">
@@ -191,7 +191,7 @@ export default function LibraryPage() {
                       </div>
                       <div className="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden border border-stone-200">
                         <div
-                          className="h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded-full"
+                          className="h-full bg-[#680C07] rounded-full"
                           style={{ width: `${item.progressPercentage}%` }}
                         />
                       </div>
@@ -201,7 +201,7 @@ export default function LibraryPage() {
                   <Link href={`/story/${item.storyId}/read`}>
                     <Button
                       size="sm"
-                      className="bg-amber-600 hover:bg-amber-700 text-white rounded-xl shadow-xs shrink-0"
+                      className="bg-[#680C07] hover:bg-[#520905] text-white rounded-xl shadow-xs shrink-0"
                     >
                       <Play className="w-3.5 h-3.5 fill-white mr-1" />
                       Resume

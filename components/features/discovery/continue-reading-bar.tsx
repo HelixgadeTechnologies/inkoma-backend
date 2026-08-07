@@ -49,7 +49,7 @@ export function ContinueReadingBar() {
             </div>
 
             <div className="flex-1 min-w-0 space-y-1.5">
-              <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider">
+              <span className="text-[10px] font-bold text-[#680C07] uppercase tracking-wider">
                 Chapter {item.lastChapterNumber}
               </span>
               <h3 className="text-sm font-bold text-stone-900 truncate">
@@ -69,7 +69,7 @@ export function ContinueReadingBar() {
                 </div>
                 <div className="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden border border-stone-200">
                   <div
-                    className="h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded-full"
+                    className="h-full bg-[#680C07] rounded-full"
                     style={{ width: `${item.progressPercentage}%` }}
                   />
                 </div>
@@ -79,7 +79,7 @@ export function ContinueReadingBar() {
             <Link href={`/story/${item.storyId}/read`}>
               <Button
                 size="sm"
-                className="bg-amber-600 hover:bg-amber-700 text-white rounded-xl shadow-xs shrink-0"
+                className="bg-[#680C07] hover:bg-[#520905] text-white rounded-xl shadow-xs shrink-0"
               >
                 <Play className="w-3.5 h-3.5 fill-white mr-1" />
                 Resume

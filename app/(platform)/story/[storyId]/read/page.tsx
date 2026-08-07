@@ -303,7 +303,7 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
       {/* Top Floating Reading Progress Bar */}
       <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-stone-200">
         <div
-          className="h-full bg-gradient-to-r from-amber-500 to-amber-600 transition-all duration-150"
+          className="h-full bg-[#680C07] transition-all duration-150"
           style={{ width: `${scrollProgress}%` }}
         />
       </div>
@@ -424,9 +424,9 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
 
           {/* Moral Lesson / Ending Banner */}
           {currentNode.isEnding && (
-            <div className="p-5 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-200 space-y-2 mt-8 animate-in fade-in duration-300">
-              <div className="flex items-center gap-2 text-amber-900 font-bold text-sm">
-                <Sparkles className="w-4 h-4 text-amber-600" />
+            <div className="p-5 bg-white rounded-2xl border border-[#680C07]/30 space-y-2 mt-8 animate-in fade-in duration-300">
+              <div className="flex items-center gap-2 text-[#680C07] font-bold text-sm">
+                <Sparkles className="w-4 h-4 text-[#680C07]" />
                 {currentNode.endingType === "triumph" ? "Tale Completed with Honor" : "The Lesson of the Ancients"}
               </div>
               {currentNode.moralLesson && (

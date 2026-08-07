@@ -19,14 +19,14 @@ export function Navbar() {
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center space-x-2.5 group">
-          <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-folklore-terracotta to-folklore-amber p-2 text-white shadow-md group-hover:scale-105 transition-transform">
+          <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-[#680C07] p-2 text-white shadow-md group-hover:scale-105 transition-transform">
             <Sparkles className="h-5 w-5 fill-current" />
           </div>
           <div className="flex flex-col">
-            <span className="font-serif text-xl font-bold tracking-tight text-stone-900 group-hover:text-folklore-amber transition-colors">
+            <span className="font-serif text-xl font-bold tracking-tight text-stone-900 group-hover:text-[#680C07] transition-colors">
               Inkoma
             </span>
-            <span className="text-[10px] tracking-widest uppercase text-folklore-amber font-semibold -mt-1">
+            <span className="text-[10px] tracking-widest uppercase text-[#680C07] font-semibold -mt-1">
               Tales Hub
             </span>
           </div>
@@ -43,7 +43,7 @@ export function Navbar() {
                 className={cn(
                   "px-3 py-1.5 rounded-lg transition-colors",
                   isActive
-                    ? "text-amber-900 bg-amber-100/80 font-semibold"
+                    ? "text-[#680C07] bg-[#680C07]/10 font-semibold"
                     : "text-stone-700 hover:text-stone-950 hover:bg-stone-100"
                 )}
               >

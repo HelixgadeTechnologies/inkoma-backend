@@ -8,18 +8,18 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "border-orange-600/30 bg-orange-50 text-orange-800 font-semibold",
+          "border-[#680C07]/20 bg-[#680C07]/10 text-[#680C07] font-semibold",
         gold:
-          "border-amber-600/30 bg-amber-50 text-amber-800 font-semibold",
+          "border-[#680C07]/20 bg-[#680C07]/10 text-[#680C07] font-semibold",
         amber:
-          "border-amber-700/30 bg-amber-100/70 text-amber-900 font-semibold",
+          "border-[#680C07]/30 bg-[#680C07]/15 text-[#680C07] font-semibold",
         moss:
           "border-emerald-700/30 bg-emerald-50 text-emerald-800 font-semibold",
         secondary:
           "border-stone-200 bg-stone-100 text-stone-700 font-medium",
         outline: "border-stone-300 text-stone-800 bg-white/80",
         interactive:
-          "border-amber-600/30 bg-gradient-to-r from-amber-100/80 to-orange-100/80 text-amber-900 font-semibold",
+          "border-[#680C07]/30 bg-[#680C07]/10 text-[#680C07] font-semibold",
       },
     },
     defaultVariants: {

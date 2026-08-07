@@ -20,12 +20,9 @@ export function AuthCard({
 }) {
   return (
     <div className="relative w-full max-w-md">
-      {/* Glow highlight */}
-      <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-folklore-terracotta via-folklore-amber to-folklore-gold opacity-20 blur-xl"></div>
-
       <Card className="relative border-stone-200 bg-white p-2 sm:p-4 shadow-xl">
         <CardHeader className="text-center space-y-2 pb-6">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-folklore-terracotta to-folklore-amber text-white shadow-md">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#680C07] text-white shadow-md">
             <Sparkles className="h-6 w-6 fill-current" />
           </div>
           <CardTitle className="text-2xl font-serif font-bold text-stone-900">

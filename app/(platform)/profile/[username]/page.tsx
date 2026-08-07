@@ -234,9 +234,9 @@ export default function UserProfilePage() {
       </div>
 
       {/* Direct Creator Support Box on Profile */}
-      <div className="p-6 sm:p-8 bg-gradient-to-r from-amber-50 to-orange-50 rounded-3xl border border-amber-200 space-y-4">
+      <div className="p-6 sm:p-8 bg-white rounded-3xl border border-[#680C07]/20 space-y-4">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-amber-600" />
+          <Sparkles className="w-5 h-5 text-[#680C07]" />
           <h2 className="text-xl font-bold text-stone-900 font-serif">
             Support {profile.penName || profile.displayName}&apos;s Griot Circle
           </h2>
