@@ -15,7 +15,6 @@ import {
   Flame,
   Sliders,
   HelpCircle,
-  ShieldAlert,
 } from "lucide-react";
 import { platformSidebarNav } from "@/config/nav";
 import { cn } from "@/lib/utils";
@@ -32,7 +31,6 @@ export function Sidebar() {
     User: <User className="h-4 w-4" />,
     Sliders: <Sliders className="h-4 w-4" />,
     HelpCircle: <HelpCircle className="h-4 w-4" />,
-    ShieldAlert: <ShieldAlert className="h-4 w-4" />,
   };
 
   return (

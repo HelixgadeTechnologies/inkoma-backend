@@ -8,15 +8,15 @@ import { SocialAuth } from "@/components/features/auth/social-auth";
 import { PasswordInput } from "@/components/features/auth/password-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Loader2, Sparkles, BookOpen } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [penName, setPenName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"reader" | "writer">("reader");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,60 +35,46 @@ export default function SignupPage() {
       description="Begin your journey as a reader or traditional storyteller in our digital folklore archive."
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Role Toggle */}
-        <div className="grid grid-cols-2 gap-2 p-1 bg-stone-100 rounded-xl border border-stone-200">
-          <button
-            type="button"
-            onClick={() => setRole("reader")}
-            className={`flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-lg transition-all ${
-              role === "reader"
-                ? "bg-white text-stone-900 shadow-sm"
-                : "text-stone-500 hover:text-stone-800"
-            }`}
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-            I want to Read
-          </button>
-          <button
-            type="button"
-            onClick={() => setRole("writer")}
-            className={`flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-lg transition-all ${
-              role === "writer"
-                ? "bg-white text-stone-900 shadow-sm"
-                : "text-stone-500 hover:text-stone-800"
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-            I want to Write
-          </button>
-        </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-xs font-semibold uppercase tracking-wider text-stone-700">
-              Full Name
+              First Name
             </label>
             <Input
               type="text"
-              placeholder="Kwame Asante"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              placeholder="Kwame"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
               required
               className="bg-white border-stone-300 text-stone-900 placeholder:text-stone-400"
             />
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-semibold uppercase tracking-wider text-stone-700">
-              Pen Name <span className="text-stone-400 font-normal">(Optional)</span>
+              Last Name
             </label>
             <Input
               type="text"
-              placeholder="Griot Kwame"
-              value={penName}
-              onChange={(e) => setPenName(e.target.value)}
+              placeholder="Asante"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
               className="bg-white border-stone-300 text-stone-900 placeholder:text-stone-400"
             />
           </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wider text-stone-700">
+            Pen Name <span className="text-stone-400 font-normal">(Optional)</span>
+          </label>
+          <Input
+            type="text"
+            placeholder="Griot Kwame"
+            value={penName}
+            onChange={(e) => setPenName(e.target.value)}
+            className="bg-white border-stone-300 text-stone-900 placeholder:text-stone-400"
+          />
         </div>
 
         <div className="space-y-1.5">

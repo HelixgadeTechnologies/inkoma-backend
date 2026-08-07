@@ -11,7 +11,6 @@ export const marketingNav: NavItem[] = [
   { title: "Personal Library", href: "/library" },
   { title: "Writer Studio", href: "/studio" },
   { title: "Support INKOMA", href: "/support" },
-  { title: "Admin Console", href: "/admin" },
 ];
 
 export const platformSidebarNav: NavItem[] = [
@@ -21,5 +20,4 @@ export const platformSidebarNav: NavItem[] = [
   { title: "My Griot Profile", href: "/profile/kwame_griot", icon: "User" },
   { title: "Circle Settings", href: "/settings", icon: "Sliders" },
   { title: "Support & FAQs", href: "/support", icon: "HelpCircle" },
-  { title: "Admin Console", href: "/admin", icon: "ShieldAlert", badge: "Admin" },
 ];

@@ -1,4 +1,4 @@
-import { Story, UserProfile, SavedQuote, ReadingProgress, PlatformKPIs, ModerationReport, AdminUserRecord } from '@/types';
+import { Story, UserProfile, SavedQuote, ReadingProgress } from '@/types';
 
 export const MOCK_STORIES: Story[] = [
   {
@@ -464,73 +464,4 @@ export const MOCK_READING_PROGRESS: ReadingProgress[] = [
   },
 ];
 
-export const MOCK_ADMIN_KPIS: PlatformKPIs = {
-  totalUsers: 14280,
-  totalWriters: 340,
-  totalReaders: 13940,
-  totalStories: 184,
-  totalChapters: 642,
-  totalReads: 148900,
-  totalTipsDonatedUsd: 18450,
-  totalSupportGeneratedUSD: 18450,
-  activeReadersToday: 1840,
-};
 
-export const MOCK_MODERATION_REPORTS: ModerationReport[] = [
-  {
-    id: "rep-1",
-    storyId: "sundiata-the-lion-king-of-mali",
-    storyTitle: "Sundiata: The Lion King of Mali",
-    itemType: "Story Chapter",
-    title: "Sundiata: The Lion King of Mali (Chapter 1)",
-    authorName: "Amina Diallo",
-    reason: "cultural_misrepresentation",
-    details: "Inquiry regarding the dialect transcription of the Do kingdom praise poetry.",
-    reportedBy: "Elder Moussa",
-    reportedAt: "2026-03-05",
-    createdAt: "March 5, 2026",
-    status: "pending",
-  },
-];
-
-export const MOCK_ADMIN_USERS: AdminUserRecord[] = [
-  {
-    id: "user-1",
-    username: "kwame_griot",
-    displayName: "Kwame Asante",
-    penName: "Griot Kwame of Ashanti",
-    email: "kwame@inkoma.org",
-    role: "writer",
-    storiesCount: 12,
-    storiesAuthored: 12,
-    joinedAt: "Oct 2025",
-    isVerifiedGriot: true,
-    status: "active",
-  },
-  {
-    id: "user-2",
-    username: "amina_sahel",
-    displayName: "Amina Diallo",
-    penName: "Griot Amina of Djenné",
-    email: "amina@sahel-lore.org",
-    role: "writer",
-    storiesCount: 8,
-    storiesAuthored: 8,
-    joinedAt: "Nov 2025",
-    isVerifiedGriot: true,
-    status: "active",
-  },
-  {
-    id: "user-3",
-    username: "adebayo_oyo",
-    displayName: "Chief Adebayo",
-    penName: "Adebayo Olawale",
-    email: "adebayo@yorubalore.ng",
-    role: "writer",
-    storiesCount: 4,
-    storiesAuthored: 4,
-    joinedAt: "Jan 2026",
-    isVerifiedGriot: false,
-    status: "active",
-  },
-];
