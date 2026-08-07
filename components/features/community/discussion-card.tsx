@@ -23,14 +23,14 @@ export function DiscussionCard({ discussion }: { discussion: CommunityDiscussion
   };
 
   return (
-    <div className="flex gap-4 rounded-2xl border border-folklore-amber/15 bg-folklore-obsidian/70 p-5 backdrop-blur-sm transition-all hover:border-folklore-amber/40 hover:shadow-lg hover:shadow-folklore-amber/5">
+    <div className="flex gap-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm transition-all hover:border-amber-300 hover:shadow-md">
       {/* Upvote Pill */}
       <button
         onClick={handleUpvote}
         className={`flex flex-col items-center justify-center h-16 w-12 rounded-xl border transition-all ${
           hasUpvoted
-            ? "border-folklore-amber bg-folklore-amber/20 text-folklore-amber"
-            : "border-white/10 bg-white/5 text-neutral-400 hover:text-white hover:border-white/20"
+            ? "border-amber-400 bg-amber-100 text-amber-900 font-bold"
+            : "border-stone-200 bg-stone-50 text-stone-600 hover:text-stone-900 hover:border-stone-300"
         }`}
       >
         <ArrowBigUp className={`h-5 w-5 ${hasUpvoted ? "fill-current" : ""}`} />
@@ -42,8 +42,8 @@ export function DiscussionCard({ discussion }: { discussion: CommunityDiscussion
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Avatar fallback={discussion.authorName.slice(0, 2).toUpperCase()} className="h-6 w-6 text-[10px]" />
-            <span className="text-xs font-medium text-neutral-300">{discussion.authorName}</span>
-            <span className="text-[11px] text-neutral-400">• {formatDate(discussion.createdAt)}</span>
+            <span className="text-xs font-semibold text-stone-800">{discussion.authorName}</span>
+            <span className="text-[11px] text-stone-500">• {formatDate(discussion.createdAt)}</span>
           </div>
 
           <div className="flex items-center gap-1.5">
@@ -52,29 +52,29 @@ export function DiscussionCard({ discussion }: { discussion: CommunityDiscussion
                 <Pin className="h-2.5 w-2.5" /> Pinned
               </Badge>
             )}
-            <Badge variant="secondary" className="text-[10px]">
+            <Badge variant="secondary" className="text-[10px] bg-stone-100 text-stone-700">
               {discussion.traditionCategory}
             </Badge>
           </div>
         </div>
 
-        <h3 className="font-serif text-base font-bold text-white hover:text-folklore-gold transition-colors cursor-pointer">
+        <h3 className="font-serif text-base font-bold text-stone-900 hover:text-folklore-amber transition-colors cursor-pointer">
           {discussion.title}
         </h3>
 
-        <p className="text-xs text-neutral-400 line-clamp-2 leading-relaxed">
+        <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
           {discussion.content}
         </p>
 
-        <div className="flex items-center justify-between pt-2 border-t border-white/5">
-          <div className="flex items-center gap-1.5 text-xs text-neutral-400">
+        <div className="flex items-center justify-between pt-2 border-t border-stone-100">
+          <div className="flex items-center gap-1.5 text-xs text-stone-500">
             <MessageSquare className="h-3.5 w-3.5" />
             <span>{discussion.repliesCount} griot responses</span>
           </div>
 
           <div className="flex gap-1">
             {discussion.tags.map((tag) => (
-              <span key={tag} className="text-[10px] text-folklore-gold/70 bg-folklore-gold/10 px-2 py-0.5 rounded">
+              <span key={tag} className="text-[10px] text-amber-900 bg-amber-100 px-2 py-0.5 rounded font-medium">
                 #{tag}
               </span>
             ))}

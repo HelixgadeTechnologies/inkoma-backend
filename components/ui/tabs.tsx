@@ -51,7 +51,7 @@ export function TabsList({
   return (
     <div
       className={cn(
-        "inline-flex h-12 items-center justify-center rounded-xl bg-folklore-night/80 p-1 text-neutral-400 border border-white/10",
+        "inline-flex h-12 items-center justify-center rounded-xl bg-stone-100/90 p-1 text-stone-600 border border-stone-200",
         className
       )}
     >
@@ -81,8 +81,8 @@ export function TabsTrigger({
       className={cn(
         "inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
         isSelected
-          ? "bg-folklore-amber text-folklore-night font-bold shadow-sm"
-          : "hover:text-white hover:bg-white/5",
+          ? "bg-white text-stone-900 font-bold shadow-sm border border-stone-200/60"
+          : "text-stone-600 hover:text-stone-950 hover:bg-stone-200/60",
         className
       )}
     >

@@ -46,12 +46,12 @@ export default function StudioPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-folklore-amber uppercase tracking-wider mb-1">
-            <Feather className="h-3.5 w-3.5" />
+          <div className="flex items-center gap-2 text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
+            <Feather className="h-3.5 w-3.5 text-folklore-amber" />
             <span>Griot Creator Hub</span>
           </div>
-          <h1 className="text-3xl font-serif font-extrabold text-white">Storyteller Studio</h1>
-          <p className="text-sm text-neutral-400">
+          <h1 className="text-3xl font-serif font-extrabold text-stone-900">Storyteller Studio</h1>
+          <p className="text-sm text-stone-600 mt-1">
             Craft branching lore, manage character webs, and inspect listener analytics.
           </p>
         </div>
@@ -66,69 +66,69 @@ export default function StudioPage() {
 
       {/* Analytics Highlights */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="rounded-2xl border border-folklore-amber/20 bg-folklore-obsidian/70 p-5 space-y-1">
-          <span className="text-xs text-neutral-400">Total Tale Reads</span>
-          <p className="text-2xl font-bold font-serif text-folklore-gold">38.4K</p>
-          <span className="text-[11px] text-emerald-400">+18% this moon cycle</span>
+        <div className="rounded-2xl border border-stone-200 bg-white p-5 space-y-1 shadow-sm">
+          <span className="text-xs text-stone-500 font-medium">Total Tale Reads</span>
+          <p className="text-2xl font-bold font-serif text-amber-900">38.4K</p>
+          <span className="text-[11px] text-emerald-700 font-semibold">+18% this moon cycle</span>
         </div>
 
-        <div className="rounded-2xl border border-folklore-amber/20 bg-folklore-obsidian/70 p-5 space-y-1">
-          <span className="text-xs text-neutral-400">Listener Blessings</span>
-          <p className="text-2xl font-bold font-serif text-folklore-terracotta">428</p>
-          <span className="text-[11px] text-neutral-400">98% reader appreciation</span>
+        <div className="rounded-2xl border border-stone-200 bg-white p-5 space-y-1 shadow-sm">
+          <span className="text-xs text-stone-500 font-medium">Listener Blessings</span>
+          <p className="text-2xl font-bold font-serif text-orange-900">428</p>
+          <span className="text-[11px] text-stone-500 font-medium">98% reader appreciation</span>
         </div>
 
-        <div className="rounded-2xl border border-folklore-amber/20 bg-folklore-obsidian/70 p-5 space-y-1">
-          <span className="text-xs text-neutral-400">Choice Paths Explored</span>
-          <p className="text-2xl font-bold font-serif text-amber-300">14 Nodes</p>
-          <span className="text-[11px] text-folklore-amber">3 Alternate Endings</span>
+        <div className="rounded-2xl border border-stone-200 bg-white p-5 space-y-1 shadow-sm">
+          <span className="text-xs text-stone-500 font-medium">Choice Paths Explored</span>
+          <p className="text-2xl font-bold font-serif text-stone-900">14 Nodes</p>
+          <span className="text-[11px] text-amber-800 font-semibold">3 Alternate Endings</span>
         </div>
       </div>
 
       {/* Active Drafts Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-serif font-bold text-white flex items-center gap-2">
+          <h2 className="text-xl font-serif font-bold text-stone-900 flex items-center gap-2">
             <Edit3 className="h-4 w-4 text-folklore-amber" />
             Manuscript Drafts in Progress
           </h2>
-          <span className="text-xs text-neutral-400">{drafts.length} active manuscripts</span>
+          <span className="text-xs text-stone-500 font-medium">{drafts.length} active manuscripts</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {drafts.map((draft) => (
-            <Card key={draft.id} className="border-folklore-amber/20 bg-folklore-obsidian/80">
+            <Card key={draft.id} className="border-stone-200 bg-white shadow-sm hover:shadow-md hover:border-amber-300 transition-all">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <Badge variant="amber">{draft.tradition}</Badge>
-                  <span className="text-xs text-neutral-400 flex items-center gap-1">
+                  <span className="text-xs text-stone-500 flex items-center gap-1 font-medium">
                     <Clock className="h-3 w-3" /> {draft.lastEdited}
                   </span>
                 </div>
-                <CardTitle className="text-base mt-2 text-white hover:text-folklore-gold cursor-pointer">
+                <CardTitle className="text-base mt-2 text-stone-900 hover:text-folklore-amber cursor-pointer font-serif font-bold">
                   {draft.title}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex items-center justify-between text-xs text-neutral-300">
+                <div className="flex items-center justify-between text-xs text-stone-700 font-medium">
                   <span className="flex items-center gap-1">
-                    <GitBranch className="h-3.5 w-3.5 text-folklore-gold" />
+                    <GitBranch className="h-3.5 w-3.5 text-folklore-amber" />
                     {draft.nodesCount} Narrative Nodes
                   </span>
                   <span>{draft.progress}% Complete</span>
                 </div>
 
                 {/* Progress bar */}
-                <div className="h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
+                <div className="h-1.5 w-full rounded-full bg-stone-100 border border-stone-200 overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-folklore-terracotta to-folklore-amber rounded-full"
+                    className="h-full bg-gradient-to-r from-orange-600 to-amber-600 rounded-full"
                     style={{ width: `${draft.progress}%` }}
                   />
                 </div>
 
                 <div className="pt-2 flex justify-end gap-2">
                   <Link href="/studio/new">
-                    <Button variant="outline" size="sm" className="text-xs">
+                    <Button variant="outline" size="sm" className="text-xs bg-white border-stone-200 text-stone-800 hover:bg-stone-50">
                       Resume Editing
                     </Button>
                   </Link>
@@ -141,8 +141,8 @@ export default function StudioPage() {
 
       {/* Published Works */}
       <div className="space-y-4">
-        <h2 className="text-xl font-serif font-bold text-white flex items-center gap-2">
-          <BookOpen className="h-4 w-4 text-folklore-gold" />
+        <h2 className="text-xl font-serif font-bold text-stone-900 flex items-center gap-2">
+          <BookOpen className="h-4 w-4 text-folklore-amber" />
           Published Living Lore
         </h2>
 
@@ -150,19 +150,19 @@ export default function StudioPage() {
           {published.map((pub) => (
             <div
               key={pub.id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-white/10 bg-folklore-obsidian/60 p-5 hover:border-folklore-amber/30 transition-all"
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-white p-5 hover:border-amber-300 shadow-sm transition-all"
             >
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <Badge variant="gold">{pub.tradition}</Badge>
-                  <span className="text-xs text-neutral-400">• Published {pub.publishedDate}</span>
+                  <span className="text-xs text-stone-500 font-medium">• Published {pub.publishedDate}</span>
                 </div>
-                <h3 className="font-serif font-bold text-base text-white">{pub.title}</h3>
+                <h3 className="font-serif font-bold text-base text-stone-900">{pub.title}</h3>
               </div>
 
-              <div className="flex items-center gap-6 text-xs text-neutral-300">
+              <div className="flex items-center gap-6 text-xs text-stone-700 font-medium">
                 <div className="flex items-center gap-1.5">
-                  <Eye className="h-3.5 w-3.5 text-neutral-400" />
+                  <Eye className="h-3.5 w-3.5 text-stone-400" />
                   <span>{pub.reads.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -170,7 +170,7 @@ export default function StudioPage() {
                   <span>{pub.upvotes}</span>
                 </div>
                 <Link href={`/story/${pub.id}`}>
-                  <Button variant="outline" size="sm" className="text-xs">
+                  <Button variant="outline" size="sm" className="text-xs bg-white border-stone-200 text-stone-800 hover:bg-stone-50">
                     View in Reader
                   </Button>
                 </Link>

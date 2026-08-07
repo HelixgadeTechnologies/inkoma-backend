@@ -49,19 +49,19 @@ export function BranchNodeCreator({
   return (
     <div className="space-y-6">
       {/* Node Content Editor */}
-      <Card className="border-folklore-amber/20 bg-folklore-obsidian">
+      <Card className="border-stone-200 bg-white shadow-sm">
         <CardHeader>
-          <CardTitle className="text-lg flex items-center justify-between">
+          <CardTitle className="text-lg flex items-center justify-between text-stone-900">
             <span className="flex items-center gap-2">
-              <GitBranch className="h-4 w-4 text-folklore-gold" />
+              <GitBranch className="h-4 w-4 text-folklore-amber" />
               Active Narrative Node
             </span>
-            <span className="text-xs font-mono text-neutral-400">ID: {node.id}</span>
+            <span className="text-xs font-mono text-stone-500">ID: {node.id}</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="text-xs font-semibold text-neutral-300 block mb-1">
+            <label className="text-xs font-bold text-stone-700 block mb-1">
               Node Scene Heading
             </label>
             <Input
@@ -72,7 +72,7 @@ export function BranchNodeCreator({
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-neutral-300 block mb-1">
+            <label className="text-xs font-bold text-stone-700 block mb-1">
               Story Prose / Dialogue (Markdown supported)
             </label>
             <textarea
@@ -80,7 +80,7 @@ export function BranchNodeCreator({
               value={node.content}
               onChange={(e) => onChange({ ...node, content: e.target.value })}
               placeholder="Write the tale's unfolding narrative here..."
-              className="w-full rounded-xl border border-white/15 bg-folklore-night/80 p-4 text-sm text-foreground placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-folklore-amber font-serif leading-relaxed"
+              className="w-full rounded-xl border border-stone-300 bg-stone-50/50 p-4 text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-folklore-amber font-serif leading-relaxed"
             />
           </div>
         </CardContent>
@@ -89,7 +89,7 @@ export function BranchNodeCreator({
       {/* Choice Branch Connectors */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h4 className="font-serif text-base font-bold text-white flex items-center gap-2">
+          <h4 className="font-serif text-base font-bold text-stone-900 flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-folklore-amber" />
             Branching Choices & Destinies ({node.choices.length})
           </h4>
@@ -108,16 +108,16 @@ export function BranchNodeCreator({
         {node.choices.map((choice, idx) => (
           <div
             key={choice.id}
-            className="rounded-xl border border-white/10 bg-folklore-night/60 p-4 space-y-3 transition-all hover:border-folklore-amber/30"
+            className="rounded-xl border border-stone-200 bg-stone-50/60 p-4 space-y-3 transition-all hover:border-amber-300"
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-folklore-amber/20 text-xs font-bold text-folklore-amber">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-100 text-xs font-bold text-amber-900">
                 {String.fromCharCode(65 + idx)}
               </span>
               <button
                 type="button"
                 onClick={() => removeChoice(idx)}
-                className="text-neutral-400 hover:text-red-400 p-1"
+                className="text-stone-400 hover:text-red-500 p-1"
               >
                 <Trash2 className="h-4 w-4" />
               </button>
@@ -125,7 +125,7 @@ export function BranchNodeCreator({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="text-[11px] text-neutral-400 block mb-1">Choice Option Prompt</label>
+                <label className="text-[11px] font-semibold text-stone-600 block mb-1">Choice Option Prompt</label>
                 <Input
                   value={choice.label}
                   onChange={(e) => updateChoice(idx, 'label', e.target.value)}
@@ -133,7 +133,7 @@ export function BranchNodeCreator({
                 />
               </div>
               <div>
-                <label className="text-[11px] text-neutral-400 block mb-1">Target Node Connection</label>
+                <label className="text-[11px] font-semibold text-stone-600 block mb-1">Target Node Connection</label>
                 <Input
                   value={choice.targetNodeId}
                   onChange={(e) => updateChoice(idx, 'targetNodeId', e.target.value)}
@@ -143,7 +143,7 @@ export function BranchNodeCreator({
             </div>
 
             <div>
-              <label className="text-[11px] text-neutral-400 block mb-1">Foreshadowing Hint</label>
+              <label className="text-[11px] font-semibold text-stone-600 block mb-1">Foreshadowing Hint</label>
               <Input
                 value={choice.consequenceHint || ''}
                 onChange={(e) => updateChoice(idx, 'consequenceHint', e.target.value)}

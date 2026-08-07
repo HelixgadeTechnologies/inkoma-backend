@@ -15,15 +15,15 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-folklore-amber/15 bg-folklore-night/85 backdrop-blur-xl transition-all">
+    <header className="sticky top-0 z-40 w-full border-b border-stone-200/80 bg-[#FAF8F5]/90 backdrop-blur-xl transition-all">
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center space-x-2.5 group">
-          <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-folklore-terracotta to-folklore-amber p-2 text-folklore-night shadow-md group-hover:scale-105 transition-transform">
+          <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-folklore-terracotta to-folklore-amber p-2 text-white shadow-md group-hover:scale-105 transition-transform">
             <Sparkles className="h-5 w-5 fill-current" />
           </div>
           <div className="flex flex-col">
-            <span className="font-serif text-xl font-bold tracking-tight text-white group-hover:text-folklore-gold transition-colors">
+            <span className="font-serif text-xl font-bold tracking-tight text-stone-900 group-hover:text-folklore-amber transition-colors">
               Inkoma
             </span>
             <span className="text-[10px] tracking-widest uppercase text-folklore-amber font-semibold -mt-1">
@@ -43,8 +43,8 @@ export function Navbar() {
                 className={cn(
                   "px-3 py-1.5 rounded-lg transition-colors",
                   isActive
-                    ? "text-folklore-gold bg-folklore-gold/10 font-semibold"
-                    : "text-neutral-300 hover:text-white hover:bg-white/5"
+                    ? "text-amber-900 bg-amber-100/80 font-semibold"
+                    : "text-stone-700 hover:text-stone-950 hover:bg-stone-100"
                 )}
               >
                 {item.title}
@@ -60,7 +60,7 @@ export function Navbar() {
           </div>
           <ThemeToggle />
           <Link href="/login">
-            <Button variant="ghost" size="sm" className="text-neutral-200">
+            <Button variant="ghost" size="sm" className="text-stone-800 hover:text-stone-950">
               Sign In
             </Button>
           </Link>
@@ -79,7 +79,7 @@ export function Navbar() {
             variant="ghost"
             size="icon"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="text-white"
+            className="text-stone-800 hover:text-stone-950"
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
@@ -88,7 +88,7 @@ export function Navbar() {
 
       {/* Mobile Drawer */}
       {mobileOpen && (
-        <div className="border-b border-white/10 bg-folklore-obsidian px-4 py-4 md:hidden animate-in slide-in-from-top-2">
+        <div className="border-b border-stone-200 bg-[#FAF8F5] px-4 py-4 md:hidden animate-in slide-in-from-top-2">
           <div className="mb-4">
             <SearchBar />
           </div>
@@ -98,12 +98,12 @@ export function Navbar() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className="px-3 py-2 rounded-lg text-sm text-neutral-200 hover:bg-white/5 hover:text-folklore-gold"
+                className="px-3 py-2 rounded-lg text-sm text-stone-800 hover:bg-stone-100 hover:text-folklore-amber font-medium"
               >
                 {item.title}
               </Link>
             ))}
-            <div className="pt-2 border-t border-white/10 flex gap-2">
+            <div className="pt-2 border-t border-stone-200 flex gap-2">
               <Link href="/login" className="flex-1" onClick={() => setMobileOpen(false)}>
                 <Button variant="outline" className="w-full">Sign In</Button>
               </Link>

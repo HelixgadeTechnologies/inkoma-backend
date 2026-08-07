@@ -68,10 +68,10 @@ The gathering chiefs watched in awe as the artifact came to rest gently on the l
   return (
     <div className="space-y-6 pb-20 max-w-5xl mx-auto">
       {/* Top Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-white/10">
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-stone-200">
         <Link
           href="/studio"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-400 hover:text-folklore-gold transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-folklore-amber transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back to Studio</span>
@@ -80,13 +80,13 @@ The gathering chiefs watched in awe as the artifact came to rest gently on the l
         <div className="flex items-center gap-3">
           <Button
             type="button"
-            variant="secondary"
+            variant="outline"
             size="sm"
             onClick={handleGenerateAIBranch}
             disabled={generatingAI}
-            className="gap-1.5 text-xs border-folklore-amber/30 text-folklore-gold"
+            className="gap-1.5 text-xs border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100 font-bold"
           >
-            <Sparkles className="h-3.5 w-3.5" />
+            <Sparkles className="h-3.5 w-3.5 text-amber-700" />
             <span>{generatingAI ? "Weaving Branch..." : "AI Branch Suggestion"}</span>
           </Button>
 
@@ -113,26 +113,27 @@ The gathering chiefs watched in awe as the artifact came to rest gently on the l
       </div>
 
       {/* Story Metadata Form */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-5 rounded-2xl border border-folklore-amber/20 bg-folklore-obsidian">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-5 rounded-2xl border border-stone-200 bg-white shadow-sm">
         <div className="md:col-span-2">
-          <label className="text-xs font-semibold text-neutral-300 block mb-1">
+          <label className="text-xs font-bold text-stone-700 block mb-1">
             Story Title
           </label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Title of your folklore masterpiece..."
+            className="bg-white border-stone-200 text-stone-900"
           />
         </div>
 
         <div>
-          <label className="text-xs font-semibold text-neutral-300 block mb-1">
+          <label className="text-xs font-bold text-stone-700 block mb-1">
             Tradition Heritage
           </label>
           <select
             value={tradition}
             onChange={(e) => setTradition(e.target.value)}
-            className="h-11 w-full rounded-xl border border-white/15 bg-folklore-night/80 px-3 text-xs text-white focus:outline-none focus:ring-2 focus:ring-folklore-amber"
+            className="h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
           >
             {TRADITIONS.map((t) => (
               <option key={t} value={t}>
@@ -145,16 +146,16 @@ The gathering chiefs watched in awe as the artifact came to rest gently on the l
 
       {/* Studio Workspace Tabs */}
       <Tabs defaultValue="nodes" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="nodes" className="gap-1.5">
-            <GitBranch className="h-4 w-4" />
+        <TabsList className="grid w-full grid-cols-3 bg-stone-100 p-1 border border-stone-200 rounded-xl">
+          <TabsTrigger value="nodes" className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-stone-900 data-[state=active]:shadow-sm">
+            <GitBranch className="h-4 w-4 text-folklore-amber" />
             <span>Node Branch Editor</span>
           </TabsTrigger>
-          <TabsTrigger value="characters" className="gap-1.5">
+          <TabsTrigger value="characters" className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-stone-900 data-[state=active]:shadow-sm">
             <span>Character Lore Tree</span>
           </TabsTrigger>
-          <TabsTrigger value="preview" className="gap-1.5">
-            <Eye className="h-4 w-4" />
+          <TabsTrigger value="preview" className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-stone-900 data-[state=active]:shadow-sm">
+            <Eye className="h-4 w-4 text-folklore-amber" />
             <span>Reader Simulation</span>
           </TabsTrigger>
         </TabsList>
@@ -171,34 +172,34 @@ The gathering chiefs watched in awe as the artifact came to rest gently on the l
 
         {/* Tab 3: Reader Simulation Preview */}
         <TabsContent value="preview" className="mt-6">
-          <div className="rounded-3xl border border-folklore-amber/30 bg-folklore-night p-8 space-y-6 text-white max-w-3xl mx-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+          <div className="rounded-3xl border border-amber-200 bg-[#F5EFEB] p-8 space-y-6 text-stone-900 max-w-3xl mx-auto shadow-sm">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-200/80">
               <Badge variant="gold">{tradition}</Badge>
-              <span className="text-xs text-neutral-400">Simulation View</span>
+              <span className="text-xs text-stone-500 font-medium">Simulation View</span>
             </div>
 
-            <h2 className="text-2xl font-serif font-bold text-folklore-gold">{currentNode.title}</h2>
-            <p className="font-serif text-lg leading-relaxed whitespace-pre-line text-neutral-200">
+            <h2 className="text-2xl font-serif font-bold text-amber-900">{currentNode.title}</h2>
+            <p className="font-serif text-lg leading-relaxed whitespace-pre-line text-stone-800">
               {currentNode.content}
             </p>
 
-            <div className="pt-6 border-t border-white/10 space-y-3">
-              <span className="text-xs font-semibold uppercase tracking-wider text-folklore-amber block">
+            <div className="pt-6 border-t border-stone-200/80 space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-900 block">
                 Interactive Decisions ({currentNode.choices.length})
               </span>
               <div className="grid grid-cols-1 gap-3">
                 {currentNode.choices.map((c, i) => (
                   <div
                     key={c.id}
-                    className="p-4 rounded-xl border border-folklore-amber/30 bg-folklore-obsidian flex items-center justify-between"
+                    className="p-4 rounded-xl border border-stone-200 bg-white flex items-center justify-between shadow-sm"
                   >
                     <div>
-                      <p className="text-sm font-serif font-bold text-white">{c.label}</p>
+                      <p className="text-sm font-serif font-bold text-stone-900">{c.label}</p>
                       {c.consequenceHint && (
-                        <p className="text-xs text-neutral-400 italic mt-0.5">{c.consequenceHint}</p>
+                        <p className="text-xs text-stone-600 italic mt-0.5">{c.consequenceHint}</p>
                       )}
                     </div>
-                    <Badge variant="secondary" className="text-[10px]">
+                    <Badge variant="secondary" className="text-[10px] bg-stone-100 text-stone-700">
                       {c.targetNodeId || "Unconnected"}
                     </Badge>
                   </div>

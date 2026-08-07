@@ -81,12 +81,12 @@ export default function CommunityPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-folklore-amber uppercase tracking-wider mb-1">
-            <Users className="h-3.5 w-3.5" />
+          <div className="flex items-center gap-2 text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
+            <Users className="h-3.5 w-3.5 text-folklore-amber" />
             <span>Lore & Griot Agora</span>
           </div>
-          <h1 className="text-3xl font-serif font-extrabold text-white">Community Discussion</h1>
-          <p className="text-sm text-neutral-400">
+          <h1 className="text-3xl font-serif font-extrabold text-stone-900">Community Discussion</h1>
+          <p className="text-sm text-stone-600 mt-1">
             Debate folklore morals, discuss alternate endings, and collaborate on collaborative story webs.
           </p>
         </div>
@@ -106,30 +106,31 @@ export default function CommunityPage() {
       {isPosting && (
         <form
           onSubmit={handleCreatePost}
-          className="rounded-2xl border border-folklore-amber/30 bg-folklore-obsidian p-6 space-y-4 animate-in slide-in-from-top-2"
+          className="rounded-2xl border border-stone-200 bg-white p-6 space-y-4 shadow-sm animate-in slide-in-from-top-2"
         >
-          <h3 className="font-serif text-lg font-bold text-folklore-gold">
+          <h3 className="font-serif text-lg font-bold text-stone-900">
             Start a Lore Inquiry or Debate
           </h3>
 
           <div>
-            <label className="text-xs text-neutral-300 block mb-1">Discussion Subject</label>
+            <label className="text-xs font-bold text-stone-700 block mb-1">Discussion Subject</label>
             <Input
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="e.g. What moral lessons are hidden within the 3rd branch of Sundiata?"
+              className="bg-white border-stone-200 text-stone-900"
               required
             />
           </div>
 
           <div>
-            <label className="text-xs text-neutral-300 block mb-1">Inquiry Details</label>
+            <label className="text-xs font-bold text-stone-700 block mb-1">Inquiry Details</label>
             <textarea
               rows={4}
               value={newContent}
               onChange={(e) => setNewContent(e.target.value)}
               placeholder="Share your interpretations and invite the community to respond..."
-              className="w-full rounded-xl border border-white/15 bg-folklore-night/80 p-3 text-sm text-foreground placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-folklore-amber"
+              className="w-full rounded-xl border border-stone-200 bg-white p-3 text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
               required
             />
           </div>
@@ -140,6 +141,7 @@ export default function CommunityPage() {
               variant="ghost"
               size="sm"
               onClick={() => setIsPosting(false)}
+              className="text-stone-600 hover:text-stone-900 hover:bg-stone-100 font-medium"
             >
               Cancel
             </Button>

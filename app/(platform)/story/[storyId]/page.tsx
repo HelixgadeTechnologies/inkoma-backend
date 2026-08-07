@@ -202,18 +202,18 @@ export default function StoryReaderPage() {
   };
 
   const themeClasses = {
-    night: "bg-folklore-night text-neutral-100",
-    parchment: "bg-[#F4EFE6] text-[#2C1D11] shadow-inner",
-    sandstone: "bg-[#1E1712] text-amber-100",
+    night: "bg-[#1C1917] text-stone-100 border-stone-800",
+    parchment: "bg-[#F5EFEB] text-[#2C1D11] border-amber-200/70 shadow-sm",
+    sandstone: "bg-white text-stone-900 border-stone-200 shadow-sm",
   };
 
   return (
     <div className="pb-24 max-w-4xl mx-auto space-y-6">
       {/* Top Header & Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-stone-200">
         <Link
           href="/explore"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-400 hover:text-folklore-gold transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-folklore-amber transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back to Library</span>
@@ -222,10 +222,10 @@ export default function StoryReaderPage() {
         <div className="flex items-center gap-2">
           {/* Chapter Drawer Toggle */}
           <Button
-            variant="secondary"
+            variant="outline"
             size="sm"
             onClick={() => setChapterNavOpen(true)}
-            className="gap-1.5 text-xs h-9 rounded-xl border-white/10"
+            className="gap-1.5 text-xs h-9 rounded-xl border-stone-200 bg-white text-stone-800 hover:bg-stone-50"
           >
             <List className="h-3.5 w-3.5" />
             <span>Chapters</span>
@@ -236,14 +236,14 @@ export default function StoryReaderPage() {
 
           {/* Bookmark Button */}
           <Button
-            variant="secondary"
+            variant="outline"
             size="sm"
             onClick={toggleBookmark}
-            className={`gap-1.5 text-xs h-9 rounded-xl border-white/10 ${
-              isBookmarked ? "text-folklore-gold border-folklore-gold/40" : ""
+            className={`gap-1.5 text-xs h-9 rounded-xl border-stone-200 bg-white text-stone-800 hover:bg-stone-50 ${
+              isBookmarked ? "text-amber-800 border-amber-400 bg-amber-50" : ""
             }`}
           >
-            <Bookmark className={`h-3.5 w-3.5 ${isBookmarked ? "fill-current" : ""}`} />
+            <Bookmark className={`h-3.5 w-3.5 ${isBookmarked ? "fill-current text-amber-700" : ""}`} />
             <span className="hidden sm:inline">{isBookmarked ? "Saved" : "Save"}</span>
           </Button>
         </div>
@@ -254,15 +254,15 @@ export default function StoryReaderPage() {
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="gold">{activeStory.tradition}</Badge>
           <Badge variant="secondary">{activeStory.difficulty}</Badge>
-          <span className="text-xs text-neutral-400">
+          <span className="text-xs text-stone-500 font-medium">
             Path Step {historyPath.length} of narrative tree
           </span>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-serif font-extrabold text-white">
+        <h1 className="text-3xl sm:text-4xl font-serif font-extrabold text-stone-900">
           {activeStory.title}
         </h1>
-        <p className="text-sm text-neutral-400 italic">
+        <p className="text-sm text-stone-600 italic">
           Recorded by Griot {activeStory.authorName}
         </p>
       </div>
@@ -276,20 +276,20 @@ export default function StoryReaderPage() {
 
       {/* Interactive Story Reader Box */}
       <div
-        className={`rounded-3xl border border-folklore-amber/20 p-6 sm:p-10 transition-all duration-300 ${
+        className={`rounded-3xl border p-6 sm:p-10 transition-all duration-300 ${
           themeClasses[readingTheme]
         }`}
       >
         {activeNode ? (
           <div className="space-y-6">
-            <div className="flex items-center justify-between pb-3 border-b border-black/10 dark:border-white/10">
-              <h2 className="text-xl font-serif font-bold text-folklore-gold">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-200/60">
+              <h2 className="text-xl font-serif font-bold text-amber-900">
                 {activeNode.title}
               </h2>
               {historyPath.length > 1 && (
                 <button
                   onClick={goToPreviousNode}
-                  className="inline-flex items-center gap-1 text-xs text-neutral-400 hover:text-folklore-gold transition-colors"
+                  className="inline-flex items-center gap-1 text-xs text-stone-500 hover:text-stone-900 transition-colors font-medium"
                 >
                   <RotateCcw className="h-3 w-3" />
                   <span>Undo Choice</span>
@@ -308,12 +308,12 @@ export default function StoryReaderPage() {
 
             {/* Ending Condition Card */}
             {activeNode.isEnding && (
-              <div className="mt-8 rounded-2xl border-2 border-folklore-gold/50 bg-folklore-gold/10 p-6 text-center space-y-3">
-                <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-folklore-gold">
-                  <Sparkles className="h-4 w-4" />
+              <div className="mt-8 rounded-2xl border-2 border-amber-300 bg-amber-50/80 p-6 text-center space-y-3">
+                <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-900">
+                  <Sparkles className="h-4 w-4 text-amber-700" />
                   Tale Concluded — Moral Lesson
                 </div>
-                <p className="text-lg font-serif italic text-white">
+                <p className="text-lg font-serif italic text-stone-900">
                   &quot;{activeNode.moralLesson}&quot;
                 </p>
                 <div className="pt-2 flex justify-center gap-3">
@@ -333,7 +333,7 @@ export default function StoryReaderPage() {
             )}
           </div>
         ) : (
-          <div className="text-center py-12 text-neutral-400">Loading tale nodes...</div>
+          <div className="text-center py-12 text-stone-500">Loading tale nodes...</div>
         )}
       </div>
 
@@ -345,22 +345,22 @@ export default function StoryReaderPage() {
       />
 
       {/* Reader Interaction Footer */}
-      <div className="flex items-center justify-between pt-6 border-t border-white/10">
+      <div className="flex items-center justify-between pt-6 border-t border-stone-200">
         <button
           onClick={handleUpvote}
-          className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-xs font-semibold transition-all ${
+          className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-xs font-bold transition-all ${
             hasUpvoted
-              ? "border-folklore-terracotta bg-folklore-terracotta/20 text-folklore-terracotta"
-              : "border-white/10 bg-white/5 text-neutral-300 hover:text-white"
+              ? "border-amber-600 bg-amber-100/70 text-amber-900"
+              : "border-stone-200 bg-white text-stone-700 hover:border-amber-300 hover:bg-stone-50 shadow-sm"
           }`}
         >
-          <Heart className={`h-4 w-4 ${hasUpvoted ? "fill-current" : ""}`} />
+          <Heart className={`h-4 w-4 ${hasUpvoted ? "fill-current text-folklore-terracotta" : "text-stone-500"}`} />
           <span>{upvotes} Blessings</span>
         </button>
 
         <div className="flex items-center gap-3">
           <Link href="/community">
-            <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+            <Button variant="outline" size="sm" className="gap-1.5 text-xs bg-white border-stone-200 text-stone-800 hover:bg-stone-50">
               <MessageSquare className="h-3.5 w-3.5" />
               <span>Discuss Lore</span>
             </Button>

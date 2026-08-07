@@ -24,13 +24,13 @@ export default function ForgotPasswordPage() {
       footerLinkHref="/login"
     >
       {submitted ? (
-        <div className="rounded-xl border border-folklore-amber/30 bg-folklore-amber/10 p-4 text-center space-y-2">
-          <p className="text-sm font-semibold text-folklore-gold">Sacred Scroll Dispatched!</p>
-          <p className="text-xs text-neutral-300">
+        <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-center space-y-2">
+          <p className="text-sm font-bold text-amber-900">Sacred Scroll Dispatched!</p>
+          <p className="text-xs text-stone-700 font-medium">
             Check your inbox for instructions to reset your account key.
           </p>
           <Link href="/login" className="block pt-2">
-            <Button variant="outline" size="sm" className="w-full">
+            <Button variant="outline" size="sm" className="w-full bg-white border-stone-300 text-stone-800 hover:bg-stone-50">
               Return to Login
             </Button>
           </Link>
@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-xs font-semibold text-neutral-300 block mb-1">
+            <label className="text-xs font-bold text-stone-700 block mb-1">
               Email Address
             </label>
             <Input

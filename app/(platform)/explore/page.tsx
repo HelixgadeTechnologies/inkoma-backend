@@ -145,22 +145,22 @@ export default function ExplorePage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-serif font-extrabold text-white">
+          <h1 className="text-3xl font-serif font-extrabold text-stone-900">
             Explore Sacred Folklore
           </h1>
-          <p className="text-sm text-neutral-400 mt-1">
+          <p className="text-sm text-stone-600 mt-1">
             Discover branching narratives across 9 ancient African storytelling traditions.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Filter by keyword or tag..."
-              className="pl-9 h-10 text-xs"
+              className="pl-9 h-10 text-xs bg-white border-stone-200 text-stone-900"
             />
           </div>
         </div>
@@ -172,8 +172,8 @@ export default function ExplorePage() {
           onClick={() => setSelectedTradition("all")}
           className={`whitespace-nowrap px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
             selectedTradition === "all"
-              ? "bg-folklore-amber text-folklore-night font-bold shadow-md"
-              : "bg-folklore-obsidian text-neutral-300 border border-white/10 hover:border-folklore-amber/40"
+              ? "bg-amber-700 text-white font-bold shadow-sm"
+              : "bg-white text-stone-700 border border-stone-200 hover:border-amber-300 hover:bg-stone-50 shadow-sm"
           }`}
         >
           All Traditions ({MOCK_STORIES.length})
@@ -185,8 +185,8 @@ export default function ExplorePage() {
             onClick={() => setSelectedTradition(t)}
             className={`whitespace-nowrap px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
               selectedTradition === t
-                ? "bg-folklore-amber text-folklore-night font-bold shadow-md"
-                : "bg-folklore-obsidian text-neutral-300 border border-white/10 hover:border-folklore-amber/40"
+                ? "bg-amber-700 text-white font-bold shadow-sm"
+                : "bg-white text-stone-700 border border-stone-200 hover:border-amber-300 hover:bg-stone-50 shadow-sm"
             }`}
           >
             {t}
@@ -199,21 +199,21 @@ export default function ExplorePage() {
         {filteredStories.map((story) => (
           <Card
             key={story.id}
-            className="flex flex-col justify-between overflow-hidden group hover:border-folklore-amber/50 transition-all duration-300"
+            className="flex flex-col justify-between overflow-hidden group bg-white border-stone-200 shadow-sm hover:shadow-md hover:border-amber-300 transition-all duration-300"
           >
-            <div className="h-32 bg-gradient-to-tr from-folklore-indigo via-folklore-obsidian to-folklore-night p-5 flex flex-col justify-between border-b border-white/5">
+            <div className="h-32 bg-gradient-to-tr from-amber-900/80 via-stone-900/90 to-amber-950 p-5 flex flex-col justify-between border-b border-stone-100">
               <div className="flex items-center justify-between">
                 <Badge variant="gold">{story.tradition}</Badge>
                 {story.hasAudioNarration && (
-                  <span className="flex items-center gap-1 text-[10px] text-folklore-gold bg-black/40 px-2 py-0.5 rounded-full border border-folklore-gold/20">
+                  <span className="flex items-center gap-1 text-[10px] text-amber-200 bg-black/50 px-2 py-0.5 rounded-full border border-amber-400/30 font-semibold backdrop-blur-sm">
                     <Mic className="h-3 w-3" /> Griot Audio
                   </span>
                 )}
               </div>
 
-              <div className="flex items-center gap-3 text-xs text-neutral-400">
+              <div className="flex items-center gap-3 text-xs text-white/90 font-medium">
                 <span className="flex items-center gap-1">
-                  <GitBranch className="h-3.5 w-3.5 text-folklore-amber" />
+                  <GitBranch className="h-3.5 w-3.5 text-amber-300" />
                   {story.totalBranches} paths
                 </span>
                 <span>• {story.estimatedReadTime} min</span>
@@ -222,16 +222,16 @@ export default function ExplorePage() {
             </div>
 
             <CardHeader className="pb-2">
-              <CardTitle className="group-hover:text-folklore-gold transition-colors">
+              <CardTitle className="group-hover:text-folklore-amber transition-colors text-stone-900">
                 {story.title}
               </CardTitle>
-              <CardDescription className="line-clamp-2 mt-1">
+              <CardDescription className="line-clamp-2 mt-1 text-stone-600">
                 {story.synopsis}
               </CardDescription>
             </CardHeader>
 
-            <CardFooter className="flex items-center justify-between pt-4">
-              <div className="flex items-center gap-1.5 text-xs text-neutral-400">
+            <CardFooter className="flex items-center justify-between pt-4 border-t border-stone-100">
+              <div className="flex items-center gap-1.5 text-xs text-stone-500 font-medium">
                 <Heart className="h-3.5 w-3.5 text-folklore-terracotta" />
                 <span>{story.upvotesCount}</span>
               </div>

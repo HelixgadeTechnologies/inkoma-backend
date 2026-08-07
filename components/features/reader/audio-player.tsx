@@ -24,17 +24,17 @@ export function AudioPlayer({ textToRead }: { textToRead: string }) {
   };
 
   return (
-    <div className="flex items-center gap-2 rounded-2xl border border-folklore-amber/30 bg-folklore-night/90 px-4 py-2.5 backdrop-blur-md shadow-lg text-white">
+    <div className="flex items-center gap-2 rounded-2xl border border-stone-200 bg-white/95 px-4 py-2.5 backdrop-blur-md shadow-md text-stone-900">
       {/* Griot Mic Indicator */}
-      <div className="flex items-center gap-2 pr-2 border-r border-white/10">
-        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-folklore-terracotta/20 text-folklore-terracotta">
+      <div className="flex items-center gap-2 pr-2 border-r border-stone-200">
+        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-orange-100 text-orange-800">
           <Mic className="h-3.5 w-3.5" />
         </div>
         <div className="hidden sm:flex flex-col">
-          <span className="text-[11px] font-semibold text-folklore-gold leading-none">
+          <span className="text-[11px] font-bold text-amber-900 leading-none">
             Griot Voice
           </span>
-          <span className="text-[9px] text-neutral-400">Oral Narration</span>
+          <span className="text-[9px] text-stone-500 font-medium">Oral Narration</span>
         </div>
       </div>
 
@@ -64,7 +64,7 @@ export function AudioPlayer({ textToRead }: { textToRead: string }) {
         variant="ghost"
         size="sm"
         onClick={cycleRate}
-        className="h-8 px-2 text-xs text-neutral-300 hover:text-folklore-gold"
+        className="h-8 px-2 text-xs text-stone-700 hover:text-folklore-amber hover:bg-stone-100 font-semibold"
       >
         {rate}x
       </Button>
@@ -74,11 +74,11 @@ export function AudioPlayer({ textToRead }: { textToRead: string }) {
         variant="ghost"
         size="sm"
         onClick={() => setAmbientAudio(!ambientAudio)}
-        className="h-8 px-2 text-xs gap-1 text-neutral-300 hover:text-folklore-amber"
+        className="h-8 px-2 text-xs gap-1 text-stone-700 hover:text-folklore-amber hover:bg-stone-100"
         title="Ambient Kalimba & Djembe Background"
       >
         <Sparkles className="h-3.5 w-3.5 text-folklore-amber" />
-        <span className="hidden md:inline text-[11px]">
+        <span className="hidden md:inline text-[11px] font-medium">
           {ambientAudio ? "Drums On" : "Ambient"}
         </span>
       </Button>

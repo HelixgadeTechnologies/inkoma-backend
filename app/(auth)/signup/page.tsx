@@ -35,17 +35,17 @@ export default function SignupPage() {
       footerLinkHref="/login"
     >
       {/* Role Selector */}
-      <div className="grid grid-cols-2 gap-2 p-1 bg-folklore-night rounded-xl border border-white/10 mb-4">
+      <div className="grid grid-cols-2 gap-2 p-1 bg-stone-100 rounded-xl border border-stone-200 mb-4">
         <button
           type="button"
           onClick={() => setRole('reader')}
           className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
             role === 'reader'
-              ? 'bg-folklore-amber text-folklore-night font-bold shadow'
-              : 'text-neutral-400 hover:text-white'
+              ? 'bg-white text-stone-900 font-bold shadow-sm border border-stone-200'
+              : 'text-stone-600 hover:text-stone-900'
           }`}
         >
-          <BookOpen className="h-3.5 w-3.5" />
+          <BookOpen className="h-3.5 w-3.5 text-folklore-amber" />
           <span>Explorer / Reader</span>
         </button>
 
@@ -54,18 +54,18 @@ export default function SignupPage() {
           onClick={() => setRole('storyteller')}
           className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
             role === 'storyteller'
-              ? 'bg-folklore-amber text-folklore-night font-bold shadow'
-              : 'text-neutral-400 hover:text-white'
+              ? 'bg-white text-stone-900 font-bold shadow-sm border border-stone-200'
+              : 'text-stone-600 hover:text-stone-900'
           }`}
         >
-          <Feather className="h-3.5 w-3.5" />
+          <Feather className="h-3.5 w-3.5 text-folklore-amber" />
           <span>Griot / Author</span>
         </button>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3.5">
         <div>
-          <label className="text-xs font-semibold text-neutral-300 block mb-1">
+          <label className="text-xs font-bold text-stone-700 block mb-1">
             Storyteller Alias / Full Name
           </label>
           <Input
@@ -77,7 +77,7 @@ export default function SignupPage() {
         </div>
 
         <div>
-          <label className="text-xs font-semibold text-neutral-300 block mb-1">
+          <label className="text-xs font-bold text-stone-700 block mb-1">
             Email Address
           </label>
           <Input
@@ -90,7 +90,7 @@ export default function SignupPage() {
         </div>
 
         <div>
-          <label className="text-xs font-semibold text-neutral-300 block mb-1">
+          <label className="text-xs font-bold text-stone-700 block mb-1">
             Secret Key (Password)
           </label>
           <Input
@@ -109,10 +109,10 @@ export default function SignupPage() {
 
       <div className="relative my-4">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-white/10" />
+          <span className="w-full border-t border-stone-200" />
         </div>
         <div className="relative flex justify-center text-[10px] uppercase">
-          <span className="bg-folklore-obsidian px-2 text-neutral-400">Or register with</span>
+          <span className="bg-white px-2 text-stone-500 font-medium">Or register with</span>
         </div>
       </div>
 

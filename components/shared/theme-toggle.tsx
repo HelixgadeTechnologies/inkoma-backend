@@ -5,11 +5,16 @@ import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
-  const [isDark, setIsDark] = React.useState(true);
+  const [isDark, setIsDark] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsDark(document.documentElement.classList.contains("dark"));
+  }, []);
 
   const toggleTheme = () => {
-    setIsDark(!isDark);
-    if (document.documentElement.classList.contains("light")) {
+    const nextDark = !isDark;
+    setIsDark(nextDark);
+    if (nextDark) {
       document.documentElement.classList.remove("light");
       document.documentElement.classList.add("dark");
     } else {
@@ -23,10 +28,10 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={toggleTheme}
-      className="text-neutral-300 hover:text-folklore-amber"
+      className="text-stone-700 hover:text-folklore-amber hover:bg-stone-100"
       title="Toggle Light/Night Lore Mode"
     >
-      {isDark ? <Sun className="h-4 w-4 text-folklore-gold" /> : <Moon className="h-4 w-4" />}
+      {isDark ? <Sun className="h-4 w-4 text-folklore-amber" /> : <Moon className="h-4 w-4 text-stone-700" />}
     </Button>
   );
 }

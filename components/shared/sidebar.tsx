@@ -19,11 +19,11 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-64 flex-col border-r border-folklore-amber/15 bg-folklore-obsidian/90 p-4 lg:flex">
+    <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-64 flex-col border-r border-stone-200/80 bg-[#FAF8F5]/95 p-4 lg:flex">
       {/* Quick Action */}
       <div className="mb-6">
         <Link href="/studio/new">
-          <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-folklore-terracotta to-folklore-amber px-4 py-2.5 text-sm font-semibold text-folklore-night shadow-md hover:shadow-folklore-amber/20 hover:scale-[1.02] transition-all">
+          <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-folklore-terracotta to-folklore-amber px-4 py-2.5 text-sm font-semibold text-white shadow-md hover:shadow-folklore-amber/20 hover:scale-[1.02] transition-all">
             <PlusCircle className="h-4 w-4" />
             <span>Forge New Tale</span>
           </button>
@@ -32,7 +32,7 @@ export function Sidebar() {
 
       {/* Main Navigation */}
       <div className="space-y-1">
-        <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
+        <p className="px-3 text-[11px] font-bold uppercase tracking-wider text-stone-500">
           Storyteller Ecosystem
         </p>
         <div className="mt-2 space-y-1">
@@ -45,8 +45,8 @@ export function Sidebar() {
                 className={cn(
                   "flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-folklore-amber/15 text-folklore-gold border border-folklore-amber/30"
-                    : "text-neutral-300 hover:bg-white/5 hover:text-white"
+                    ? "bg-amber-100 text-amber-900 border border-amber-300 font-semibold shadow-sm"
+                    : "text-stone-700 hover:bg-stone-100 hover:text-stone-950"
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -66,10 +66,10 @@ export function Sidebar() {
 
       {/* Folklore Traditions Quick Filter */}
       <div className="mt-8 space-y-2">
-        <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
+        <p className="px-3 text-[11px] font-bold uppercase tracking-wider text-stone-500">
           Mythos Lineages
         </p>
-        <div className="space-y-1 text-xs text-neutral-400">
+        <div className="space-y-1 text-xs text-stone-700">
           {[
             { name: "Ashanti Spider Lore", count: "24", slug: "ashanti" },
             { name: "Yoruba Orisha Pantheons", count: "19", slug: "yoruba" },
@@ -79,25 +79,25 @@ export function Sidebar() {
             <Link
               key={myth.slug}
               href={`/explore?tradition=${myth.slug}`}
-              className="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-white/5 hover:text-folklore-gold transition-colors"
+              className="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-stone-100 hover:text-folklore-amber transition-colors font-medium"
             >
               <div className="flex items-center gap-2">
                 <Flame className="h-3.5 w-3.5 text-folklore-terracotta" />
                 <span>{myth.name}</span>
               </div>
-              <span className="text-[10px] text-neutral-400">{myth.count}</span>
+              <span className="text-[10px] text-stone-400">{myth.count}</span>
             </Link>
           ))}
         </div>
       </div>
 
       {/* Footer Griot Wisdom */}
-      <div className="mt-auto rounded-xl border border-folklore-amber/20 bg-folklore-night/60 p-3.5 text-xs text-neutral-300">
-        <div className="flex items-center gap-1.5 text-folklore-gold font-semibold mb-1">
+      <div className="mt-auto rounded-xl border border-amber-200/80 bg-amber-50/90 p-3.5 text-xs text-stone-700 shadow-sm">
+        <div className="flex items-center gap-1.5 text-amber-900 font-bold mb-1">
           <Sparkles className="h-3.5 w-3.5" />
           <span>Griot Wisdom</span>
         </div>
-        <p className="italic text-neutral-400 text-[11px] leading-relaxed">
+        <p className="italic text-stone-600 text-[11px] leading-relaxed">
           &quot;Wisdom is like a baobab tree; no one person&apos;s arms can embrace it all.&quot;
         </p>
       </div>

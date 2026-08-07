@@ -33,7 +33,7 @@ export default function LoginPage() {
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="text-xs font-semibold text-neutral-300 block mb-1">
+          <label className="text-xs font-bold text-stone-700 block mb-1">
             Email Address
           </label>
           <Input
@@ -47,10 +47,10 @@ export default function LoginPage() {
 
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label className="text-xs font-semibold text-neutral-300">Password</label>
+            <label className="text-xs font-bold text-stone-700">Password</label>
             <Link
               href="/forgot-password"
-              className="text-[11px] text-folklore-gold hover:underline"
+              className="text-[11px] text-amber-800 font-semibold hover:underline"
             >
               Forgot secret key?
             </Link>
@@ -71,10 +71,10 @@ export default function LoginPage() {
 
       <div className="relative my-4">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-white/10" />
+          <span className="w-full border-t border-stone-200" />
         </div>
         <div className="relative flex justify-center text-[10px] uppercase">
-          <span className="bg-folklore-obsidian px-2 text-neutral-400">Or continue with</span>
+          <span className="bg-white px-2 text-stone-500 font-medium">Or continue with</span>
         </div>
       </div>
 

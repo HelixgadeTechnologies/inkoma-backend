@@ -10,15 +10,15 @@ const buttonVariants = cva(
         default:
           "bg-folklore-terracotta text-white shadow hover:bg-folklore-clay hover:shadow-md",
         folklore:
-          "bg-gradient-to-r from-folklore-terracotta via-folklore-amber to-folklore-gold text-folklore-night font-semibold shadow-lg hover:shadow-folklore-amber/20 hover:brightness-105",
+          "bg-gradient-to-r from-folklore-terracotta to-folklore-amber text-white font-semibold shadow-md hover:shadow-lg hover:brightness-105",
         gold:
-          "bg-folklore-gold text-folklore-night font-semibold hover:bg-folklore-amber shadow hover:shadow-md",
+          "bg-folklore-gold text-white font-semibold hover:bg-folklore-amber shadow hover:shadow-md",
         outline:
-          "border border-folklore-amber/30 bg-transparent text-foreground hover:bg-folklore-amber/10 hover:border-folklore-amber/60",
+          "border border-stone-300 bg-white/90 text-stone-800 hover:bg-amber-50 hover:border-folklore-amber hover:text-stone-900 shadow-sm",
         secondary:
-          "bg-folklore-obsidian border border-white/10 text-foreground hover:bg-folklore-indigo/50",
-        ghost: "hover:bg-folklore-amber/10 hover:text-folklore-amber",
-        link: "text-folklore-gold underline-offset-4 hover:underline",
+          "bg-stone-100/90 border border-stone-200 text-stone-800 hover:bg-stone-200/80 hover:text-stone-950",
+        ghost: "text-stone-700 hover:bg-amber-100/50 hover:text-stone-950",
+        link: "text-folklore-amber font-semibold underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",
