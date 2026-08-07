@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 20% 6%;
+    --foreground: 45 30% 96%;
+
+    --card: 222 18% 10%;
+    --card-foreground: 45 30% 96%;
+
+    --popover: 222 18% 10%;
+    --popover-foreground: 45 30% 96%;
+
+    --primary: 38 92% 50%;
+    --primary-foreground: 220 20% 6%;
+
+    --secondary: 220 14% 16%;
+    --secondary-foreground: 45 30% 96%;
+
+    --muted: 220 14% 18%;
+    --muted-foreground: 220 10% 60%;
+
+    --accent: 14 65% 50%;
+    --accent-foreground: 45 30% 96%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 14% 18%;
+    --input: 220 14% 18%;
+    --ring: 38 92% 50%;
+
+    --radius: 0.75rem;
+
+    --font-serif: "Cinzel Decorative", "Merriweather", "Georgia", serif;
+    --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  .light {
+    --background: 45 30% 98%;
+    --foreground: 220 20% 10%;
+
+    --card: 45 25% 94%;
+    --card-foreground: 220 20% 10%;
+
+    --popover: 45 25% 94%;
+    --popover-foreground: 220 20% 10%;
+
+    --primary: 14 65% 45%;
+    --primary-foreground: 45 30% 98%;
+
+    --secondary: 45 20% 88%;
+    --secondary-foreground: 220 20% 10%;
+
+    --muted: 45 15% 85%;
+    --muted-foreground: 220 10% 40%;
+
+    --accent: 38 92% 45%;
+    --accent-foreground: 220 20% 6%;
+
+    --border: 45 20% 82%;
+    --input: 45 20% 82%;
+    --ring: 14 65% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    background-image: radial-gradient(circle at 50% 0%, rgba(217, 119, 6, 0.08) 0%, transparent 60%),
+                      radial-gradient(circle at 100% 100%, rgba(194, 89, 63, 0.05) 0%, transparent 50%);
+    min-height: 100vh;
+  }
+}
+
+/* Custom Folklore Textures & Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(13, 15, 20, 0.8);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(217, 119, 6, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 119, 6, 0.6);
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, #FFF0D4 0%, #E5A93C 50%, #D97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-terracotta-gradient {
+  background: linear-gradient(135deg, #F8A58B 0%, #C2593F 50%, #9B3821 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.folklore-pattern {
+  background-color: #0d0f14;
+  background-image: radial-gradient(rgba(229, 169, 60, 0.1) 1px, transparent 0);
+  background-size: 24px 24px;
+}
