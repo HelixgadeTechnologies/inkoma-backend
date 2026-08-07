@@ -36,7 +36,7 @@ const MOCK_DISCUSSIONS: CommunityDiscussion[] = [
   {
     id: "disc-3",
     title: "Dogon Astronomical Knowledge encoded in Oral Sirius Poetry",
-    content: "Has anyone tried weaving a speculative Afrofuturist branch tracking the Sigui ceremony cycles? Looking for collaborator griots for a multi-author tale.",
+    content: "Has anyone tried weaving a speculative Afrofuturist branch tracking the Sigui ceremony cycles? Looking for collaborators for a multi-author tale.",
     authorId: "user-oumar-04",
     authorName: "Oumar Sangare",
     traditionCategory: "Dogon",
@@ -81,9 +81,9 @@ export default function CommunityPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
-            <Users className="h-3.5 w-3.5 text-folklore-amber" />
-            <span>Lore & Griot Agora</span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold uppercase tracking-wider">
+            <Users className="w-3.5 h-3.5 text-amber-600" />
+            <span>Lore & Storyteller Agora</span>
           </div>
           <h1 className="text-3xl font-serif font-extrabold text-stone-900">Community Discussion</h1>
           <p className="text-sm text-stone-600 mt-1">
@@ -146,7 +146,7 @@ export default function CommunityPage() {
               Cancel
             </Button>
             <Button type="submit" variant="folklore" size="sm">
-              Post to Griot Agora
+              Post to Lore Agora
             </Button>
           </div>
         </form>

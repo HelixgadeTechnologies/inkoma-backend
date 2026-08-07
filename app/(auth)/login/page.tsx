@@ -39,7 +39,7 @@ export default function LoginPage() {
           </label>
           <Input
             type="email"
-            placeholder="griot@inkoma.org"
+            placeholder="author@inkoma.org"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required

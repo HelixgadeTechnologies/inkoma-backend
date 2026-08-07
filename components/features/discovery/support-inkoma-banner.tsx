@@ -27,7 +27,7 @@ export function SupportInkomaBanner() {
             Support Living African Lore
           </div>
           <h3 className="text-xl sm:text-2xl font-bold font-serif tracking-tight text-white">
-            Empower Independent African Griots & Storytellers
+            Empower Independent African Storytellers
           </h3>
           <p className="text-stone-200 text-xs sm:text-sm leading-relaxed">
             Inkoma is 100% committed to digitizing oral traditions, indigenous dialects, and branching interactive mythology. Your patron support directly funds creator stipends, elder audio recording sessions, and open folklore archives.

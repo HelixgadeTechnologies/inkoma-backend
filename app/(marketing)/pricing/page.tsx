@@ -42,7 +42,7 @@ export default function PricingPage() {
           </Link>
         </div>
 
-        {/* Storyteller Griot */}
+        {/* Storyteller Creator */}
         <div className="relative rounded-3xl border-2 border-[#680C07] bg-white p-8 flex flex-col justify-between shadow-lg">
           <div className="absolute -top-3.5 right-6">
             <Badge variant="gold" className="px-3 py-1 font-bold">Most Popular</Badge>
@@ -50,7 +50,7 @@ export default function PricingPage() {
 
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-[#680C07] font-bold text-xs uppercase tracking-wider">
-              <Feather className="h-4 w-4" /> Griot Creator
+              <Feather className="h-4 w-4" /> Storyteller Creator
             </div>
             <h3 className="font-serif text-xl font-bold text-stone-900">Author & Weaver</h3>
             <p className="text-xs text-stone-600">For storytellers crafting multi-branch folklore.</p>
@@ -73,7 +73,7 @@ export default function PricingPage() {
           </div>
 
           <Link href="/signup?plan=creator" className="mt-8">
-            <Button variant="folklore" className="w-full">Join Griot Guild</Button>
+            <Button variant="folklore" className="w-full">Join Storyteller Guild</Button>
           </Link>
         </div>
 

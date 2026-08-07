@@ -17,7 +17,7 @@ export const platformSidebarNav: NavItem[] = [
   { title: "Discover & Explore", href: "/explore", icon: "Compass" },
   { title: "My Library", href: "/library", icon: "BookOpen" },
   { title: "Writer Dashboard", href: "/studio", icon: "Feather", badge: "Studio" },
-  { title: "My Griot Profile", href: "/profile/kwame_griot", icon: "User" },
+  { title: "My Storyteller Profile", href: "/profile/kwame_asante", icon: "User" },
   { title: "Circle Settings", href: "/settings", icon: "Sliders" },
   { title: "Support & FAQs", href: "/support", icon: "HelpCircle" },
 ];

@@ -31,7 +31,7 @@ export default function SignupPage() {
 
   return (
     <AuthCard
-      title="Join the Griot Circle"
+      title="Join the Storyteller Circle"
       description="Begin your journey as a reader or traditional storyteller in our digital folklore archive."
     >
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -70,7 +70,7 @@ export default function SignupPage() {
           </label>
           <Input
             type="text"
-            placeholder="Griot Kwame"
+            placeholder="Storyteller Kwame"
             value={penName}
             onChange={(e) => setPenName(e.target.value)}
             className="bg-white border-stone-300 text-stone-900 placeholder:text-stone-400"
@@ -83,7 +83,7 @@ export default function SignupPage() {
           </label>
           <Input
             type="email"
-            placeholder="griot@inkoma.org"
+            placeholder="author@inkoma.org"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required

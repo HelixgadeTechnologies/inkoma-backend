@@ -99,7 +99,7 @@ export default function SettingsPage() {
           Account & Circle Settings
         </h1>
         <p className="text-sm text-stone-600">
-          Manage your personal profile, Griot payout details, privacy, and notifications.
+          Manage your personal profile, author payout details, privacy, and notifications.
         </p>
       </div>
 
@@ -186,12 +186,12 @@ export default function SettingsPage() {
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
-                Griot Pen Name
+                Author Pen Name
               </label>
               <Input
                 value={penName}
                 onChange={(e) => setPenName(e.target.value)}
-                placeholder="Griot Kwame"
+                placeholder="Kwame of Ashanti"
                 className="bg-white border-stone-300 text-stone-900"
               />
             </div>
@@ -370,7 +370,7 @@ export default function SettingsPage() {
               <label className="flex items-center justify-between p-3 bg-stone-50 rounded-2xl border border-stone-200 cursor-pointer">
                 <div>
                   <span className="font-bold text-stone-900 block">Public Profile</span>
-                  <span className="text-stone-500">Allow your Griot profile to be discoverable in community searches</span>
+                  <span className="text-stone-500">Allow your author profile to be discoverable in community searches</span>
                 </div>
                 <input
                   type="checkbox"

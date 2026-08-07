@@ -64,7 +64,7 @@ export default function ChapterReaderPage() {
       replies: [
         {
           id: "comm-1-1",
-          author: "Griot Kwame",
+          author: "Kwame Asante",
           avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
           text: "Indeed! In Akan storytelling, this is where the children are invited to reflect on humility.",
           likes: 5,

@@ -64,7 +64,7 @@ export default function UserProfilePage() {
                   {profile.penName || profile.displayName}
                 </h1>
                 <Badge className="bg-amber-100 text-amber-900 border border-amber-300 text-xs">
-                  {profile.role === "writer" ? "Master Griot" : "Reader"}
+                  {profile.role === "writer" ? "Master Storyteller" : "Reader"}
                 </Badge>
               </div>
               <p className="text-xs text-stone-500 font-mono">@{profile.username}</p>
@@ -95,10 +95,10 @@ export default function UserProfilePage() {
 
             <Button
               onClick={() => setShowSupportModal(true)}
-              className="bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-semibold shadow-xs flex-1 sm:flex-none"
+              className="bg-[#680C07] hover:bg-[#520905] text-white rounded-xl text-xs font-semibold shadow-xs flex-1 sm:flex-none"
             >
               <Heart className="w-3.5 h-3.5 mr-1 fill-white" />
-              Support Griot
+              Support Author
             </Button>
           </div>
         </div>
@@ -238,7 +238,7 @@ export default function UserProfilePage() {
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-[#680C07]" />
           <h2 className="text-xl font-bold text-stone-900 font-serif">
-            Support {profile.penName || profile.displayName}&apos;s Griot Circle
+            Support {profile.penName || profile.displayName}&apos;s Storyteller Circle
           </h2>
         </div>
         <p className="text-xs text-stone-600 max-w-xl leading-relaxed">

@@ -38,14 +38,14 @@ export function SupportAuthorDialog({
 }: SupportAuthorDialogProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  const penName = story?.authorPenName || authorProfile?.penName || authorProfile?.displayName || "Griot Storyteller";
+  const penName = story?.authorPenName || authorProfile?.penName || authorProfile?.displayName || "Storyteller";
   const avatar = story?.authorAvatar || authorProfile?.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop";
   const bio = story?.authorBio || authorProfile?.bio || "Traditional African storyteller preserving oral mythology and branching folklore manuscripts.";
   
   const bankName = authorProfile?.supportDetails?.bankName || "Access Bank Plc";
   const accountName = authorProfile?.supportDetails?.accountName || (authorProfile?.displayName || "Kwame Kofi Asante");
   const accountNumber = authorProfile?.supportDetails?.accountNumber || "0123456789";
-  const paystackLink = authorProfile?.supportDetails?.paystackLink || "https://paystack.com/pay/kwame-griot";
+  const paystackLink = authorProfile?.supportDetails?.paystackLink || "https://paystack.com/pay/kwame-asante";
 
   const handleCopy = (text: string, fieldName: string) => {
     navigator.clipboard.writeText(text);
@@ -61,7 +61,7 @@ export function SupportAuthorDialog({
             <Heart className="w-6 h-6 fill-amber-600 text-amber-600" />
           </div>
           <DialogTitle className="text-2xl font-bold font-serif text-stone-900">
-            Support the Griot
+            Support the Author
           </DialogTitle>
           <DialogDescription className="text-xs text-stone-500">
             Send patron support directly to this traditional author to sustain their lore recording and writing.

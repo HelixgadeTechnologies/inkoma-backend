@@ -21,7 +21,7 @@ const FAQS = [
     category: "General Folklore & Platform",
     question: "What is INKOMA's mission in African storytelling?",
     answer:
-      "INKOMA is a digital folklore sanctuary designed to preserve centuries-old African oral traditions, mythological epics, and trickster wisdom through immersive reading, authentic Griot audio narration, and interactive branching choices.",
+      "INKOMA is a digital folklore sanctuary designed to preserve centuries-old African oral traditions, mythological epics, and trickster wisdom through immersive reading, authentic oral voice narration, and interactive branching choices.",
   },
   {
     category: "Creator Support & Royalties",
@@ -123,7 +123,7 @@ export default function SupportPage() {
           {/* Quick Channels */}
           <div className="p-6 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-stone-700">
-              Direct Griot Community Channels
+              Direct Community Channels
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-stone-600">
               <div className="flex items-center gap-2.5 p-3 bg-white rounded-xl border border-stone-200">
@@ -132,7 +132,7 @@ export default function SupportPage() {
               </div>
               <div className="flex items-center gap-2.5 p-3 bg-white rounded-xl border border-stone-200">
                 <MessageSquare className="w-4 h-4 text-amber-600" />
-                <span>Discord Griot Circle</span>
+                <span>Discord Storyteller Circle</span>
               </div>
             </div>
           </div>
@@ -167,7 +167,7 @@ export default function SupportPage() {
                 </label>
                 <Input
                   type="email"
-                  placeholder="griot@inkoma.org"
+                  placeholder="author@inkoma.org"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required

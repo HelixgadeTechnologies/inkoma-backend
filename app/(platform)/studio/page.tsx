@@ -191,7 +191,7 @@ export default function StudioPage() {
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold uppercase tracking-wider">
             <Flame className="w-3.5 h-3.5 text-amber-600" />
-            Griot Author Studio
+            Author Studio
           </div>
           <h1 className="text-3xl font-extrabold text-stone-900 font-serif tracking-tight">
             Writer Dashboard

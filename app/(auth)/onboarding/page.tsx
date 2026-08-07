@@ -17,7 +17,7 @@ const AVAILABLE_GENRES = [
 ];
 
 const READING_INTERESTS = [
-  { id: "audio", label: "Oral Griot Narration", icon: Volume2 },
+  { id: "audio", label: "Oral Narration", icon: Volume2 },
   { id: "branching", label: "Interactive Choice Quests", icon: Compass },
   { id: "heritage", label: "Cultural Lore Preservation", icon: TreePine },
   { id: "writing", label: "Authoring My Own Tales", icon: Flame },

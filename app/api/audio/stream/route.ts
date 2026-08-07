@@ -10,7 +10,7 @@ export async function GET(req: Request) {
     status: 'ok',
     storyId,
     nodeId,
-    narrationType: 'oral_griot_tts',
+    narrationType: 'oral_narration_tts',
     audioFormat: 'audio/mpeg',
     message: 'Oral narration stream endpoint initialized.',
   });

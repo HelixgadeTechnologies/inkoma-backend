@@ -69,7 +69,7 @@ export function DiscussionCard({ discussion }: { discussion: CommunityDiscussion
         <div className="flex items-center justify-between pt-2 border-t border-stone-100">
           <div className="flex items-center gap-1.5 text-xs text-stone-500">
             <MessageSquare className="h-3.5 w-3.5" />
-            <span>{discussion.repliesCount} griot responses</span>
+            <span>{discussion.repliesCount} community responses</span>
           </div>
 
           <div className="flex gap-1">

@@ -47,7 +47,7 @@ export interface UserProfile {
   avatarUrl?: string;
   bannerUrl?: string;
   country?: string;
-  role: 'reader' | 'writer' | 'griot' | 'elder_admin';
+  role: 'reader' | 'writer' | 'storyteller' | 'elder_admin';
   traditionSpecialty?: string;
   createdAt: string;
   

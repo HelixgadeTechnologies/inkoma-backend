@@ -31,36 +31,38 @@ export function AudioPlayer({
 
   return (
     <div className="flex items-center gap-2 rounded-2xl border border-stone-200 bg-white/95 px-4 py-2.5 backdrop-blur-md shadow-md text-stone-900">
-      {/* Griot Mic Indicator */}
-      <div className="flex items-center gap-2 pr-2 border-r border-stone-200">
-        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-orange-100 text-orange-800">
-          <Mic className="h-3.5 w-3.5" />
+      {/* Oral Voice Indicator */}
+      <div className="flex items-center gap-2.5 min-w-0">
+        <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-[#680C07] text-white shadow-xs shrink-0">
+          <Volume2 className="h-4 w-4" />
         </div>
-        <div className="hidden sm:flex flex-col">
-          <span className="text-[11px] font-bold text-amber-900 leading-none">
-            {title ? title : "Griot Voice"}
-          </span>
-          <span className="text-[9px] text-stone-500 font-medium">Oral Narration</span>
+        <div className="min-w-0">
+          <p className="text-xs font-bold text-stone-900 truncate font-serif">
+            {title ? title : "Oral Voice"}
+          </p>
+          <p className="text-[10px] text-stone-500 truncate">
+            Traditional Narration
+          </p>
         </div>
       </div>
 
-      {/* Main Play/Pause Button */}
+      {/* Play/Pause Button */}
       <Button
-        variant="folklore"
+        type="button"
         size="sm"
         onClick={toggleNarration}
-        className="gap-1.5 h-8 px-3 rounded-lg text-xs"
+        className="bg-[#680C07] hover:bg-[#520905] text-white rounded-xl gap-1.5 text-xs font-semibold shadow-xs shrink-0 px-3 py-1.5"
         disabled={!isSupported}
       >
         {isSpeaking ? (
           <>
-            <Pause className="h-3.5 w-3.5" />
-            <span>Pause Griot</span>
+            <Pause className="w-3.5 h-3.5 fill-white" />
+            <span>Pause Narration</span>
           </>
         ) : (
           <>
-            <Play className="h-3.5 w-3.5 fill-current" />
-            <span>Listen Oral Tale</span>
+            <Play className="w-3.5 h-3.5 fill-white" />
+            <span>Listen</span>
           </>
         )}
       </Button>

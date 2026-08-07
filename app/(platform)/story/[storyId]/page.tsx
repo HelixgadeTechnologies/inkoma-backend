@@ -166,28 +166,28 @@ export default function StoryDetailsPage() {
             {/* Author Profile Row */}
             <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-stone-50 rounded-2xl border border-stone-200">
               <div className="flex items-center gap-3">
-                <Link href={`/profile/kwame_griot`} className="relative w-12 h-12 rounded-full overflow-hidden border border-amber-300">
+                <Link href={`/profile/kwame_asante`} className="relative w-12 h-12 rounded-full overflow-hidden border border-amber-300">
                   <Image
                     src={
                       currentStory.authorAvatar ||
                       "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"
                     }
-                    alt={currentStory.authorName}
+                    alt={currentStory.authorPenName || currentStory.authorName}
                     fill
                     className="object-cover"
                   />
                 </Link>
                 <div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2">
                     <Link
-                      href={`/profile/kwame_griot`}
+                      href={`/profile/kwame_asante`}
                       className="text-sm font-bold text-stone-900 hover:text-amber-700 font-serif"
                     >
                       {currentStory.authorPenName || currentStory.authorName}
                     </Link>
-                    <span className="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded font-medium">
-                      Griot
-                    </span>
+                    <Badge className="bg-amber-100 text-amber-900 text-[10px]">
+                      Storyteller
+                    </Badge>
                   </div>
                   <p className="text-xs text-stone-500 line-clamp-1 max-w-sm">
                     {currentStory.authorBio || "Living folklore archivist and traditional storyteller."}

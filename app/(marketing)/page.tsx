@@ -28,7 +28,7 @@ export default function HomePage() {
         </h1>
 
         <p className="text-stone-600 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-          Step into centuries of African oral traditions, mythological epics, and trickster wisdom. Read, listen with authentic Griot voice narration, and forge your own path through branching moral choices.
+          Step into centuries of African oral traditions, mythological epics, and trickster wisdom. Read, listen with authentic oral voice narration, and forge your own path through branching moral choices.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -45,7 +45,7 @@ export default function HomePage() {
               className="border-stone-300 text-stone-800 hover:bg-stone-100 font-semibold px-6 py-6 text-sm rounded-xl"
             >
               <Flame className="w-4 h-4 mr-2 text-[#680C07]" />
-              Griot Story Studio
+              Storyteller Studio
             </Button>
           </Link>
         </div>
@@ -55,7 +55,7 @@ export default function HomePage() {
           <div className="flex items-center gap-3 p-3 bg-white/70 rounded-2xl border border-stone-200">
             <Volume2 className="w-5 h-5 text-[#680C07] shrink-0" />
             <div>
-              <p className="text-xs font-bold text-stone-900">Oral Griot Audio</p>
+              <p className="text-xs font-bold text-stone-900">Oral Narration Audio</p>
               <p className="text-[10px] text-stone-500">Traditional cadence</p>
             </div>
           </div>
@@ -101,7 +101,7 @@ export default function HomePage() {
       {/* Recently Updated Shelf */}
       <StoryShelf
         title="Recently Updated"
-        subtitle="Fresh chapters and branching updates penned by master griots"
+        subtitle="Fresh chapters and branching updates penned by master storytellers"
         icon={<Flame className="w-5 h-5 text-orange-600" />}
         stories={recentlyUpdated}
         viewAllHref="/explore?status=ongoing"

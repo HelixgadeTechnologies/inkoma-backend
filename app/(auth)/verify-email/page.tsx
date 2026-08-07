@@ -17,7 +17,7 @@ export default function VerifyEmailPage() {
   return (
     <AuthCard
       title="Verify Your Email"
-      description="We sent a confirmation link to your inbox. Verify your email to activate your Griot Circle account."
+      description="We sent a confirmation link to your inbox. Verify your email to activate your Storyteller Circle account."
     >
       <div className="flex flex-col items-center text-center space-y-4 py-4">
         <div className="w-16 h-16 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-700">

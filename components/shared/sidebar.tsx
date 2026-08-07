@@ -106,11 +106,11 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Footer Griot Wisdom */}
-      <div className="mt-auto rounded-xl border border-amber-200/80 bg-amber-50/90 p-3.5 text-xs text-stone-700 shadow-xs">
-        <div className="flex items-center gap-1.5 text-amber-900 font-bold mb-1">
-          <Sparkles className="h-3.5 w-3.5 text-amber-600" />
-          <span>Griot Wisdom</span>
+      {/* Footer Folklore Wisdom */}
+      <div className="mt-auto pt-4 border-t border-stone-200/80 text-[11px] text-stone-500">
+        <div className="flex items-center gap-1.5 font-semibold text-stone-700 mb-1">
+          <Sparkles className="h-3.5 w-3.5 text-[#680C07]" />
+          <span>Folklore Wisdom</span>
         </div>
         <p className="italic text-stone-600 text-[11px] leading-relaxed">
           &ldquo;Until the lion learns how to speak, every story will glorify the hunter.&rdquo;

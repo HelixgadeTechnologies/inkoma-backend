@@ -11,7 +11,7 @@ export default function AboutPage() {
           Revitalizing Africa&apos;s Oral Storytelling Traditions
         </h1>
         <p className="text-base sm:text-lg text-stone-700 max-w-2xl mx-auto leading-relaxed font-medium">
-          For thousands of years, African griots, jalis, and elders preserved history, ethics, and philosophy through spoken word, drum rhythms, and community dialogue. Inkoma bridges ancient oral storytelling with modern interactive software.
+          For thousands of years, African storytellers, bards, and elders preserved history, ethics, and philosophy through spoken word, drum rhythms, and community dialogue. Inkoma bridges ancient oral storytelling with modern interactive software.
         </p>
       </div>
 
@@ -21,7 +21,7 @@ export default function AboutPage() {
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-800">
             <Feather className="h-5 w-5" />
           </div>
-          <h3 className="font-serif font-bold text-lg text-stone-900">Griot Authorship</h3>
+          <h3 className="font-serif font-bold text-lg text-stone-900">Storyteller Authorship</h3>
           <p className="text-xs text-stone-600 leading-relaxed">
             Empowering authentic storytellers, community folklorists, and indigenous writers to publish and monetize their cultural narratives.
           </p>

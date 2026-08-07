@@ -374,7 +374,7 @@ export default function ExplorePage() {
                       </Link>
 
                       <Link
-                        href={`/profile/kwame_griot`}
+                        href={`/profile/kwame_asante`}
                         className="text-xs text-stone-500 hover:text-stone-800 transition-colors block line-clamp-1"
                       >
                         by {story.authorPenName || story.authorName}

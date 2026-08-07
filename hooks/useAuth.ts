@@ -10,10 +10,10 @@ export function useAuth() {
   });
   const [profile, setProfile] = useState<UserProfile | null>({
     id: 'user-kwame-01',
-    username: 'kwame_griot',
+    username: 'kwame_asante',
     displayName: 'Kwame Asante',
     bio: 'Keeper of Ashanti trickster lore and ancient Dogon constellation myths.',
-    role: 'griot',
+    role: 'storyteller',
     followersCount: 1420,
     followingCount: 89,
     publishedStoriesCount: 12,
@@ -29,7 +29,7 @@ export function useAuth() {
       },
       {
         id: 'badge-2',
-        name: 'Master Griot',
+        name: 'Master Storyteller',
         description: 'Reached 25,000 oral story listeners',
         iconName: 'Volume2',
         tier: 'elder',

@@ -59,27 +59,22 @@ export function Footer() {
           {/* Creators & Studio */}
           <div>
             <h4 className="font-serif text-sm font-bold text-stone-900 tracking-wider uppercase mb-3">
-              Griot Guild
+              Creators
             </h4>
             <ul className="space-y-2 text-sm font-medium">
               <li>
                 <Link href="/studio" className="hover:text-folklore-amber transition-colors">
-                  Author Studio
-                </Link>
-              </li>
-              <li>
-                <Link href="/studio/new" className="hover:text-folklore-amber transition-colors">
-                  Choice Tree Creator
-                </Link>
-              </li>
-              <li>
-                <Link href="/community" className="hover:text-folklore-amber transition-colors">
-                  Lore Discussion Forum
+                  Storyteller Studio
                 </Link>
               </li>
               <li>
                 <Link href="/pricing" className="hover:text-folklore-amber transition-colors">
-                  Storyteller Monetization
+                  Storyteller Guild
+                </Link>
+              </li>
+              <li>
+                <Link href="/support" className="hover:text-folklore-amber transition-colors">
+                  Patron Tipping
                 </Link>
               </li>
             </ul>
@@ -111,7 +106,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 border-t border-stone-300/70 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500 gap-4">
-          <p>© {new Date().getFullYear()} Inkoma Tales. Dedicated to the eternal griots of Africa.</p>
+          <p>© {new Date().getFullYear()} Inkoma Tales. Dedicated to the eternal storytellers of Africa.</p>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
               Crafted with <Heart className="h-3 w-3 text-folklore-terracotta fill-current" /> for storytellers worldwide
