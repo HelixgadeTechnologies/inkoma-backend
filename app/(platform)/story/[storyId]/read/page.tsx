@@ -299,7 +299,7 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
   const bookmarked = isBookmarked(currentStory.id);
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] pb-24 relative">
+    <div className="min-h-screen bg-[#FAF8F5] pb-24 relative px-4 sm:px-6 lg:px-8">
       {/* Top Floating Reading Progress Bar */}
       <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-stone-200">
         <div

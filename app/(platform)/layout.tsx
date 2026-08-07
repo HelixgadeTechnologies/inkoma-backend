@@ -9,7 +9,7 @@ export default function PlatformLayout({
   return (
     <div className="relative flex min-h-screen flex-col bg-[#FAF8F5] text-stone-900">
       <Navbar />
-      <div className="container mx-auto flex max-w-7xl flex-1 px-0 sm:px-4">
+      <div className="container mx-auto flex max-w-7xl flex-1 px-4 sm:px-6 lg:px-8">
         <Sidebar />
         <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:px-8">
           {children}
