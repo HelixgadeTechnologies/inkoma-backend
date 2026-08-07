@@ -57,8 +57,8 @@ export function SupportAuthorDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md w-full bg-white border border-stone-200 shadow-2xl rounded-3xl p-6 sm:p-7 space-y-5">
         <DialogHeader className="text-center space-y-2">
-          <div className="mx-auto w-12 h-12 rounded-full bg-amber-100 border border-amber-300 text-amber-700 flex items-center justify-center">
-            <Heart className="w-6 h-6 fill-amber-600 text-amber-600" />
+          <div className="mx-auto w-12 h-12 rounded-full bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] flex items-center justify-center">
+            <Heart className="w-6 h-6 fill-[#680C07] text-[#680C07]" />
           </div>
           <DialogTitle className="text-2xl font-bold font-serif text-stone-900">
             Support the Author
@@ -70,7 +70,7 @@ export function SupportAuthorDialog({
 
         {/* Author Card */}
         <div className="flex items-center gap-3.5 p-3.5 bg-stone-50 rounded-2xl border border-stone-200">
-          <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0 border border-amber-300">
+          <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0 border border-[#680C07]/30">
             <Image src={avatar} alt={penName} fill className="object-cover" />
           </div>
           <div className="flex-1 min-w-0">
@@ -90,7 +90,7 @@ export function SupportAuthorDialog({
             rel="noopener noreferrer"
             className="block"
           >
-            <Button className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-bold py-5 shadow-sm rounded-xl">
+            <Button className="w-full bg-[#680C07] hover:bg-[#520905] text-white font-bold py-5 shadow-sm rounded-xl">
               <Sparkles className="w-4 h-4 mr-2" />
               Pay with Paystack
               <ExternalLink className="w-4 h-4 ml-2" />
@@ -124,7 +124,7 @@ export function SupportAuthorDialog({
                 <CreditCard className="w-3.5 h-3.5 text-stone-400" /> Account Number:
               </span>
               <div className="flex items-center gap-2">
-                <span className="font-mono font-bold text-amber-900 text-sm tracking-wider">
+                <span className="font-mono font-bold text-[#680C07] text-sm tracking-wider">
                   {accountNumber}
                 </span>
                 <button

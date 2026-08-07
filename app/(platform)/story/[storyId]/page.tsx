@@ -49,7 +49,7 @@ export default function StoryDetailsPage() {
           The requested folklore manuscript could not be found in our digital archives.
         </p>
         <Link href="/explore">
-          <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+          <Button className="bg-[#680C07] hover:bg-[#520905] text-white">
             Return to Explore
           </Button>
         </Link>
@@ -124,7 +124,7 @@ export default function StoryDetailsPage() {
 
             {/* Read CTA button under cover */}
             <Link href={`/story/${currentStory.id}/read`} className="block">
-              <Button className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-bold py-6 text-sm rounded-xl shadow-md">
+              <Button className="w-full bg-[#680C07] hover:bg-[#520905] text-white font-bold py-6 text-sm rounded-xl shadow-md">
                 <Play className="w-4 h-4 fill-white mr-2" />
                 Start Reading (Chap 1)
               </Button>
@@ -135,14 +135,14 @@ export default function StoryDetailsPage() {
           <div className="md:col-span-8 lg:col-span-9 space-y-6">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge className="bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold">
+                <Badge className="bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] text-xs font-semibold">
                   {currentStory.mainGenre}
                 </Badge>
                 <span
                   className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${
                     currentStory.status === "completed"
                       ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                      : "bg-amber-50 text-amber-700 border border-amber-200"
+                      : "bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20"
                   }`}
                 >
                   {currentStory.status === "completed" ? "Completed Story" : "Ongoing Manuscript"}
@@ -166,7 +166,7 @@ export default function StoryDetailsPage() {
             {/* Author Profile Row */}
             <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-stone-50 rounded-2xl border border-stone-200">
               <div className="flex items-center gap-3">
-                <Link href={`/profile/kwame_asante`} className="relative w-12 h-12 rounded-full overflow-hidden border border-amber-300">
+                <Link href={`/profile/kwame_asante`} className="relative w-12 h-12 rounded-full overflow-hidden border border-[#680C07]/30">
                   <Image
                     src={
                       currentStory.authorAvatar ||
@@ -181,11 +181,11 @@ export default function StoryDetailsPage() {
                   <div className="flex items-center gap-2">
                     <Link
                       href={`/profile/kwame_asante`}
-                      className="text-sm font-bold text-stone-900 hover:text-amber-700 font-serif"
+                      className="text-sm font-bold text-stone-900 hover:text-[#680C07] font-serif"
                     >
                       {currentStory.authorPenName || currentStory.authorName}
                     </Link>
-                    <Badge className="bg-amber-100 text-amber-900 text-[10px]">
+                    <Badge className="bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20 text-[10px]">
                       Storyteller
                     </Badge>
                   </div>
@@ -202,13 +202,13 @@ export default function StoryDetailsPage() {
                   onClick={() => setIsFollowing(!isFollowing)}
                   className={`border-stone-300 text-xs rounded-xl ${
                     isFollowing
-                      ? "bg-amber-50 border-amber-300 text-amber-900 font-semibold"
+                      ? "bg-[#680C07]/10 border-[#680C07]/20 text-[#680C07] font-semibold"
                       : "bg-white text-stone-700"
                   }`}
                 >
                   {isFollowing ? (
                     <>
-                      <UserCheck className="w-3.5 h-3.5 mr-1 text-amber-600" /> Following
+                      <UserCheck className="w-3.5 h-3.5 mr-1 text-[#680C07]" /> Following
                     </>
                   ) : (
                     <>
@@ -220,7 +220,7 @@ export default function StoryDetailsPage() {
                 <Button
                   size="sm"
                   onClick={() => setShowSupportModal(true)}
-                  className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-xl shadow-xs"
+                  className="bg-[#680C07] hover:bg-[#520905] text-white text-xs font-semibold rounded-xl shadow-xs"
                 >
                   <Heart className="w-3.5 h-3.5 mr-1 fill-white" />
                   Support Author
@@ -271,7 +271,7 @@ export default function StoryDetailsPage() {
                   <strong className="text-stone-900">{currentStory.readsCount.toLocaleString()}</strong> Reads
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Heart className="w-4 h-4 text-amber-600" />
+                  <Heart className="w-4 h-4 text-[#680C07]" />
                   <strong className="text-stone-900">{likesCount}</strong> Likes
                 </span>
                 <span className="flex items-center gap-1.5">
@@ -298,10 +298,10 @@ export default function StoryDetailsPage() {
                   variant="outline"
                   onClick={() => toggleBookmark(currentStory.id)}
                   className={`border-stone-300 rounded-xl ${
-                    bookmarked ? "bg-amber-50 border-amber-300 text-amber-900 font-semibold" : "bg-white text-stone-700"
+                    bookmarked ? "bg-[#680C07]/10 border-[#680C07]/20 text-[#680C07] font-semibold" : "bg-white text-stone-700"
                   }`}
                 >
-                  <Bookmark className={`w-3.5 h-3.5 mr-1.5 ${bookmarked ? "fill-amber-600 text-amber-600" : ""}`} />
+                  <Bookmark className={`w-3.5 h-3.5 mr-1.5 ${bookmarked ? "fill-[#680C07] text-[#680C07]" : ""}`} />
                   {bookmarked ? "Bookmarked" : "Bookmark"}
                 </Button>
 
@@ -310,10 +310,10 @@ export default function StoryDetailsPage() {
                   variant="outline"
                   onClick={() => toggleFavorite(currentStory.id)}
                   className={`border-stone-300 rounded-xl ${
-                    favorited ? "bg-amber-50 border-amber-300 text-amber-900 font-semibold" : "bg-white text-stone-700"
+                    favorited ? "bg-[#680C07]/10 border-[#680C07]/20 text-[#680C07] font-semibold" : "bg-white text-stone-700"
                   }`}
                 >
-                  <Sparkles className={`w-3.5 h-3.5 mr-1.5 ${favorited ? "fill-amber-500 text-amber-600" : ""}`} />
+                  <Sparkles className={`w-3.5 h-3.5 mr-1.5 ${favorited ? "fill-[#680C07] text-[#680C07]" : ""}`} />
                   {favorited ? "Favorited" : "Favorite"}
                 </Button>
 
@@ -351,7 +351,7 @@ export default function StoryDetailsPage() {
             </p>
           </div>
           <Link href={`/story/${currentStory.id}/read`}>
-            <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white rounded-xl">
+            <Button size="sm" className="bg-[#680C07] hover:bg-[#520905] text-white rounded-xl">
               Read Chapter 1
             </Button>
           </Link>
@@ -365,11 +365,11 @@ export default function StoryDetailsPage() {
               className="flex items-center justify-between p-4 hover:bg-stone-50 rounded-2xl transition-all group"
             >
               <div className="flex items-center gap-4 min-w-0">
-                <div className="w-10 h-10 rounded-xl bg-amber-100 border border-amber-300 text-amber-900 flex items-center justify-center font-bold text-sm shrink-0 font-serif">
+                <div className="w-10 h-10 rounded-xl bg-[#680C07]/10 border border-[#680C07]/30 text-[#680C07] flex items-center justify-center font-bold text-sm shrink-0 font-serif">
                   {chapter.number}
                 </div>
                 <div className="space-y-1 min-w-0">
-                  <h3 className="text-sm font-bold text-stone-900 group-hover:text-amber-700 transition-colors truncate">
+                  <h3 className="text-sm font-bold text-stone-900 group-hover:text-[#680C07] transition-colors truncate">
                     {chapter.title}
                   </h3>
                   <p className="text-xs text-stone-500 truncate max-w-xl">
@@ -383,9 +383,9 @@ export default function StoryDetailsPage() {
                   <Clock className="w-3.5 h-3.5" /> {chapter.readTimeMinutes}m
                 </span>
                 <span className="flex items-center gap-1">
-                  <Heart className="w-3.5 h-3.5 text-stone-300 group-hover:text-amber-600" /> {chapter.likesCount}
+                  <Heart className="w-3.5 h-3.5 text-stone-300 group-hover:text-[#680C07]" /> {chapter.likesCount}
                 </span>
-                <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-amber-600 group-hover:translate-x-1 transition-all" />
+                <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-[#680C07] group-hover:translate-x-1 transition-all" />
               </div>
             </Link>
           ))}

@@ -93,7 +93,7 @@ export default function HomePage() {
       <StoryShelf
         title="Featured Folklore"
         subtitle="Celebrated epics and essential community favorites"
-        icon={<Sparkles className="w-5 h-5 text-amber-600" />}
+        icon={<Sparkles className="w-5 h-5 text-[#680C07]" />}
         stories={featuredStories}
         viewAllHref="/explore?sort=trending"
       />
@@ -102,7 +102,7 @@ export default function HomePage() {
       <StoryShelf
         title="Recently Updated"
         subtitle="Fresh chapters and branching updates penned by master storytellers"
-        icon={<Flame className="w-5 h-5 text-orange-600" />}
+        icon={<Flame className="w-5 h-5 text-[#680C07]" />}
         stories={recentlyUpdated}
         viewAllHref="/explore?status=ongoing"
       />
@@ -111,7 +111,7 @@ export default function HomePage() {
       <StoryShelf
         title="New Releases"
         subtitle="Newly preserved oral accounts and modern African fantasy"
-        icon={<BookOpen className="w-5 h-5 text-amber-700" />}
+        icon={<BookOpen className="w-5 h-5 text-[#680C07]" />}
         stories={newReleases}
         viewAllHref="/explore?sort=newest"
       />
@@ -120,7 +120,7 @@ export default function HomePage() {
       <StoryShelf
         title="Recommended for You"
         subtitle="Curated based on traditional roots and philosophical depth"
-        icon={<Compass className="w-5 h-5 text-amber-600" />}
+        icon={<Compass className="w-5 h-5 text-[#680C07]" />}
         stories={recommendedStories}
         viewAllHref="/explore"
       />

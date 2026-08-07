@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 
 const FAQS = [
   {
@@ -66,8 +67,8 @@ export default function SupportPage() {
     <div className="space-y-12 pb-16">
       {/* Header */}
       <div className="text-center space-y-2 max-w-2xl mx-auto">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold uppercase tracking-wider">
-          <HelpCircle className="w-3.5 h-3.5 text-amber-600" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] text-xs font-semibold uppercase tracking-wider">
+          <HelpCircle className="w-3.5 h-3.5 text-[#680C07]" />
           Hearth Fire Support
         </div>
         <h1 className="text-3xl sm:text-4xl font-extrabold text-stone-900 font-serif tracking-tight">
@@ -83,7 +84,7 @@ export default function SupportPage() {
         {/* Left: FAQs Accordion */}
         <div className="lg:col-span-7 space-y-4">
           <h2 className="text-lg font-bold text-stone-900 font-serif flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-amber-600" /> Frequently Asked Questions
+            <Sparkles className="w-4 h-4 text-[#680C07]" /> Frequently Asked Questions
           </h2>
 
           <div className="space-y-3">
@@ -102,14 +103,14 @@ export default function SupportPage() {
                     <span className="font-serif">{faq.question}</span>
                     <ChevronDown
                       className={`w-4 h-4 text-stone-400 shrink-0 transition-transform ${
-                        isOpen ? "rotate-180 text-amber-600" : ""
+                        isOpen ? "rotate-180 text-[#680C07]" : ""
                       }`}
                     />
                   </button>
 
                   {isOpen && (
                     <div className="px-4 pb-4 pt-1 text-xs text-stone-600 leading-relaxed border-t border-stone-100 animate-in fade-in duration-200">
-                      <span className="text-[10px] uppercase font-bold text-amber-700 block mb-1">
+                      <span className="text-[10px] uppercase font-bold text-[#680C07] block mb-1">
                         {faq.category}
                       </span>
                       {faq.answer}
@@ -127,11 +128,11 @@ export default function SupportPage() {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-stone-600">
               <div className="flex items-center gap-2.5 p-3 bg-white rounded-xl border border-stone-200">
-                <Mail className="w-4 h-4 text-amber-600" />
+                <Mail className="w-4 h-4 text-[#680C07]" />
                 <span>support@inkoma.org</span>
               </div>
               <div className="flex items-center gap-2.5 p-3 bg-white rounded-xl border border-stone-200">
-                <MessageSquare className="w-4 h-4 text-amber-600" />
+                <MessageSquare className="w-4 h-4 text-[#680C07]" />
                 <span>Discord Storyteller Circle</span>
               </div>
             </div>
@@ -142,7 +143,7 @@ export default function SupportPage() {
         <div className="lg:col-span-5 bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm space-y-5">
           <div className="space-y-1">
             <h2 className="text-xl font-bold text-stone-900 font-serif flex items-center gap-2">
-              <Mail className="w-5 h-5 text-amber-600" /> Send an Inquiry
+              <Mail className="w-5 h-5 text-[#680C07]" /> Send an Inquiry
             </h2>
             <p className="text-xs text-stone-500">
               Our archivist team typically responds within 24 hours.
@@ -176,19 +177,19 @@ export default function SupportPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
+                <label className="text-xs font-bold text-stone-700 uppercase tracking-wider block">
                   Category
                 </label>
-                <select
+                <Select
                   value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                >
-                  <option value="General Question">General Question</option>
-                  <option value="Author & Royalties Support">Author & Royalties Support</option>
-                  <option value="Audio Narration Feedback">Audio Narration Feedback</option>
-                  <option value="Report Lore Violation">Report Content Violation</option>
-                </select>
+                  onChange={(val) => setCategory(val)}
+                  options={[
+                    "General Question",
+                    "Author & Royalties Support",
+                    "Audio Narration Feedback",
+                    "Report Content Violation",
+                  ]}
+                />
               </div>
 
               <div className="space-y-1.5">
@@ -215,13 +216,13 @@ export default function SupportPage() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   required
-                  className="w-full bg-stone-50 border border-stone-300 rounded-xl p-3 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full bg-stone-50 border border-stone-300 rounded-xl p-3 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#680C07]"
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-5 text-xs rounded-xl shadow-xs"
+                className="w-full bg-[#680C07] hover:bg-[#520905] text-white font-bold py-5 text-xs rounded-xl shadow-xs"
               >
                 <Send className="w-3.5 h-3.5 mr-2" /> Send Message
               </Button>

@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
 
 const TRADITIONS: (Tradition | "all")[] = [
   "all",
@@ -76,8 +77,8 @@ export default function ExplorePage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="space-y-1.5">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] text-xs font-semibold uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5 text-[#680C07]" />
             Folklore Archive
           </div>
           <h1 className="text-3xl font-extrabold text-stone-900 font-serif tracking-tight">
@@ -91,39 +92,40 @@ export default function ExplorePage() {
         {/* Sorting Dropdown */}
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium text-stone-500 shrink-0">Sort by:</span>
-          <select
+          <Select
             value={filters.sortBy || "trending"}
-            onChange={(e) => setFilters((prev) => ({ ...prev, sortBy: e.target.value as any }))}
-            className="text-xs font-semibold bg-white border border-stone-300 rounded-xl px-3 py-2 text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-xs cursor-pointer"
-          >
-            <option value="trending">🔥 Trending & Popular</option>
-            <option value="newest">✨ Newest Releases</option>
-            <option value="most_read">👁️ Most Read</option>
-            <option value="most_liked">❤️ Most Liked</option>
-            <option value="readTime">⏱️ Shortest Read Time</option>
-          </select>
+            onChange={(val) => setFilters((prev) => ({ ...prev, sortBy: val as any }))}
+            options={[
+              { value: "trending", label: "🔥 Trending & Popular" },
+              { value: "newest", label: "✨ Newest Releases" },
+              { value: "most_read", label: "👁️ Most Read" },
+              { value: "most_liked", label: "❤️ Most Liked" },
+              { value: "readTime", label: "⏱️ Shortest Read Time" },
+            ]}
+            className="w-48"
+          />
         </div>
       </div>
 
-      {/* Search Bar & Filter Toggle */}
+      {/* Search Input Bar & Filters Toggle */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <div className="relative flex-1 w-full">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
             <Input
               type="text"
-              placeholder="Search by story title, pen name, keywords, or characters (e.g., Anansi, Sundiata, Mami Wata)..."
+              placeholder="Search stories by title, author, or keywords..."
               value={filters.searchQuery || ""}
               onChange={(e) => setFilters((prev) => ({ ...prev, searchQuery: e.target.value }))}
-              className="pl-10 pr-10 py-6 bg-white border-stone-300 text-stone-900 placeholder:text-stone-400 rounded-2xl shadow-xs"
+              className="pl-11 py-6 bg-white border-stone-200 rounded-2xl shadow-xs text-sm"
             />
             {filters.searchQuery && (
               <button
                 type="button"
                 onClick={() => setFilters((prev) => ({ ...prev, searchQuery: "" }))}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 text-xs bg-stone-100 px-2 py-0.5 rounded-md font-medium"
               >
-                <X className="w-4 h-4" />
+                Clear
               </button>
             )}
           </div>
@@ -134,14 +136,14 @@ export default function ExplorePage() {
             onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
             className={`border-stone-300 rounded-2xl py-6 px-4 gap-2 transition-all ${
               showAdvancedFilters || activeFiltersCount > 0
-                ? "bg-amber-50 border-amber-400 text-amber-900"
+                ? "bg-[#680C07]/10 border-[#680C07] text-[#680C07]"
                 : "bg-white text-stone-700 hover:bg-stone-50"
             }`}
           >
             <SlidersHorizontal className="w-4 h-4" />
             <span className="hidden sm:inline">Filters</span>
             {activeFiltersCount > 0 && (
-              <span className="w-5 h-5 rounded-full bg-amber-600 text-white text-[10px] flex items-center justify-center font-bold">
+              <span className="w-5 h-5 rounded-full bg-[#680C07] text-white text-[10px] flex items-center justify-center font-bold">
                 {activeFiltersCount}
               </span>
             )}
@@ -191,39 +193,33 @@ export default function ExplorePage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
               {/* Genre Selector */}
               <div className="space-y-1.5">
-                <label className="font-semibold text-stone-700">Genre Category</label>
-                <select
+                <label className="font-semibold text-stone-700 block">Genre Category</label>
+                <Select
                   value={filters.genre || "All Genres"}
-                  onChange={(e) =>
+                  onChange={(val) =>
                     setFilters((prev) => ({
                       ...prev,
-                      genre: e.target.value === "All Genres" ? undefined : e.target.value,
+                      genre: val === "All Genres" ? undefined : val,
                     }))
                   }
-                  className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                >
-                  {GENRES.map((g) => (
-                    <option key={g} value={g}>
-                      {g}
-                    </option>
-                  ))}
-                </select>
+                  options={GENRES}
+                />
               </div>
 
               {/* Status Filter */}
               <div className="space-y-1.5">
-                <label className="font-semibold text-stone-700">Story Status</label>
-                <select
+                <label className="font-semibold text-stone-700 block">Story Status</label>
+                <Select
                   value={filters.status || "all"}
-                  onChange={(e) =>
-                    setFilters((prev) => ({ ...prev, status: e.target.value as StoryStatus }))
+                  onChange={(val) =>
+                    setFilters((prev) => ({ ...prev, status: val as StoryStatus }))
                   }
-                  className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                >
-                  <option value="all">All Statuses</option>
-                  <option value="completed">Completed Stories</option>
-                  <option value="ongoing">Ongoing Manuscripts</option>
-                </select>
+                  options={[
+                    { value: "all", label: "All Statuses" },
+                    { value: "completed", label: "Completed Stories" },
+                    { value: "ongoing", label: "Ongoing Manuscripts" },
+                  ]}
+                />
               </div>
 
               {/* Format Toggles */}
@@ -237,7 +233,7 @@ export default function ExplorePage() {
                       onChange={(e) =>
                         setFilters((prev) => ({ ...prev, interactiveOnly: e.target.checked }))
                       }
-                      className="rounded border-stone-300 text-amber-600 focus:ring-amber-500"
+                      className="rounded border-stone-300 text-[#680C07] focus:ring-[#680C07]"
                     />
                     <span>Interactive Branches Only</span>
                   </label>
@@ -248,7 +244,7 @@ export default function ExplorePage() {
                       onChange={(e) =>
                         setFilters((prev) => ({ ...prev, audioOnly: e.target.checked }))
                       }
-                      className="rounded border-stone-300 text-amber-600 focus:ring-amber-500"
+                      className="rounded border-stone-300 text-[#680C07] focus:ring-[#680C07]"
                     />
                     <span>Oral Audio Narration Only</span>
                   </label>
@@ -269,7 +265,7 @@ export default function ExplorePage() {
             <button
               type="button"
               onClick={resetFilters}
-              className="text-amber-700 hover:underline font-semibold"
+              className="text-[#680C07] hover:underline font-semibold"
             >
               Clear all filters
             </button>
@@ -278,7 +274,7 @@ export default function ExplorePage() {
 
         {filteredStories.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-3xl border border-stone-200 p-8 space-y-3">
-            <div className="w-12 h-12 rounded-full bg-amber-50 border border-amber-200 text-amber-700 mx-auto flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] mx-auto flex items-center justify-center">
               <Search className="w-6 h-6" />
             </div>
             <h3 className="text-lg font-bold text-stone-900 font-serif">No tales found</h3>
@@ -310,7 +306,7 @@ export default function ExplorePage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent" />
 
                     <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
-                      <Badge className="bg-amber-600/90 text-white backdrop-blur-xs text-[10px] font-medium border-0 shadow-xs">
+                      <Badge className="bg-[#680C07] text-white backdrop-blur-xs text-[10px] font-medium border-0 shadow-xs">
                         {story.tradition}
                       </Badge>
                       <button
@@ -322,7 +318,7 @@ export default function ExplorePage() {
                         }}
                         className={`p-1.5 rounded-full backdrop-blur-md transition-all ${
                           bookmarked
-                            ? "bg-amber-600 text-white shadow-xs"
+                            ? "bg-[#680C07] text-white shadow-xs"
                             : "bg-stone-900/60 text-stone-200 hover:bg-stone-900/90 hover:text-white"
                         }`}
                       >
@@ -332,16 +328,16 @@ export default function ExplorePage() {
 
                     <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-white text-[11px] font-medium">
                       <span className="flex items-center gap-1 drop-shadow-xs">
-                        <Clock className="w-3 h-3 text-amber-300" /> {story.estimatedReadTime} min
+                        <Clock className="w-3 h-3 text-red-200" /> {story.estimatedReadTime} min
                       </span>
                       <div className="flex items-center gap-2">
                         {story.hasAudioNarration && (
-                          <span className="flex items-center gap-1 bg-black/40 px-1.5 py-0.5 rounded-md text-[10px] text-amber-300">
+                          <span className="flex items-center gap-1 bg-black/40 px-1.5 py-0.5 rounded-md text-[10px] text-red-200">
                             <Volume2 className="w-2.5 h-2.5" /> Audio
                           </span>
                         )}
                         {story.isInteractive && (
-                          <span className="flex items-center gap-1 bg-black/40 px-1.5 py-0.5 rounded-md text-[10px] text-amber-300">
+                          <span className="flex items-center gap-1 bg-black/40 px-1.5 py-0.5 rounded-md text-[10px] text-red-200">
                             <GitFork className="w-2.5 h-2.5" /> {story.totalBranches} paths
                           </span>
                         )}
@@ -353,14 +349,14 @@ export default function ExplorePage() {
                   <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider">
+                        <span className="text-[10px] font-bold text-[#680C07] uppercase tracking-wider">
                           {story.mainGenre}
                         </span>
                         <span
                           className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
                             story.status === "completed"
                               ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                              : "bg-amber-50 text-amber-700 border border-amber-200"
+                              : "bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20"
                           }`}
                         >
                           {story.status === "completed" ? "Completed" : "Ongoing"}
@@ -368,7 +364,7 @@ export default function ExplorePage() {
                       </div>
 
                       <Link href={`/story/${story.id}`}>
-                        <h3 className="text-base font-bold text-stone-900 line-clamp-1 group-hover:text-amber-700 transition-colors font-serif">
+                        <h3 className="text-base font-bold text-stone-900 line-clamp-1 group-hover:text-[#680C07] transition-colors font-serif">
                           {story.title}
                         </h3>
                       </Link>
@@ -395,7 +391,7 @@ export default function ExplorePage() {
                             : story.readsCount}
                         </span>
                         <span className="flex items-center gap-1">
-                          <Heart className="w-3.5 h-3.5 text-amber-600" />
+                          <Heart className="w-3.5 h-3.5 text-[#680C07]" />
                           {story.likesCount}
                         </span>
                       </div>

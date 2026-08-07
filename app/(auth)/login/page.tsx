@@ -54,7 +54,7 @@ export default function LoginPage() {
             </label>
             <Link
               href="/forgot-password"
-              className="text-xs text-amber-700 hover:text-amber-800 font-medium transition-colors"
+              className="text-xs text-[#680C07] hover:underline font-medium transition-colors"
             >
               Forgot password?
             </Link>
@@ -73,7 +73,7 @@ export default function LoginPage() {
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              className="rounded border-stone-300 text-amber-600 focus:ring-amber-500 w-4 h-4"
+              className="rounded border-stone-300 text-[#680C07] focus:ring-[#680C07] w-4 h-4"
             />
             Stay logged in
           </label>
@@ -82,13 +82,13 @@ export default function LoginPage() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-semibold shadow-md py-5"
+          className="w-full bg-[#680C07] hover:bg-[#520905] text-white font-semibold shadow-md py-5"
         >
           {isLoading ? (
             <Loader2 className="w-4 h-4 animate-spin mr-2" />
           ) : (
             <>
-              Enter the Agora
+              Sign In
               <ArrowRight className="w-4 h-4 ml-2" />
             </>
           )}
@@ -107,12 +107,12 @@ export default function LoginPage() {
       <SocialAuth />
 
       <p className="text-center text-xs text-stone-600 mt-6">
-        New to Inkoma?{" "}
+        Don&apos;t have an account?{" "}
         <Link
           href="/signup"
-          className="text-amber-700 hover:text-amber-800 font-semibold underline underline-offset-4"
+          className="text-[#680C07] hover:underline font-semibold underline-offset-4"
         >
-          Create an account
+          Sign up for free
         </Link>
       </p>
     </AuthCard>

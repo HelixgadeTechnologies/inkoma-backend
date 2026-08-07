@@ -24,8 +24,8 @@ export default function ForgotPasswordPage() {
       footerLinkHref="/login"
     >
       {submitted ? (
-        <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-center space-y-2">
-          <p className="text-sm font-bold text-amber-900">Sacred Scroll Dispatched!</p>
+        <div className="rounded-xl border border-[#680C07]/30 bg-[#680C07]/10 p-4 text-center space-y-2">
+          <p className="text-sm font-bold text-[#680C07]">Recovery Link Dispatched!</p>
           <p className="text-xs text-stone-700 font-medium">
             Check your inbox for instructions to reset your account key.
           </p>

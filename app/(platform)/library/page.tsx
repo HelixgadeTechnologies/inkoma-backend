@@ -237,11 +237,11 @@ export default function LibraryPage() {
                       <Image src={story.coverImage} alt={story.title} fill className="object-cover" />
                     </div>
                     <div className="min-w-0 space-y-1">
-                      <Badge className="bg-amber-100 text-amber-900 text-[10px]">
+                      <Badge className="bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20 text-[10px]">
                         {story.tradition}
                       </Badge>
                       <Link href={`/story/${story.id}`}>
-                        <h4 className="text-sm font-bold text-stone-900 truncate font-serif hover:text-amber-700">
+                        <h4 className="text-sm font-bold text-stone-900 truncate font-serif hover:text-[#680C07]">
                           {story.title}
                         </h4>
                       </Link>
@@ -295,11 +295,11 @@ export default function LibraryPage() {
                       <Image src={story.coverImage} alt={story.title} fill className="object-cover" />
                     </div>
                     <div className="min-w-0 space-y-1">
-                      <Badge className="bg-amber-100 text-amber-900 text-[10px]">
+                      <Badge className="bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20 text-[10px]">
                         {story.mainGenre}
                       </Badge>
                       <Link href={`/story/${story.id}`}>
-                        <h4 className="text-sm font-bold text-stone-900 truncate font-serif hover:text-amber-700">
+                        <h4 className="text-sm font-bold text-stone-900 truncate font-serif hover:text-[#680C07]">
                           {story.title}
                         </h4>
                       </Link>
@@ -318,7 +318,7 @@ export default function LibraryPage() {
                       <Trash2 className="w-3.5 h-3.5" /> Remove
                     </button>
                     <Link href={`/story/${story.id}/read`}>
-                      <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white text-xs rounded-xl">
+                      <Button size="sm" className="bg-[#680C07] hover:bg-[#520905] text-white text-xs rounded-xl">
                         Read Story
                       </Button>
                     </Link>
@@ -383,7 +383,7 @@ export default function LibraryPage() {
                 >
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs text-stone-400">
-                      <span className="font-semibold text-amber-800">
+                      <span className="font-semibold text-[#680C07]">
                         {q.storyTitle} • Ch. {q.chapterNumber}
                       </span>
                       <span>{q.savedAt}</span>
@@ -399,7 +399,7 @@ export default function LibraryPage() {
                     <button
                       type="button"
                       onClick={() => handleCopyQuote(q.quoteText, q.id)}
-                      className="text-stone-600 hover:text-amber-700 flex items-center gap-1 font-medium"
+                      className="text-stone-600 hover:text-[#680C07] flex items-center gap-1 font-medium"
                     >
                       {copiedQuoteId === q.id ? (
                         <>

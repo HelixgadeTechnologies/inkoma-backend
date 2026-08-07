@@ -17,8 +17,8 @@ export default function AboutPage() {
 
       {/* Core Values */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="rounded-2xl border border-stone-200 bg-white p-6 space-y-3 shadow-sm hover:shadow-md hover:border-amber-300 transition-all">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-800">
+        <div className="rounded-2xl border border-stone-200 bg-white p-6 space-y-3 shadow-sm hover:shadow-md hover:border-[#680C07]/30 transition-all">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#680C07]/10 text-[#680C07]">
             <Feather className="h-5 w-5" />
           </div>
           <h3 className="font-serif font-bold text-lg text-stone-900">Storyteller Authorship</h3>
@@ -27,8 +27,8 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-stone-200 bg-white p-6 space-y-3 shadow-sm hover:shadow-md hover:border-amber-300 transition-all">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-orange-800">
+        <div className="rounded-2xl border border-stone-200 bg-white p-6 space-y-3 shadow-sm hover:shadow-md hover:border-[#680C07]/30 transition-all">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#680C07]/10 text-[#680C07]">
             <Sparkles className="h-5 w-5" />
           </div>
           <h3 className="font-serif font-bold text-lg text-stone-900">Interactive Choice</h3>
@@ -37,7 +37,7 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-stone-200 bg-white p-6 space-y-3 shadow-sm hover:shadow-md hover:border-amber-300 transition-all">
+        <div className="rounded-2xl border border-stone-200 bg-white p-6 space-y-3 shadow-sm hover:shadow-md hover:border-[#680C07]/30 transition-all">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800">
             <Globe className="h-5 w-5" />
           </div>

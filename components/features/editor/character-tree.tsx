@@ -15,7 +15,7 @@ export function CharacterTree({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <Users className="h-4 w-4 text-folklore-amber" />
+        <Users className="h-4 w-4 text-[#680C07]" />
         <h4 className="font-serif text-sm font-bold text-stone-900 uppercase tracking-wider">
           Mythological Character Dramatis Personae
         </h4>
@@ -25,16 +25,16 @@ export function CharacterTree({
         {characters.map((char, idx) => (
           <div
             key={idx}
-            className="flex flex-col justify-between rounded-xl border border-stone-200 bg-white p-3.5 hover:border-amber-300 shadow-sm transition-all"
+            className="flex flex-col justify-between rounded-xl border border-stone-200 bg-white p-3.5 hover:border-[#680C07]/30 shadow-sm transition-all"
           >
             <div className="flex items-center justify-between">
-              <span className="font-serif font-bold text-sm text-amber-900">{char.name}</span>
+              <span className="font-serif font-bold text-sm text-[#680C07]">{char.name}</span>
               <Badge variant="secondary" className="text-[10px] bg-stone-100 text-stone-700">
                 {char.archetype}
               </Badge>
             </div>
             <p className="text-xs text-stone-700 mt-1">{char.role}</p>
-            <div className="mt-2 flex items-center gap-1 text-[10px] text-folklore-amber font-semibold">
+            <div className="mt-2 flex items-center gap-1 text-[10px] text-[#680C07] font-semibold">
               <Sparkles className="h-3 w-3" />
               <span>Theme: {char.motif}</span>
             </div>

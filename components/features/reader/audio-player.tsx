@@ -83,11 +83,11 @@ export function AudioPlayer({
         size="sm"
         onClick={() => setAmbientAudio(!ambientAudio)}
         className={`h-8 px-2 rounded-lg text-xs ${
-          ambientAudio ? "text-amber-800 bg-amber-100" : "text-stone-500 hover:text-stone-900"
+          ambientAudio ? "text-[#680C07] bg-[#680C07]/10 border border-[#680C07]/20" : "text-stone-500 hover:text-stone-900"
         }`}
         title="Night Fireplace Ambiance"
       >
-        <Sparkles className="h-3.5 w-3.5 mr-1 text-amber-600" />
+        <Sparkles className="h-3.5 w-3.5 mr-1 text-[#680C07]" />
         <span className="text-[10px] hidden md:inline">
           {ambientAudio ? "Hearth Fire ON" : "Hearth FX"}
         </span>

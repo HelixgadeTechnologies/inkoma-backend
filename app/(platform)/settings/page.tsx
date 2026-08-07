@@ -82,7 +82,7 @@ export default function SettingsPage() {
   const handleUpdatePassword = (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      alert("New passwords do not match!");
+      showToast("New passwords do not match! Please check and try again.");
       return;
     }
     showToast("Password updated successfully!");
@@ -110,7 +110,7 @@ export default function SettingsPage() {
           onClick={() => setActiveTab("profile")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "profile"
-              ? "bg-amber-600 text-white shadow-sm"
+              ? "bg-[#680C07] text-white shadow-sm"
               : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
           }`}
         >
@@ -123,7 +123,7 @@ export default function SettingsPage() {
           onClick={() => setActiveTab("creator_support")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "creator_support"
-              ? "bg-amber-600 text-white shadow-sm"
+              ? "bg-[#680C07] text-white shadow-sm"
               : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
           }`}
         >
@@ -136,7 +136,7 @@ export default function SettingsPage() {
           onClick={() => setActiveTab("privacy")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "privacy"
-              ? "bg-amber-600 text-white shadow-sm"
+              ? "bg-[#680C07] text-white shadow-sm"
               : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
           }`}
         >
@@ -149,7 +149,7 @@ export default function SettingsPage() {
           onClick={() => setActiveTab("notifications")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "notifications"
-              ? "bg-amber-600 text-white shadow-sm"
+              ? "bg-[#680C07] text-white shadow-sm"
               : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
           }`}
         >
@@ -162,7 +162,7 @@ export default function SettingsPage() {
       {activeTab === "profile" && (
         <form onSubmit={handleSaveProfile} className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm space-y-6 max-w-2xl">
           <div className="flex items-center gap-4">
-            <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-amber-400 bg-stone-100 shrink-0">
+            <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#680C07] bg-stone-100 shrink-0">
               <Image src={avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"} alt="Avatar" fill className="object-cover" />
             </div>
             <div className="space-y-1">
@@ -221,7 +221,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="pt-2">
-            <Button type="submit" className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl px-6 py-5">
+            <Button type="submit" className="bg-[#680C07] hover:bg-[#520905] text-white font-bold text-xs rounded-xl px-6 py-5">
               <Save className="w-4 h-4 mr-2" /> Save Profile
             </Button>
           </div>
@@ -232,8 +232,8 @@ export default function SettingsPage() {
       {activeTab === "creator_support" && (
         <form onSubmit={handleSaveSupport} className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm space-y-6 max-w-2xl">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-semibold">
-              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20 text-xs font-semibold">
+              <Sparkles className="w-3.5 h-3.5 text-[#680C07]" />
               Patron Donations & Royalties
             </div>
             <h2 className="text-xl font-bold text-stone-900 font-serif">
@@ -298,7 +298,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="pt-2">
-            <Button type="submit" className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl px-6 py-5">
+            <Button type="submit" className="bg-[#680C07] hover:bg-[#520905] text-white font-bold text-xs rounded-xl px-6 py-5">
               <Save className="w-4 h-4 mr-2" /> Save Banking Details
             </Button>
           </div>
@@ -312,7 +312,7 @@ export default function SettingsPage() {
           <form onSubmit={handleUpdatePassword} className="space-y-4">
             <div className="space-y-1">
               <h2 className="text-lg font-bold text-stone-900 font-serif flex items-center gap-2">
-                <Key className="w-4 h-4 text-amber-600" /> Change Password
+                <Key className="w-4 h-4 text-[#680C07]" /> Change Password
               </h2>
               <p className="text-xs text-stone-500">Ensure your account is protected with a strong password.</p>
             </div>
@@ -351,19 +351,19 @@ export default function SettingsPage() {
 
           {/* Privacy Toggles */}
           <div className="pt-6 border-t border-stone-100 space-y-4">
-            <h3 className="text-sm font-bold text-stone-900">Reading Privacy</h3>
+            <h3 className="text-sm font-bold text-stone-900 font-serif">Privacy Controls</h3>
 
             <div className="space-y-3 text-xs">
               <label className="flex items-center justify-between p-3 bg-stone-50 rounded-2xl border border-stone-200 cursor-pointer">
                 <div>
-                  <span className="font-bold text-stone-900 block">Show Reading Activity</span>
-                  <span className="text-stone-500">Allow circle members to see stories you recently completed</span>
+                  <span className="font-bold text-stone-900 block">Public Reading Activity</span>
+                  <span className="text-stone-500">Allow community members to view your saved quotes</span>
                 </div>
                 <input
                   type="checkbox"
                   checked={privacySettings.showReadingActivity}
                   onChange={(e) => updatePrivacySettings({ showReadingActivity: e.target.checked })}
-                  className="rounded text-amber-600 focus:ring-amber-500 w-4 h-4"
+                  className="rounded text-[#680C07] focus:ring-[#680C07] w-4 h-4"
                 />
               </label>
 
@@ -376,7 +376,7 @@ export default function SettingsPage() {
                   type="checkbox"
                   checked={privacySettings.publicProfile}
                   onChange={(e) => updatePrivacySettings({ publicProfile: e.target.checked })}
-                  className="rounded text-amber-600 focus:ring-amber-500 w-4 h-4"
+                  className="rounded text-[#680C07] focus:ring-[#680C07] w-4 h-4"
                 />
               </label>
             </div>
@@ -386,38 +386,34 @@ export default function SettingsPage() {
 
       {/* Tab 4: Notifications */}
       {activeTab === "notifications" && (
-        <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm space-y-4 max-w-2xl">
-          <div className="space-y-1">
-            <h2 className="text-lg font-bold text-stone-900 font-serif flex items-center gap-2">
-              <Bell className="w-4 h-4 text-amber-600" /> Circle Notification Preferences
-            </h2>
-            <p className="text-xs text-stone-500">Choose when you want to receive alerts and email updates.</p>
-          </div>
+        <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm space-y-6 max-w-2xl">
+          <h3 className="text-lg font-bold text-stone-900 font-serif flex items-center gap-2">
+            <Bell className="w-4 h-4 text-[#680C07]" /> Circle Notification Preferences
+          </h3>
 
-          <div className="space-y-3 text-xs pt-2">
+          <div className="space-y-3 text-xs">
             <label className="flex items-center justify-between p-3.5 bg-stone-50 rounded-2xl border border-stone-200 cursor-pointer">
               <div>
                 <span className="font-bold text-stone-900 block">New Chapter Releases</span>
-                <span className="text-stone-500">When authors you follow release new chapters or story branches</span>
+                <span className="text-stone-500">Get notified when authors you follow publish new branches</span>
               </div>
               <input
                 type="checkbox"
                 checked={notificationSettings.newChapterAlerts}
                 onChange={(e) => updateNotificationSettings({ newChapterAlerts: e.target.checked })}
-                className="rounded text-amber-600 focus:ring-amber-500 w-4 h-4"
+                className="rounded text-[#680C07] focus:ring-[#680C07] w-4 h-4"
               />
             </label>
 
             <label className="flex items-center justify-between p-3.5 bg-stone-50 rounded-2xl border border-stone-200 cursor-pointer">
               <div>
-                <span className="font-bold text-stone-900 block">Comment Replies & Discussions</span>
-                <span className="text-stone-500">When another reader or author replies to your reflections</span>
+                <span className="font-bold text-stone-900 block">Discussion Replies</span>
+                <span className="text-stone-500">Receive alerts when someone replies to your community posts</span>
               </div>
               <input
                 type="checkbox"
                 checked={notificationSettings.commentReplies}
                 onChange={(e) => updateNotificationSettings({ commentReplies: e.target.checked })}
-                className="rounded text-amber-600 focus:ring-amber-500 w-4 h-4"
               />
             </label>
 
@@ -430,7 +426,7 @@ export default function SettingsPage() {
                 type="checkbox"
                 checked={notificationSettings.patronTips}
                 onChange={(e) => updateNotificationSettings({ patronTips: e.target.checked })}
-                className="rounded text-amber-600 focus:ring-amber-500 w-4 h-4"
+                className="rounded text-[#680C07] focus:ring-[#680C07] w-4 h-4"
               />
             </label>
 
@@ -443,7 +439,7 @@ export default function SettingsPage() {
                 type="checkbox"
                 checked={notificationSettings.communityAnnouncements}
                 onChange={(e) => updateNotificationSettings({ communityAnnouncements: e.target.checked })}
-                className="rounded text-amber-600 focus:ring-amber-500 w-4 h-4"
+                className="rounded text-[#680C07] focus:ring-[#680C07] w-4 h-4"
               />
             </label>
           </div>

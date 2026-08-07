@@ -20,7 +20,7 @@ export default function VerifyEmailPage() {
       description="We sent a confirmation link to your inbox. Verify your email to activate your Storyteller Circle account."
     >
       <div className="flex flex-col items-center text-center space-y-4 py-4">
-        <div className="w-16 h-16 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-700">
+        <div className="w-16 h-16 rounded-full bg-[#680C07]/10 border border-[#680C07]/20 flex items-center justify-center text-[#680C07]">
           <Mail className="w-8 h-8" />
         </div>
 
@@ -35,7 +35,7 @@ export default function VerifyEmailPage() {
 
         <div className="w-full space-y-3 pt-4">
           <Link href="/onboarding" className="w-full block">
-            <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-5">
+            <Button className="w-full bg-[#680C07] hover:bg-[#520905] text-white font-semibold py-5">
               Continue to Onboarding
             </Button>
           </Link>
@@ -60,7 +60,7 @@ export default function VerifyEmailPage() {
 
         <p className="text-xs text-stone-500 pt-2">
           Wrong email address?{" "}
-          <Link href="/signup" className="text-amber-700 font-semibold underline underline-offset-4">
+          <Link href="/signup" className="text-[#680C07] font-semibold underline underline-offset-4">
             Sign up again
           </Link>
         </p>

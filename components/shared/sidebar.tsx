@@ -60,7 +60,7 @@ export function Sidebar() {
                 className={cn(
                   "flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-amber-100 text-amber-900 border border-amber-300 font-semibold shadow-xs"
+                    ? "bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20 font-semibold shadow-xs"
                     : "text-stone-700 hover:bg-stone-100 hover:text-stone-950"
                 )}
               >
@@ -69,7 +69,7 @@ export function Sidebar() {
                   <span>{item.title}</span>
                 </div>
                 {item.badge && (
-                  <Badge className="bg-amber-600 text-white text-[10px] py-0 px-1.5 border-0">
+                  <Badge className="bg-[#680C07] text-white text-[10px] py-0 px-1.5 border-0">
                     {item.badge}
                   </Badge>
                 )}
@@ -94,10 +94,10 @@ export function Sidebar() {
             <Link
               key={myth.slug}
               href={`/explore?tradition=${encodeURIComponent(myth.slug)}`}
-              className="flex items-center justify-between rounded-lg px-3 py-1.5 hover:bg-stone-100 hover:text-amber-800 transition-colors font-medium"
+              className="flex items-center justify-between rounded-lg px-3 py-1.5 hover:bg-stone-100 hover:text-[#680C07] transition-colors font-medium"
             >
               <div className="flex items-center gap-2">
-                <Flame className="h-3.5 w-3.5 text-amber-600" />
+                <Flame className="h-3.5 w-3.5 text-[#680C07]" />
                 <span>{myth.name}</span>
               </div>
               <span className="text-[10px] text-stone-400">{myth.count}</span>

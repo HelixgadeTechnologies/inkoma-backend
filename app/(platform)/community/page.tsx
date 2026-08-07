@@ -81,8 +81,8 @@ export default function CommunityPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold uppercase tracking-wider">
-            <Users className="w-3.5 h-3.5 text-amber-600" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] text-xs font-semibold uppercase tracking-wider">
+            <Users className="w-3.5 h-3.5 text-[#680C07]" />
             <span>Lore & Storyteller Agora</span>
           </div>
           <h1 className="text-3xl font-serif font-extrabold text-stone-900">Community Discussion</h1>
@@ -130,7 +130,7 @@ export default function CommunityPage() {
               value={newContent}
               onChange={(e) => setNewContent(e.target.value)}
               placeholder="Share your interpretations and invite the community to respond..."
-              className="w-full rounded-xl border border-stone-200 bg-white p-3 text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-full rounded-xl border border-stone-200 bg-white p-3 text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#680C07]"
               required
             />
           </div>

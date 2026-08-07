@@ -50,7 +50,7 @@ export default function UserProfilePage() {
       <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-10 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="flex items-center gap-5">
-            <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-amber-400 shadow-md bg-stone-100 shrink-0">
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-[#680C07] shadow-md bg-stone-100 shrink-0">
               <Image
                 src={profile.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"}
                 alt={profile.displayName}
@@ -63,7 +63,7 @@ export default function UserProfilePage() {
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 font-serif">
                   {profile.penName || profile.displayName}
                 </h1>
-                <Badge className="bg-amber-100 text-amber-900 border border-amber-300 text-xs">
+                <Badge className="bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20 text-xs">
                   {profile.role === "writer" ? "Master Storyteller" : "Reader"}
                 </Badge>
               </div>
@@ -79,12 +79,12 @@ export default function UserProfilePage() {
               variant="outline"
               onClick={() => setIsFollowing(!isFollowing)}
               className={`border-stone-300 rounded-xl text-xs flex-1 sm:flex-none ${
-                isFollowing ? "bg-amber-50 border-amber-300 text-amber-900 font-semibold" : "bg-white text-stone-700"
+                isFollowing ? "bg-[#680C07]/10 border-[#680C07]/20 text-[#680C07] font-semibold" : "bg-white text-stone-700"
               }`}
             >
               {isFollowing ? (
                 <>
-                  <UserCheck className="w-3.5 h-3.5 mr-1 text-amber-600" /> Following
+                  <UserCheck className="w-3.5 h-3.5 mr-1 text-[#680C07]" /> Following
                 </>
               ) : (
                 <>
@@ -127,7 +127,7 @@ export default function UserProfilePage() {
         {/* Writing Stats */}
         <div className="bg-white rounded-3xl border border-stone-200 p-6 shadow-sm space-y-4">
           <div className="flex items-center gap-2 border-b border-stone-100 pb-3">
-            <Flame className="w-5 h-5 text-amber-600" />
+            <Flame className="w-5 h-5 text-[#680C07]" />
             <h2 className="text-base font-bold text-stone-900 font-serif">
               Storytelling Statistics
             </h2>
@@ -147,7 +147,7 @@ export default function UserProfilePage() {
             </div>
             <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
               <span className="text-stone-400">Patron Support</span>
-              <p className="text-xl font-bold text-amber-800">${profile.supportDetails?.totalTipsReceived || 1250}</p>
+              <p className="text-xl font-bold text-[#680C07]">${profile.supportDetails?.totalTipsReceived || 1250}</p>
             </div>
           </div>
         </div>
@@ -155,7 +155,7 @@ export default function UserProfilePage() {
         {/* Reading Stats */}
         <div className="bg-white rounded-3xl border border-stone-200 p-6 shadow-sm space-y-4">
           <div className="flex items-center gap-2 border-b border-stone-100 pb-3">
-            <BookOpen className="w-5 h-5 text-amber-600" />
+            <BookOpen className="w-5 h-5 text-[#680C07]" />
             <h2 className="text-base font-bold text-stone-900 font-serif">
               Reader Journeys
             </h2>
@@ -200,11 +200,11 @@ export default function UserProfilePage() {
                   <Image src={story.coverImage} alt={story.title} fill className="object-cover" />
                 </div>
                 <div className="min-w-0 space-y-1">
-                  <Badge className="bg-amber-100 text-amber-900 text-[10px]">
+                  <Badge className="bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20 text-[10px]">
                     {story.tradition}
                   </Badge>
                   <Link href={`/story/${story.id}`}>
-                    <h4 className="text-sm font-bold text-stone-900 truncate font-serif hover:text-amber-700">
+                    <h4 className="text-sm font-bold text-stone-900 truncate font-serif hover:text-[#680C07]">
                       {story.title}
                     </h4>
                   </Link>
@@ -223,7 +223,7 @@ export default function UserProfilePage() {
                   </Button>
                 </Link>
                 <Link href={`/story/${story.id}/read`}>
-                  <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white text-xs rounded-xl">
+                  <Button size="sm" className="bg-[#680C07] hover:bg-[#520905] text-white text-xs rounded-xl">
                     Read Story
                   </Button>
                 </Link>
@@ -253,14 +253,14 @@ export default function UserProfilePage() {
             rel="noopener noreferrer"
             className="block"
           >
-            <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-6 rounded-2xl shadow-sm">
+            <Button className="w-full bg-[#680C07] hover:bg-[#520905] text-white font-bold py-6 rounded-2xl shadow-sm">
               <Sparkles className="w-4 h-4 mr-2" /> Paystack Support Link
               <ExternalLink className="w-4 h-4 ml-2" />
             </Button>
           </a>
 
           {/* Copy Account Box */}
-          <div className="p-3 bg-white rounded-2xl border border-amber-300 flex items-center justify-between text-xs">
+          <div className="p-3 bg-white rounded-2xl border border-[#680C07]/30 flex items-center justify-between text-xs">
             <div>
               <p className="text-stone-500">{profile.supportDetails?.bankName} • {profile.supportDetails?.accountName}</p>
               <p className="font-mono font-bold text-stone-900 text-sm">{profile.supportDetails?.accountNumber}</p>
@@ -269,7 +269,7 @@ export default function UserProfilePage() {
               size="sm"
               variant="outline"
               onClick={() => handleCopyAcc(profile.supportDetails?.accountNumber || "")}
-              className="text-xs rounded-xl border-amber-300"
+              className="text-xs rounded-xl border-[#680C07]/30"
             >
               {copiedAcc ? (
                 <>

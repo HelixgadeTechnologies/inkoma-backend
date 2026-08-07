@@ -17,7 +17,7 @@ export function ContinueReadingBar() {
     <section className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-amber-100 border border-amber-300 text-amber-800 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-xl bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] flex items-center justify-center">
             <BookOpen className="w-4 h-4" />
           </div>
           <div>
@@ -27,7 +27,7 @@ export function ContinueReadingBar() {
         </div>
         <Link
           href="/library"
-          className="text-xs text-amber-700 hover:text-amber-800 font-semibold flex items-center gap-1"
+          className="text-xs text-[#680C07] hover:underline font-semibold flex items-center gap-1"
         >
           View Library <ArrowRight className="w-3.5 h-3.5" />
         </Link>

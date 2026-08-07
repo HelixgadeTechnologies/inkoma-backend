@@ -28,6 +28,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import {
   Dialog,
   DialogContent,
@@ -41,6 +43,7 @@ export default function StudioPage() {
   const [showCreateStoryModal, setShowCreateStoryModal] = useState(false);
   const [showCreateChapterModal, setShowCreateChapterModal] = useState(false);
   const [selectedStoryForChapter, setSelectedStoryForChapter] = useState<Story | null>(null);
+  const [storyToDeleteId, setStoryToDeleteId] = useState<string | null>(null);
 
   // New Story Form State
   const [newTitle, setNewTitle] = useState("");
@@ -178,9 +181,10 @@ export default function StudioPage() {
     setNewChapterSummary("");
   };
 
-  const handleDeleteStory = (storyId: string) => {
-    if (confirm("Are you sure you want to delete this story?")) {
-      setStories((prev) => prev.filter((s) => s.id !== storyId));
+  const confirmDeleteStory = () => {
+    if (storyToDeleteId) {
+      setStories((prev) => prev.filter((s) => s.id !== storyToDeleteId));
+      setStoryToDeleteId(null);
     }
   };
 
@@ -189,8 +193,8 @@ export default function StudioPage() {
       {/* Studio Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold uppercase tracking-wider">
-            <Flame className="w-3.5 h-3.5 text-amber-600" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] text-xs font-semibold uppercase tracking-wider">
+            <Flame className="w-3.5 h-3.5 text-[#680C07]" />
             Author Studio
           </div>
           <h1 className="text-3xl font-extrabold text-stone-900 font-serif tracking-tight">
@@ -201,13 +205,14 @@ export default function StudioPage() {
           </p>
         </div>
 
-        <Button
-          onClick={() => setShowCreateStoryModal(true)}
-          className="bg-amber-600 hover:bg-amber-700 text-white font-bold px-6 py-5 rounded-2xl shadow-md gap-2 shrink-0"
-        >
-          <Plus className="w-4 h-4 stroke-[3]" />
-          Create New Story
-        </Button>
+        <Link href="/studio/new">
+          <Button
+            className="bg-[#680C07] hover:bg-[#520905] text-white font-bold px-6 py-5 rounded-2xl shadow-md gap-2 shrink-0"
+          >
+            <Plus className="w-4 h-4 stroke-[3]" />
+            Create New Story
+          </Button>
+        </Link>
       </div>
 
       {/* KPI Cards Grid */}
@@ -215,7 +220,7 @@ export default function StudioPage() {
         <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-1">
           <div className="flex items-center justify-between text-stone-500 text-xs">
             <span>Stories</span>
-            <BookOpen className="w-4 h-4 text-amber-600" />
+            <BookOpen className="w-4 h-4 text-[#680C07]" />
           </div>
           <p className="text-2xl font-extrabold text-stone-900 font-serif">{totalStories}</p>
           <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-0.5">
@@ -226,7 +231,7 @@ export default function StudioPage() {
         <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-1">
           <div className="flex items-center justify-between text-stone-500 text-xs">
             <span>Chapters</span>
-            <FileText className="w-4 h-4 text-amber-600" />
+            <FileText className="w-4 h-4 text-[#680C07]" />
           </div>
           <p className="text-2xl font-extrabold text-stone-900 font-serif">{totalChapters}</p>
           <span className="text-[10px] text-stone-400">Total episodes</span>
@@ -235,7 +240,7 @@ export default function StudioPage() {
         <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-1">
           <div className="flex items-center justify-between text-stone-500 text-xs">
             <span>Total Reads</span>
-            <Eye className="w-4 h-4 text-amber-600" />
+            <Eye className="w-4 h-4 text-[#680C07]" />
           </div>
           <p className="text-2xl font-extrabold text-stone-900 font-serif">
             {(totalReads / 1000).toFixed(1)}k
@@ -248,7 +253,7 @@ export default function StudioPage() {
         <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-1">
           <div className="flex items-center justify-between text-stone-500 text-xs">
             <span>Likes</span>
-            <Heart className="w-4 h-4 text-amber-600" />
+            <Heart className="w-4 h-4 text-[#680C07]" />
           </div>
           <p className="text-2xl font-extrabold text-stone-900 font-serif">{totalLikes}</p>
           <span className="text-[10px] text-stone-400">Reader hearts</span>
@@ -257,7 +262,7 @@ export default function StudioPage() {
         <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-1">
           <div className="flex items-center justify-between text-stone-500 text-xs">
             <span>Discussions</span>
-            <MessageSquare className="w-4 h-4 text-amber-600" />
+            <MessageSquare className="w-4 h-4 text-[#680C07]" />
           </div>
           <p className="text-2xl font-extrabold text-stone-900 font-serif">{totalComments}</p>
           <span className="text-[10px] text-stone-400">Reflections</span>
@@ -266,7 +271,7 @@ export default function StudioPage() {
         <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-1">
           <div className="flex items-center justify-between text-stone-500 text-xs">
             <span>Patron Support</span>
-            <DollarSign className="w-4 h-4 text-amber-600" />
+            <DollarSign className="w-4 h-4 text-[#680C07]" />
           </div>
           <p className="text-2xl font-extrabold text-stone-900 font-serif">${totalTips}</p>
           <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-0.5">
@@ -297,14 +302,14 @@ export default function StudioPage() {
                 </div>
                 <div className="space-y-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <Badge className="bg-amber-100 text-amber-900 text-[10px]">
+                    <Badge className="bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20 text-[10px]">
                       {story.tradition}
                     </Badge>
                     <span
                       className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                         story.status === "completed"
                           ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                          : "bg-amber-50 text-amber-700 border border-amber-200"
+                          : "bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20"
                       }`}
                     >
                       {story.status}
@@ -334,7 +339,7 @@ export default function StudioPage() {
                   }}
                   className="bg-white border-stone-300 text-stone-700 text-xs rounded-xl hover:bg-stone-100"
                 >
-                  <Plus className="w-3.5 h-3.5 mr-1 text-amber-600" /> Add Chapter
+                  <Plus className="w-3.5 h-3.5 mr-1 text-[#680C07]" /> Add Chapter
                 </Button>
 
                 <Link href={`/story/${story.id}`}>
@@ -345,8 +350,8 @@ export default function StudioPage() {
 
                 <button
                   type="button"
-                  onClick={() => handleDeleteStory(story.id)}
-                  className="p-2 rounded-xl text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                  onClick={() => setStoryToDeleteId(story.id)}
+                  className="p-2 rounded-xl text-stone-400 hover:text-[#680C07] hover:bg-[#680C07]/10 transition-colors"
                   title="Delete manuscript"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -399,38 +404,25 @@ export default function StudioPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
+                <label className="text-xs font-bold text-stone-700 uppercase tracking-wider block">
                   Tradition
                 </label>
-                <select
+                <Select
                   value={newTradition}
-                  onChange={(e) => setNewTradition(e.target.value as Tradition)}
-                  className="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                >
-                  <option value="Ashanti/Akan">Ashanti/Akan</option>
-                  <option value="Yoruba">Yoruba</option>
-                  <option value="Zulu">Zulu</option>
-                  <option value="Dogon">Dogon</option>
-                  <option value="Pan-African">Pan-African</option>
-                  <option value="Swahili">Swahili</option>
-                </select>
+                  onChange={(val) => setNewTradition(val as Tradition)}
+                  options={["Ashanti/Akan", "Yoruba", "Zulu", "Dogon", "Pan-African", "Swahili"]}
+                />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
+                <label className="text-xs font-bold text-stone-700 uppercase tracking-wider block">
                   Genre
                 </label>
-                <select
+                <Select
                   value={newGenre}
-                  onChange={(e) => setNewGenre(e.target.value)}
-                  className="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                >
-                  <option value="Trickster Lore">Trickster Lore</option>
-                  <option value="Historical Epics">Historical Epics</option>
-                  <option value="Spiritual Lore">Spiritual Lore</option>
-                  <option value="Cosmology & Astronomy">Cosmology & Astronomy</option>
-                  <option value="Animal Fables">Animal Fables</option>
-                </select>
+                  onChange={(val) => setNewGenre(val)}
+                  options={["Trickster Lore", "Historical Epics", "Spiritual Lore", "Cosmology & Astronomy", "Animal Fables"]}
+                />
               </div>
             </div>
 
@@ -458,7 +450,7 @@ export default function StudioPage() {
               </Button>
               <Button
                 type="submit"
-                className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-6"
+                className="bg-[#680C07] hover:bg-[#520905] text-white text-xs font-bold px-6"
               >
                 Create Story
               </Button>
@@ -532,7 +524,7 @@ export default function StudioPage() {
               </Button>
               <Button
                 type="submit"
-                className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-6"
+                className="bg-[#680C07] hover:bg-[#520905] text-white text-xs font-bold px-6"
               >
                 Save Chapter
               </Button>
@@ -540,6 +532,18 @@ export default function StudioPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Custom Themed Confirmation Modal */}
+      <ConfirmModal
+        isOpen={!!storyToDeleteId}
+        onClose={() => setStoryToDeleteId(null)}
+        onConfirm={confirmDeleteStory}
+        title="Delete Story Manuscript?"
+        description="Are you sure you want to permanently delete this manuscript? All written chapters and choice paths will be removed from your circle archive."
+        confirmText="Delete Manuscript"
+        cancelText="Keep Story"
+        variant="danger"
+      />
     </div>
   );
 }
