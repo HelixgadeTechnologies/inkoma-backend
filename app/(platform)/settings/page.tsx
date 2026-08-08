@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import { useSettings } from "@/hooks/useSettings";
 import {
@@ -15,6 +15,7 @@ import {
   Sparkles,
   Save,
   Key,
+  Camera,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,8 @@ export default function SettingsPage() {
     notificationSettings,
     updateNotificationSettings,
   } = useSettings();
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Profile Form State
   const [displayName, setDisplayName] = useState(userProfile.displayName);
@@ -55,6 +58,24 @@ export default function SettingsPage() {
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        showToast("Please select a valid image file.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          setAvatarUrl(reader.result);
+          showToast("Profile photo selected! Click 'Save Profile' to save changes.");
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSaveProfile = (e: React.FormEvent) => {
@@ -161,13 +182,36 @@ export default function SettingsPage() {
       {/* Tab 1: Profile Settings */}
       {activeTab === "profile" && (
         <form onSubmit={handleSaveProfile} className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm space-y-6 max-w-2xl">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleAvatarFileChange}
+            accept="image/*"
+            className="hidden"
+          />
           <div className="flex items-center gap-4">
-            <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#680C07] bg-stone-100 shrink-0">
-              <Image src={avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"} alt="Avatar" fill className="object-cover" />
-            </div>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="relative group w-20 h-20 rounded-full overflow-hidden border-2 border-[#680C07] bg-stone-100 shrink-0 focus:outline-none focus:ring-2 focus:ring-[#680C07] focus:ring-offset-2 transition-transform hover:scale-105"
+              title="Click to upload profile photo"
+            >
+              <Image
+                src={avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"}
+                alt="Avatar"
+                fill
+                className="object-cover transition-opacity group-hover:opacity-75"
+              />
+              <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                <Camera className="w-5 h-5 mb-0.5" />
+                <span className="text-[9px] font-bold uppercase tracking-wider">Upload</span>
+              </div>
+            </button>
             <div className="space-y-1">
               <h3 className="text-sm font-bold text-stone-900">Profile Photo</h3>
-              <p className="text-xs text-stone-500">Provide an avatar image URL or use our defaults.</p>
+              <p className="text-xs text-stone-500">
+                Click on the circle to upload a photo directly from your device.
+              </p>
             </div>
           </div>
 
@@ -192,17 +236,6 @@ export default function SettingsPage() {
                 value={penName}
                 onChange={(e) => setPenName(e.target.value)}
                 placeholder="Kwame of Ashanti"
-                className="bg-white border-stone-300 text-stone-900"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
-                Avatar Image URL
-              </label>
-              <Input
-                value={avatarUrl}
-                onChange={(e) => setAvatarUrl(e.target.value)}
                 className="bg-white border-stone-300 text-stone-900"
               />
             </div>
