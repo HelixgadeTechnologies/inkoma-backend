@@ -98,6 +98,10 @@ export interface Story {
 
 export interface StoryFilterOptions {
   searchQuery?: string;
+  searchScope?: 'all' | 'title' | 'author' | 'genre';
+  titleSearch?: string;
+  authorSearch?: string;
+  genreSearch?: string;
   genre?: string;
   subGenre?: string;
   tradition?: Tradition | 'all';

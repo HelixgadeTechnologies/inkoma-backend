@@ -8,6 +8,7 @@ import { useStory } from "@/hooks/useStory";
 import { useLibrary } from "@/hooks/useLibrary";
 import { MOCK_CURRENT_USER } from "@/config/mock-data";
 import { SupportAuthorDialog } from "@/components/features/story-details/support-author-dialog";
+import { StoryCommentsSection } from "@/components/features/story-details/story-comments-section";
 import {
   BookOpen,
   Heart,
@@ -391,6 +392,13 @@ export default function StoryDetailsPage() {
           ))}
         </div>
       </div>
+
+      {/* Reader Comments & Reflections Section */}
+      <StoryCommentsSection
+        storyId={currentStory.id}
+        storyTitle={currentStory.title}
+        initialCommentsCount={currentStory.commentsCount}
+      />
 
       {/* Support Author Dialog */}
       <SupportAuthorDialog

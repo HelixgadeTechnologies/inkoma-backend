@@ -15,6 +15,7 @@ import {
   Flame,
   Sliders,
   HelpCircle,
+  Bell,
 } from "lucide-react";
 import { platformSidebarNav } from "@/config/nav";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,7 @@ export function Sidebar() {
 
   const iconMap: Record<string, React.ReactNode> = {
     Compass: <Compass className="h-4 w-4" />,
+    Bell: <Bell className="h-4 w-4" />,
     BookOpen: <BookOpen className="h-4 w-4" />,
     Feather: <Feather className="h-4 w-4" />,
     Users: <Users className="h-4 w-4" />,

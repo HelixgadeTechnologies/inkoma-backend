@@ -15,6 +15,7 @@ export const marketingNav: NavItem[] = [
 
 export const platformSidebarNav: NavItem[] = [
   { title: "Discover & Explore", href: "/explore", icon: "Compass" },
+  { title: "Notifications", href: "/notifications", icon: "Bell", badge: "3" },
   { title: "My Library", href: "/library", icon: "BookOpen" },
   { title: "Writer Dashboard", href: "/studio", icon: "Feather", badge: "Studio" },
   { title: "My Storyteller Profile", href: "/profile/kwame_asante", icon: "User" },

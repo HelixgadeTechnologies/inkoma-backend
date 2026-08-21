@@ -1,7 +1,15 @@
 import * as React from "react";
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import Image from "next/image";
+
+export interface AuthCardProps {
+  title: string;
+  description: string;
+  children: React.ReactNode;
+  footerText?: string;
+  footerLinkText?: string;
+  footerLinkHref?: string;
+}
 
 export function AuthCard({
   title,
@@ -10,43 +18,49 @@ export function AuthCard({
   footerText,
   footerLinkText,
   footerLinkHref,
-}: {
-  title: string;
-  description: string;
-  children: React.ReactNode;
-  footerText?: string;
-  footerLinkText?: string;
-  footerLinkHref?: string;
-}) {
+}: AuthCardProps) {
   return (
-    <div className="relative w-full max-w-md">
-      <Card className="relative border-stone-200 bg-white p-2 sm:p-4 shadow-xl">
-        <CardHeader className="text-center space-y-2 pb-6">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#680C07] text-white shadow-md">
-            <Sparkles className="h-6 w-6 fill-current" />
+    <div className="relative w-full max-w-md my-4">
+      {/* Card Container */}
+      <div className="relative border border-stone-200/80 bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-3xl shadow-2xl space-y-6">
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-white p-2 border border-stone-200 shadow-lg shadow-[#680C07]/10 overflow-hidden">
+            <Image
+              src="/images/inkoma-logo.png"
+              alt="Inkoma Logo"
+              width={72}
+              height={72}
+              className="object-contain h-full w-full"
+              priority
+            />
           </div>
-          <CardTitle className="text-2xl font-serif font-bold text-stone-900">
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight pt-1">
             {title}
-          </CardTitle>
-          <CardDescription className="text-xs text-stone-600 max-w-xs mx-auto font-medium">
+          </h1>
+          <p className="text-xs sm:text-sm text-stone-600 max-w-xs mx-auto font-medium leading-relaxed">
             {description}
-          </CardDescription>
-        </CardHeader>
+          </p>
+        </div>
 
-        <CardContent className="space-y-4">{children}</CardContent>
+        {/* Content / Form */}
+        <div className="space-y-4">{children}</div>
 
+        {/* Footer */}
         {footerText && footerLinkHref && (
-          <CardFooter className="justify-center text-xs text-stone-600 pt-4 font-medium">
+          <div className="justify-center text-xs text-stone-600 pt-4 border-t border-stone-100 font-medium flex items-center gap-1 text-center">
             <span>{footerText}</span>{" "}
             <Link
               href={footerLinkHref}
-              className="ml-1 font-bold text-folklore-amber hover:underline"
+              className="font-bold text-[#680C07] hover:underline underline-offset-4"
             >
               {footerLinkText}
             </Link>
-          </CardFooter>
+          </div>
         )}
-      </Card>
+      </div>
     </div>
   );
 }
+
+

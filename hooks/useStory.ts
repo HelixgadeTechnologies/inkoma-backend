@@ -46,9 +46,32 @@ export function useStory(storyId?: string) {
         const matchesAuthor = (story.authorPenName || story.authorName).toLowerCase().includes(query);
         const matchesGenre = story.mainGenre.toLowerCase().includes(query) || story.subGenres.some(sg => sg.toLowerCase().includes(query));
         const matchesTag = story.tags.some(t => t.toLowerCase().includes(query));
-        if (!matchesTitle && !matchesAuthor && !matchesGenre && !matchesTag) {
-          return false;
+
+        if (filters.searchScope === 'title' && !matchesTitle) return false;
+        if (filters.searchScope === 'author' && !matchesAuthor) return false;
+        if (filters.searchScope === 'genre' && !matchesGenre) return false;
+        if (!filters.searchScope || filters.searchScope === 'all') {
+          if (!matchesTitle && !matchesAuthor && !matchesGenre && !matchesTag) {
+            return false;
+          }
         }
+      }
+
+      if (filters.titleSearch) {
+        const titleQuery = filters.titleSearch.toLowerCase();
+        if (!story.title.toLowerCase().includes(titleQuery)) return false;
+      }
+
+      if (filters.authorSearch) {
+        const authorQuery = filters.authorSearch.toLowerCase();
+        const authorName = (story.authorPenName || story.authorName).toLowerCase();
+        if (!authorName.includes(authorQuery)) return false;
+      }
+
+      if (filters.genreSearch) {
+        const genreQuery = filters.genreSearch.toLowerCase();
+        const matchesGenre = story.mainGenre.toLowerCase().includes(genreQuery) || story.subGenres.some(sg => sg.toLowerCase().includes(genreQuery));
+        if (!matchesGenre) return false;
       }
 
       if (filters.tradition && filters.tradition !== 'all') {

@@ -2,8 +2,9 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Sparkles, Feather, Compass, Users, Menu, X, BookOpen } from "lucide-react";
+import { Sparkles, Feather, Compass, Users, Menu, X, BookOpen, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchBar } from "@/components/shared/search-bar";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
@@ -16,17 +17,24 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-stone-200/80 bg-[#FAF8F5]/90 backdrop-blur-xl transition-all">
-      <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+      <div className="container mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center space-x-2.5 group">
-          <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-[#680C07] p-2 text-white shadow-md group-hover:scale-105 transition-transform">
-            <Sparkles className="h-5 w-5 fill-current" />
+        <Link href="/" className="flex items-center space-x-3 group">
+          <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-white p-1 border border-stone-200 shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
+            <Image
+              src="/images/inkoma-logo.png"
+              alt="Inkoma Logo"
+              width={54}
+              height={54}
+              className="object-contain h-full w-full"
+              priority
+            />
           </div>
           <div className="flex flex-col">
-            <span className="font-serif text-xl font-bold tracking-tight text-stone-900 group-hover:text-[#680C07] transition-colors">
+            <span className="font-serif text-2xl font-bold tracking-tight text-stone-900 group-hover:text-[#680C07] transition-colors">
               Inkoma
             </span>
-            <span className="text-[10px] tracking-widest uppercase text-[#680C07] font-semibold -mt-1">
+            <span className="text-[11px] tracking-widest uppercase text-[#680C07] font-semibold -mt-1">
               Tales Hub
             </span>
           </div>
@@ -59,6 +67,17 @@ export function Navbar() {
             <SearchBar />
           </div>
           <ThemeToggle />
+          <Link
+            href="/notifications"
+            title="Notifications"
+            className="relative p-2 text-stone-700 hover:text-[#680C07] transition-colors rounded-xl hover:bg-stone-100/80"
+          >
+            <Bell className="h-5 w-5" />
+            <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#680C07] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#680C07]"></span>
+            </span>
+          </Link>
           <Link href="/login">
             <Button variant="ghost" size="sm" className="text-stone-800 hover:text-stone-950">
               Sign In

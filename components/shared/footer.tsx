@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Sparkles, Heart, Globe, Feather } from "lucide-react";
+import Image from "next/image";
+import { Heart, Globe } from "lucide-react";
 
 export function Footer() {
   return (
@@ -8,11 +9,17 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4 lg:grid-cols-5">
           {/* Brand Col */}
           <div className="md:col-span-2 space-y-4">
-            <div className="flex items-center space-x-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#680C07] text-white shadow-sm">
-                <Sparkles className="h-4 w-4 fill-current" />
+            <div className="flex items-center space-x-3">
+              <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-white p-1 border border-stone-200 shadow-xs overflow-hidden">
+                <Image
+                  src="/images/inkoma-logo.png"
+                  alt="Inkoma Logo"
+                  width={52}
+                  height={52}
+                  className="object-contain h-full w-full"
+                />
               </div>
-              <span className="font-serif text-xl font-bold tracking-tight text-stone-900">
+              <span className="font-serif text-2xl font-bold tracking-tight text-stone-900">
                 Inkoma
               </span>
             </div>
