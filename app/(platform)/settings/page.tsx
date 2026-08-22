@@ -117,10 +117,10 @@ export default function SettingsPage() {
       {/* Header */}
       <div className="space-y-1">
         <h1 className="text-3xl font-extrabold text-stone-900 font-serif tracking-tight">
-          Account & Circle Settings
+          Account & Settings
         </h1>
         <p className="text-sm text-stone-600">
-          Manage your personal profile, author payout details, privacy, and notifications.
+          Manage your personal profile, author payout details, privacy, and preferences.
         </p>
       </div>
 

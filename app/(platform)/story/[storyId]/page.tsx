@@ -9,6 +9,7 @@ import { useLibrary } from "@/hooks/useLibrary";
 import { MOCK_CURRENT_USER } from "@/config/mock-data";
 import { SupportAuthorDialog } from "@/components/features/story-details/support-author-dialog";
 import { StoryCommentsSection } from "@/components/features/story-details/story-comments-section";
+import { RecommendedCategoriesSection } from "@/components/features/story-details/recommended-categories";
 import {
   BookOpen,
   Heart,
@@ -398,6 +399,13 @@ export default function StoryDetailsPage() {
         storyId={currentStory.id}
         storyTitle={currentStory.title}
         initialCommentsCount={currentStory.commentsCount}
+      />
+
+      {/* Recommended Book Categories & Mythos Lineages */}
+      <RecommendedCategoriesSection
+        currentStoryId={currentStory.id}
+        currentGenre={currentStory.mainGenre}
+        currentTradition={currentStory.tradition}
       />
 
       {/* Support Author Dialog */}

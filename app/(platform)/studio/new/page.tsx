@@ -154,7 +154,7 @@ export default function StudioNewStoryPage() {
   };
 
   return (
-    <div className="space-y-8 pb-24 max-w-5xl mx-auto">
+    <div className="space-y-8 pb-24 w-full">
       {/* Top Action Bar */}
       <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-stone-200">
         <Link

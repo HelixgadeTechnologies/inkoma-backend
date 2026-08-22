@@ -17,7 +17,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-stone-200/80 bg-[#FAF8F5]/90 backdrop-blur-xl transition-all">
-      <div className="container mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6">
+      <div className="flex h-20 w-full items-center justify-between px-3 sm:px-6 lg:px-8">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center space-x-3 group">
           <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-white p-1 border border-stone-200 shadow-sm group-hover:scale-105 transition-transform overflow-hidden">

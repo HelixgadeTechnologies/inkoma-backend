@@ -81,32 +81,7 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Folklore Traditions Quick Filter */}
-      <div className="mt-6 space-y-2">
-        <p className="px-3 text-[11px] font-bold uppercase tracking-wider text-stone-500">
-          Mythos Lineages
-        </p>
-        <div className="space-y-1 text-xs text-stone-700">
-          {[
-            { name: "Ashanti Spider Lore", count: "24", slug: "Ashanti/Akan" },
-            { name: "Yoruba Orisha Pantheons", count: "19", slug: "Yoruba" },
-            { name: "Zulu Warrior Epics", count: "15", slug: "Zulu" },
-            { name: "Dogon Star Cosmologies", count: "8", slug: "Dogon" },
-          ].map((myth) => (
-            <Link
-              key={myth.slug}
-              href={`/explore?tradition=${encodeURIComponent(myth.slug)}`}
-              className="flex items-center justify-between rounded-lg px-3 py-1.5 hover:bg-stone-100 hover:text-[#680C07] transition-colors font-medium"
-            >
-              <div className="flex items-center gap-2">
-                <Flame className="h-3.5 w-3.5 text-[#680C07]" />
-                <span>{myth.name}</span>
-              </div>
-              <span className="text-[10px] text-stone-400">{myth.count}</span>
-            </Link>
-          ))}
-        </div>
-      </div>
+
 
       {/* Footer Folklore Wisdom */}
       <div className="mt-auto pt-4 border-t border-stone-200/80 text-[11px] text-stone-500">

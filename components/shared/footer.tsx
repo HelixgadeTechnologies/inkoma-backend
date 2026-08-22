@@ -5,7 +5,7 @@ import { Heart, Globe } from "lucide-react";
 export function Footer() {
   return (
     <footer className="border-t border-stone-200/80 bg-[#F3EEE7] text-stone-600">
-      <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
+      <div className="w-full px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4 lg:grid-cols-5">
           {/* Brand Col */}
           <div className="md:col-span-2 space-y-4">
