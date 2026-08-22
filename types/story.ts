@@ -46,7 +46,7 @@ export interface StoryChapter {
   nodes: Record<string, StoryNode>;
   readTimeMinutes?: number;
   estimatedReadTime?: number;
-  status: 'draft' | 'published';
+  status?: 'draft' | 'published';
   likesCount: number;
   commentsCount?: number;
   readsCount?: number;
