@@ -28,6 +28,7 @@ export function ChapterListBuilder({
     const newChap: StoryChapter = {
       id: `chapter-${Date.now()}`,
       storyId: "draft-story",
+      number: nextChapterNum,
       chapterNumber: nextChapterNum,
       title: `Chapter ${nextChapterNum}: The Awakening of the Spirits`,
       synopsis: "The journey continues as ancient omens reveal hidden choices ahead.",
