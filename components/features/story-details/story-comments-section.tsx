@@ -283,7 +283,10 @@ export function StoryCommentsSection({
         <div className="flex items-start gap-3">
           <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#680C07]/30 flex-shrink-0">
             <Image
-              src={MOCK_CURRENT_USER.avatarUrl}
+              src={
+                MOCK_CURRENT_USER.avatarUrl ||
+                "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"
+              }
               alt={MOCK_CURRENT_USER.displayName}
               fill
               className="object-cover"
