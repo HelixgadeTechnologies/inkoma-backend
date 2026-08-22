@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
+import { UserProfile, Story } from "@/types";
 import { MOCK_CURRENT_USER, MOCK_STORIES } from "@/config/mock-data";
 import { SupportAuthorDialog } from "@/components/features/story-details/support-author-dialog";
 import {
@@ -23,32 +24,279 @@ import {
   UserCheck,
   Calendar,
   ShieldCheck,
+  Sliders,
+  Plus,
+  Share2,
+  Award,
+  Trees,
+  Volume2,
+  Shield,
+  Layers,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
+const MOCK_USER_PROFILES: Record<string, UserProfile> = {
+  kwame_asante: MOCK_CURRENT_USER,
+  amina_diallo: {
+    id: "user-amina-02",
+    username: "amina_diallo",
+    displayName: "Amina Diallo",
+    penName: "Amina of Djenné",
+    bio: "Sahel historian, poet, and griot preserving epic Manden poetry and ancient royal dynasties of West Africa.",
+    avatarUrl: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=200&auto=format&fit=crop",
+    country: "Mali",
+    role: "storyteller",
+    traditionSpecialty: "Pan-African",
+    createdAt: "2025-08-14",
+    followersCount: 3820,
+    followingCount: 142,
+    onboardingCompleted: true,
+    writingStats: {
+      storiesPublished: 8,
+      draftStories: 1,
+      totalChaptersPublished: 24,
+      totalReads: 54800,
+      totalLikes: 4190,
+      totalComments: 680,
+    },
+    readingStats: {
+      booksRead: 34,
+      chaptersRead: 112,
+      readingStreakDays: 28,
+      favoriteGenres: ["Historical Epics", "Warrior Lore"],
+      interests: ["Manden Epics", "Djenné History", "Oral Poetry"],
+    },
+    supportDetails: {
+      paystackLink: "https://paystack.com/pay/amina-diallo",
+      bankName: "Bank of Africa Mali",
+      accountName: "Amina Diallo",
+      accountNumber: "9876543210",
+      isAcceptingSupport: true,
+    },
+    badges: [
+      {
+        id: "badge-sahel",
+        name: "Sahel Historian",
+        description: "Preserved 5+ ancient Sahel kingdom epics",
+        iconName: "Shield",
+        tier: "elder",
+        unlockedAt: "2025-11-20",
+      },
+      {
+        id: "badge-master-griot",
+        name: "Master Griot",
+        description: "Performed 20,000+ oral recitations",
+        iconName: "Volume2",
+        tier: "gold",
+        unlockedAt: "2026-01-10",
+      },
+    ],
+  },
+  chief_adebayo: {
+    id: "user-adebayo-03",
+    username: "chief_adebayo",
+    displayName: "Chief Adebayo Olawale",
+    penName: "Adebayo Olawale (Storyteller of Oyo)",
+    bio: "Yoruba traditional archivist, playwright, and narrator of coastal legends, Mami Wata mysteries, and Orisha lore.",
+    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop",
+    country: "Nigeria",
+    role: "storyteller",
+    traditionSpecialty: "Yoruba",
+    createdAt: "2025-09-02",
+    followersCount: 2940,
+    followingCount: 105,
+    onboardingCompleted: true,
+    writingStats: {
+      storiesPublished: 6,
+      draftStories: 3,
+      totalChaptersPublished: 18,
+      totalReads: 32100,
+      totalLikes: 2780,
+      totalComments: 410,
+    },
+    readingStats: {
+      booksRead: 22,
+      chaptersRead: 78,
+      readingStreakDays: 19,
+      favoriteGenres: ["Spiritual Lore", "Orisha Mythos"],
+      interests: ["Coastal Delta", "Yoruba Rituals", "Ancestral Voices"],
+    },
+    supportDetails: {
+      paystackLink: "https://paystack.com/pay/chief-adebayo",
+      bankName: "First Bank of Nigeria",
+      accountName: "Adebayo Olawale",
+      accountNumber: "3019284756",
+      isAcceptingSupport: true,
+    },
+    badges: [
+      {
+        id: "badge-orisha",
+        name: "Orisha Guardian",
+        description: "Authored 4+ Yoruba spirit realm narratives",
+        iconName: "Flame",
+        tier: "gold",
+        unlockedAt: "2025-12-05",
+      },
+    ],
+  },
+  oumar_sangare: {
+    id: "user-oumar-04",
+    username: "oumar_sangare",
+    displayName: "Oumar Sangare",
+    penName: "Oumar Sangare the Astrologer",
+    bio: "Bandiagara escarpment scholar documenting ancient cliff architecture, Sigui rituals, and Dogon star maps.",
+    avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop",
+    country: "Mali",
+    role: "storyteller",
+    traditionSpecialty: "Dogon",
+    createdAt: "2025-11-10",
+    followersCount: 2150,
+    followingCount: 76,
+    onboardingCompleted: true,
+    writingStats: {
+      storiesPublished: 4,
+      draftStories: 1,
+      totalChaptersPublished: 14,
+      totalReads: 19800,
+      totalLikes: 1740,
+      totalComments: 310,
+    },
+    readingStats: {
+      booksRead: 15,
+      chaptersRead: 52,
+      readingStreakDays: 12,
+      favoriteGenres: ["Cosmology & Astronomy", "Afrofuturism"],
+      interests: ["Sirius Star Dancers", "Sigui Rituals"],
+    },
+    supportDetails: {
+      paystackLink: "https://paystack.com/pay/oumar-sangare",
+      bankName: "Ecobank Mali",
+      accountName: "Oumar Sangare",
+      accountNumber: "4567890123",
+      isAcceptingSupport: true,
+    },
+    badges: [
+      {
+        id: "badge-star",
+        name: "Star Dancers Elder",
+        description: "Preserved ancient Sirius constellation maps",
+        iconName: "Sparkles",
+        tier: "elder",
+        unlockedAt: "2026-01-25",
+      },
+    ],
+  },
+};
+
 export default function UserProfilePage() {
   const params = useParams();
-  const username = params?.username as string;
+  const rawUsername = params?.username as string;
+  const username = rawUsername ? rawUsername.toLowerCase() : "";
 
+  // Determine if viewing own profile
+  const isOwnProfile = !username || username === MOCK_CURRENT_USER.username.toLowerCase();
+
+  // Retrieve user profile data
+  const profile: UserProfile = isOwnProfile
+    ? MOCK_CURRENT_USER
+    : MOCK_USER_PROFILES[username] || {
+        id: `user-${username || "guest"}`,
+        username: username || "storyteller",
+        displayName: (username ? username.replace(/_/g, " ") : "African Storyteller").replace(/\b\w/g, (l) => l.toUpperCase()),
+        penName: `${(username ? username.replace(/_/g, " ") : "African Storyteller").replace(/\b\w/g, (l) => l.toUpperCase())}`,
+        bio: "Preserver of living African folklore, traditional trickster tales, and ancestral oral wisdom.",
+        avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
+        country: "Pan-African",
+        role: "storyteller",
+        traditionSpecialty: "Pan-African",
+        createdAt: "2025-10-01",
+        followersCount: 1240,
+        followingCount: 65,
+        onboardingCompleted: true,
+        writingStats: {
+          storiesPublished: 3,
+          draftStories: 1,
+          totalChaptersPublished: 10,
+          totalReads: 14200,
+          totalLikes: 1120,
+          totalComments: 230,
+        },
+        readingStats: {
+          booksRead: 14,
+          chaptersRead: 42,
+          readingStreakDays: 10,
+          favoriteGenres: ["Trickster Lore", "Historical Epics"],
+          interests: ["Oral Performance", "Branching Destinies"],
+        },
+        supportDetails: {
+          paystackLink: "https://paystack.com",
+          bankName: "Pan-African Bank",
+          accountName: username || "Storyteller",
+          accountNumber: "0123456789",
+          isAcceptingSupport: true,
+        },
+        badges: [
+          {
+            id: "badge-storyteller",
+            name: "Circle Storyteller",
+            description: "Active contributor to the Inkoma oral archives",
+            iconName: "Sparkles",
+            tier: "gold",
+            unlockedAt: "2026-01-01",
+          },
+        ],
+      };
+
+  // State
   const [isFollowing, setIsFollowing] = useState(false);
+  const [followersCount, setFollowersCount] = useState(profile.followersCount);
   const [showSupportModal, setShowSupportModal] = useState(false);
   const [copiedAcc, setCopiedAcc] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [activeTab, setActiveTab] = useState<"stories" | "stats" | "badges">("stories");
 
-  const profile = MOCK_CURRENT_USER;
-  const publishedStories = MOCK_STORIES.filter((s) => s.authorId === profile.id || s.authorPenName === profile.penName);
+  // Authored stories matching this profile
+  const publishedStories = MOCK_STORIES.filter(
+    (s) =>
+      s.authorId === profile.id ||
+      s.authorName?.toLowerCase() === profile.displayName?.toLowerCase() ||
+      s.authorPenName?.toLowerCase() === profile.penName?.toLowerCase() ||
+      (profile.username === "kwame_asante" && s.authorId === "user-kwame-01")
+  );
+
+  const handleFollowToggle = () => {
+    if (isFollowing) {
+      setIsFollowing(false);
+      setFollowersCount((prev) => prev - 1);
+    } else {
+      setIsFollowing(true);
+      setFollowersCount((prev) => prev + 1);
+    }
+  };
 
   const handleCopyAcc = (acc: string) => {
-    navigator.clipboard.writeText(acc);
-    setCopiedAcc(true);
-    setTimeout(() => setCopiedAcc(false), 2500);
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(acc);
+      setCopiedAcc(true);
+      setTimeout(() => setCopiedAcc(false), 2500);
+    }
+  };
+
+  const handleShareProfile = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    }
   };
 
   return (
-    <div className="space-y-10 pb-16">
+    <div className="space-y-8 pb-16">
       {/* Profile Header Hero */}
-      <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-10 shadow-sm space-y-6">
+      <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-9 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          {/* Avatar & User Info */}
           <div className="flex items-center gap-5">
             <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-[#680C07] shadow-md bg-stone-100 shrink-0">
               <Image
@@ -56,197 +304,406 @@ export default function UserProfilePage() {
                 alt={profile.displayName}
                 fill
                 className="object-cover"
+                priority
               />
             </div>
-            <div className="space-y-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 font-serif">
+            <div className="space-y-1.5 min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 font-serif tracking-tight">
                   {profile.penName || profile.displayName}
                 </h1>
-                <Badge className="bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20 text-xs">
-                  {profile.role === "writer" ? "Master Storyteller" : "Reader"}
-                </Badge>
+                {isOwnProfile ? (
+                  <Badge className="bg-[#680C07] text-white border-0 text-xs px-2.5 py-0.5 font-bold">
+                    Your Profile Workspace
+                  </Badge>
+                ) : (
+                  <Badge className="bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20 text-xs font-semibold">
+                    Master Storyteller
+                  </Badge>
+                )}
               </div>
-              <p className="text-xs text-stone-500 font-mono">@{profile.username}</p>
-              <div className="flex items-center gap-2 text-xs text-stone-400 pt-1">
-                <Calendar className="w-3.5 h-3.5" /> Joined {profile.createdAt}
+
+              <div className="flex flex-wrap items-center gap-3 text-xs text-stone-500 font-medium">
+                <span className="font-mono text-stone-600">@{profile.username}</span>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  <Flame className="w-3.5 h-3.5 text-[#680C07]" /> {profile.traditionSpecialty || "Pan-African"}
+                </span>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5 text-stone-400" /> Joined {profile.createdAt}
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <Button
-              variant="outline"
-              onClick={() => setIsFollowing(!isFollowing)}
-              className={`border-stone-300 rounded-xl text-xs flex-1 sm:flex-none ${
-                isFollowing ? "bg-[#680C07]/10 border-[#680C07]/20 text-[#680C07] font-semibold" : "bg-white text-stone-700"
-              }`}
-            >
-              {isFollowing ? (
-                <>
-                  <UserCheck className="w-3.5 h-3.5 mr-1 text-[#680C07]" /> Following
-                </>
-              ) : (
-                <>
-                  <UserPlus className="w-3.5 h-3.5 mr-1" /> Follow
-                </>
-              )}
-            </Button>
+          {/* Action Buttons: Own Profile vs Other User Profile */}
+          <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+            {isOwnProfile ? (
+              <>
+                <Link href="/settings" className="flex-1 sm:flex-none">
+                  <Button
+                    variant="outline"
+                    className="w-full border-stone-300 rounded-xl text-xs font-bold text-stone-700 hover:bg-stone-100 gap-1.5"
+                  >
+                    <Sliders className="w-3.5 h-3.5 text-[#680C07]" /> Account & Settings
+                  </Button>
+                </Link>
 
-            <Button
-              onClick={() => setShowSupportModal(true)}
-              className="bg-[#680C07] hover:bg-[#520905] text-white rounded-xl text-xs font-semibold shadow-xs flex-1 sm:flex-none"
-            >
-              <Heart className="w-3.5 h-3.5 mr-1 fill-white" />
-              Support Author
-            </Button>
+                <Link href="/studio/new" className="flex-1 sm:flex-none">
+                  <Button className="w-full bg-[#680C07] hover:bg-[#520905] text-white rounded-xl text-xs font-bold gap-1.5 shadow-sm">
+                    <Plus className="w-4 h-4 stroke-[3]" /> Create New Story
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={handleFollowToggle}
+                  className={`border-stone-300 rounded-xl text-xs flex-1 sm:flex-none font-bold ${
+                    isFollowing
+                      ? "bg-[#680C07]/10 border-[#680C07]/20 text-[#680C07]"
+                      : "bg-white text-stone-700 hover:bg-stone-50"
+                  }`}
+                >
+                  {isFollowing ? (
+                    <>
+                      <UserCheck className="w-3.5 h-3.5 mr-1.5 text-[#680C07]" /> Following
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="w-3.5 h-3.5 mr-1.5" /> Follow Author
+                    </>
+                  )}
+                </Button>
+
+                <Button
+                  onClick={() => setShowSupportModal(true)}
+                  className="bg-[#680C07] hover:bg-[#520905] text-white rounded-xl text-xs font-bold shadow-xs flex-1 sm:flex-none"
+                >
+                  <Heart className="w-3.5 h-3.5 mr-1.5 fill-white" />
+                  Support Author
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={handleShareProfile}
+                  className="border-stone-300 rounded-xl text-xs text-stone-700 bg-white"
+                  title="Share profile link"
+                >
+                  {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
+                </Button>
+              </>
+            )}
           </div>
         </div>
 
         {/* Bio */}
-        <p className="text-sm text-stone-700 leading-relaxed max-w-3xl">
+        <p className="text-sm text-stone-700 leading-relaxed max-w-3xl font-medium">
           {profile.bio}
         </p>
 
-        {/* Followers & Counts */}
-        <div className="flex flex-wrap items-center gap-6 pt-4 border-t border-stone-100 text-xs text-stone-600">
+        {/* Engagement & Metrics Bar */}
+        <div className="flex flex-wrap items-center gap-6 pt-4 border-t border-stone-100 text-xs text-stone-600 font-medium">
           <div>
-            <strong className="text-stone-900 text-sm font-bold">{profile.followersCount}</strong> Followers
+            <strong className="text-stone-900 text-sm font-bold">{followersCount.toLocaleString()}</strong> Followers
           </div>
           <div>
             <strong className="text-stone-900 text-sm font-bold">{profile.followingCount}</strong> Following
           </div>
           <div>
-            <strong className="text-stone-900 text-sm font-bold">{profile.writingStats?.totalLikes || 1800}</strong> Total Likes
+            <strong className="text-stone-900 text-sm font-bold">
+              {(profile.writingStats?.totalReads || 38420).toLocaleString()}
+            </strong> Total Reads
+          </div>
+          <div>
+            <strong className="text-stone-900 text-sm font-bold">
+              {(profile.writingStats?.totalLikes || 2840).toLocaleString()}
+            </strong> Story Likes
           </div>
         </div>
       </div>
 
-      {/* Writing & Reading Statistics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Writing Stats */}
-        <div className="bg-white rounded-3xl border border-stone-200 p-6 shadow-sm space-y-4">
-          <div className="flex items-center gap-2 border-b border-stone-100 pb-3">
-            <Flame className="w-5 h-5 text-[#680C07]" />
-            <h2 className="text-base font-bold text-stone-900 font-serif">
-              Storytelling Statistics
-            </h2>
-          </div>
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
-              <span className="text-stone-400">Stories Authored</span>
-              <p className="text-xl font-bold text-stone-900">{profile.writingStats?.storiesAuthored || publishedStories.length}</p>
-            </div>
-            <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
-              <span className="text-stone-400">Chapters Penned</span>
-              <p className="text-xl font-bold text-stone-900">{profile.writingStats?.chaptersAuthored || 14}</p>
-            </div>
-            <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
-              <span className="text-stone-400">Total Reads</span>
-              <p className="text-xl font-bold text-stone-900">{profile.writingStats?.totalReads.toLocaleString() || "12,400"}</p>
-            </div>
-            <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
-              <span className="text-stone-400">Patron Support</span>
-              <p className="text-xl font-bold text-[#680C07]">${profile.supportDetails?.totalTipsReceived || 1250}</p>
-            </div>
-          </div>
-        </div>
+      {/* Tabs Navigation */}
+      <div className="flex items-center gap-2 border-b border-stone-200 pb-3">
+        <button
+          onClick={() => setActiveTab("stories")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            activeTab === "stories"
+              ? "bg-[#680C07] text-white shadow-sm"
+              : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
+          }`}
+        >
+          <BookOpen className="w-3.5 h-3.5" />
+          Authored Manuscripts ({publishedStories.length})
+        </button>
 
-        {/* Reading Stats */}
-        <div className="bg-white rounded-3xl border border-stone-200 p-6 shadow-sm space-y-4">
-          <div className="flex items-center gap-2 border-b border-stone-100 pb-3">
-            <BookOpen className="w-5 h-5 text-[#680C07]" />
-            <h2 className="text-base font-bold text-stone-900 font-serif">
-              Reader Journeys
-            </h2>
-          </div>
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
-              <span className="text-stone-400">Stories Completed</span>
-              <p className="text-xl font-bold text-stone-900">{profile.readingStats?.storiesRead || 18}</p>
-            </div>
-            <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
-              <span className="text-stone-400">Chapters Explored</span>
-              <p className="text-xl font-bold text-stone-900">{profile.readingStats?.chaptersRead || 46}</p>
-            </div>
-            <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
-              <span className="text-stone-400">Hours at the Hearth</span>
-              <p className="text-xl font-bold text-stone-900">{profile.readingStats?.hoursRead || 32}h</p>
-            </div>
-            <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
-              <span className="text-stone-400">Branches Discovered</span>
-              <p className="text-xl font-bold text-stone-900">{profile.readingStats?.branchesDiscovered || 28}</p>
-            </div>
-          </div>
-        </div>
+        <button
+          onClick={() => setActiveTab("stats")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            activeTab === "stats"
+              ? "bg-[#680C07] text-white shadow-sm"
+              : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
+          }`}
+        >
+          <Layers className="w-3.5 h-3.5" />
+          Storytelling & Reader Journey
+        </button>
+
+        <button
+          onClick={() => setActiveTab("badges")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            activeTab === "badges"
+              ? "bg-[#680C07] text-white shadow-sm"
+              : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
+          }`}
+        >
+          <Award className="w-3.5 h-3.5" />
+          Badges & Achievements ({profile.badges?.length || 3})
+        </button>
       </div>
 
-      {/* Published Stories by Author */}
-      <div className="space-y-4 bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm">
-        <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-          <h2 className="text-lg font-bold text-stone-900 font-serif">
-            Authored Folklore Manuscripts ({publishedStories.length})
-          </h2>
-        </div>
+      {/* TAB 1: AUTHORED MANUSCRIPTS */}
+      {activeTab === "stories" && (
+        <div className="space-y-4 bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm">
+          <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+            <h2 className="text-lg font-bold text-stone-900 font-serif">
+              Folklore Manuscripts by {profile.penName || profile.displayName}
+            </h2>
+            {isOwnProfile && (
+              <Link href="/studio">
+                <Button size="sm" variant="outline" className="text-xs rounded-xl border-stone-300">
+                  Manage in Writer Studio
+                </Button>
+              </Link>
+            )}
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {publishedStories.map((story) => (
-            <div
-              key={story.id}
-              className="flex flex-col bg-white rounded-2xl border border-stone-200 p-4 justify-between space-y-3 shadow-xs hover:shadow-md transition-all"
-            >
-              <div className="flex gap-3">
-                <div className="relative w-16 h-20 rounded-xl overflow-hidden shrink-0 border border-stone-200">
-                  <Image src={story.coverImage} alt={story.title} fill className="object-cover" />
-                </div>
-                <div className="min-w-0 space-y-1">
-                  <Badge className="bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20 text-[10px]">
-                    {story.tradition}
-                  </Badge>
-                  <Link href={`/story/${story.id}`}>
-                    <h4 className="text-sm font-bold text-stone-900 truncate font-serif hover:text-[#680C07]">
-                      {story.title}
-                    </h4>
-                  </Link>
-                  <div className="flex items-center gap-3 text-xs text-stone-400">
-                    <span>{story.readsCount} reads</span>
-                    <span>•</span>
-                    <span>{story.likesCount} likes</span>
+          {publishedStories.length === 0 ? (
+            <div className="text-center py-10 space-y-3">
+              <p className="text-stone-500 text-xs font-medium">
+                No published manuscripts available yet.
+              </p>
+              {isOwnProfile && (
+                <Link href="/studio/new">
+                  <Button className="bg-[#680C07] hover:bg-[#520905] text-white text-xs font-bold">
+                    Write First Story
+                  </Button>
+                </Link>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {publishedStories.map((story) => (
+                <div
+                  key={story.id}
+                  className="flex flex-col bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-all group"
+                >
+                  <div className="relative aspect-[16/10] w-full bg-stone-100">
+                    <Image
+                      src={story.coverImage}
+                      alt={story.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent" />
+
+                    <div className="absolute top-3 left-3">
+                      <Badge className="bg-stone-900/80 text-white text-[10px] backdrop-blur-xs">
+                        {story.tradition}
+                      </Badge>
+                    </div>
+
+                    <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-white text-[11px] font-medium">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-red-200" /> {story.estimatedReadTime} min read
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Heart className="w-3 h-3 text-red-400 fill-current" /> {story.likesCount}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-bold text-[#680C07] uppercase tracking-wider block">
+                        {story.mainGenre}
+                      </span>
+                      <Link href={`/story/${story.id}`}>
+                        <h3 className="text-sm font-bold text-stone-900 font-serif group-hover:text-[#680C07] transition-colors line-clamp-1">
+                          {story.title}
+                        </h3>
+                      </Link>
+                      <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
+                        {story.synopsis}
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-stone-100 flex items-center justify-between gap-2">
+                      <Link href={`/story/${story.id}`} className="flex-1">
+                        <Button variant="outline" size="sm" className="w-full text-xs rounded-xl border-stone-300">
+                          Details
+                        </Button>
+                      </Link>
+                      <Link href={`/story/${story.id}/read`} className="flex-1">
+                        <Button size="sm" className="w-full bg-[#680C07] hover:bg-[#520905] text-white text-xs font-bold rounded-xl">
+                          Read
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
-              <div className="pt-2 border-t border-stone-100 flex items-center justify-between">
-                <Link href={`/story/${story.id}`}>
-                  <Button size="sm" variant="outline" className="text-xs rounded-xl">
-                    View Details
-                  </Button>
-                </Link>
-                <Link href={`/story/${story.id}/read`}>
-                  <Button size="sm" className="bg-[#680C07] hover:bg-[#520905] text-white text-xs rounded-xl">
-                    Read Story
-                  </Button>
-                </Link>
+      {/* TAB 2: STORYTELLING & READER STATS */}
+      {activeTab === "stats" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Writing Stats */}
+          <div className="bg-white rounded-3xl border border-stone-200 p-6 shadow-sm space-y-4">
+            <div className="flex items-center gap-2 border-b border-stone-100 pb-3">
+              <Flame className="w-5 h-5 text-[#680C07]" />
+              <h2 className="text-base font-bold text-stone-900 font-serif">
+                Storytelling Statistics
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
+                <span className="text-stone-500 font-medium">Stories Authored</span>
+                <p className="text-2xl font-extrabold text-stone-900 font-serif">
+                  {profile.writingStats?.storiesPublished || publishedStories.length}
+                </p>
+              </div>
+              <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
+                <span className="text-stone-500 font-medium">Chapters Penned</span>
+                <p className="text-2xl font-extrabold text-stone-900 font-serif">
+                  {profile.writingStats?.totalChaptersPublished || 28}
+                </p>
+              </div>
+              <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
+                <span className="text-stone-500 font-medium">Total Reads</span>
+                <p className="text-2xl font-extrabold text-stone-900 font-serif">
+                  {(profile.writingStats?.totalReads || 38420).toLocaleString()}
+                </p>
+              </div>
+              <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
+                <span className="text-stone-500 font-medium">Patron Support</span>
+                <p className="text-2xl font-extrabold text-[#680C07] font-serif">
+                  ${profile.supportDetails?.totalTipsReceived || 1250}
+                </p>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
 
-      {/* Direct Creator Support Box on Profile */}
-      <div className="p-6 sm:p-8 bg-white rounded-3xl border border-[#680C07]/20 space-y-4">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-[#680C07]" />
-          <h2 className="text-xl font-bold text-stone-900 font-serif">
-            Support {profile.penName || profile.displayName}&apos;s Storyteller Circle
-          </h2>
+          {/* Reading Journey */}
+          <div className="bg-white rounded-3xl border border-stone-200 p-6 shadow-sm space-y-4">
+            <div className="flex items-center gap-2 border-b border-stone-100 pb-3">
+              <BookOpen className="w-5 h-5 text-[#680C07]" />
+              <h2 className="text-base font-bold text-stone-900 font-serif">
+                Reader Journey Metrics
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
+                <span className="text-stone-500 font-medium">Stories Completed</span>
+                <p className="text-2xl font-extrabold text-stone-900 font-serif">
+                  {profile.readingStats?.booksRead || 19}
+                </p>
+              </div>
+              <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
+                <span className="text-stone-500 font-medium">Chapters Explored</span>
+                <p className="text-2xl font-extrabold text-stone-900 font-serif">
+                  {profile.readingStats?.chaptersRead || 64}
+                </p>
+              </div>
+              <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
+                <span className="text-stone-500 font-medium">Reading Streak</span>
+                <p className="text-2xl font-extrabold text-stone-900 font-serif">
+                  {profile.readingStats?.readingStreakDays || 14} Days
+                </p>
+              </div>
+              <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
+                <span className="text-stone-500 font-medium">Tradition Focus</span>
+                <p className="text-sm font-bold text-stone-900 truncate">
+                  {profile.traditionSpecialty || "Pan-African"}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-        <p className="text-xs text-stone-600 max-w-xl leading-relaxed">
-          Your patron tips go 100% directly to this storyteller to support folklore research, village elder interviews, and new interactive chapter releases.
+      )}
+
+      {/* TAB 3: BADGES & ACHIEVEMENTS */}
+      {activeTab === "badges" && (
+        <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm space-y-5">
+          <div className="border-b border-stone-100 pb-3">
+            <h2 className="text-lg font-bold text-stone-900 font-serif">
+              Ancestral Badges & Folklore Honor
+            </h2>
+            <p className="text-xs text-stone-500">
+              Unlocked achievements earned through story preservation and oral performance.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {(profile.badges || []).map((badge) => (
+              <div
+                key={badge.id}
+                className="p-4 bg-stone-50 rounded-2xl border border-stone-200 flex items-start gap-3 space-y-1"
+              >
+                <div className="w-10 h-10 rounded-xl bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] flex items-center justify-center shrink-0">
+                  <Sparkles className="w-5 h-5 fill-current" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-stone-900 font-serif">
+                      {badge.name}
+                    </h3>
+                    <Badge className="bg-[#680C07] text-white text-[9px] uppercase font-bold py-0 px-1.5">
+                      {badge.tier}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-stone-600 leading-relaxed pt-0.5">
+                    {badge.description}
+                  </p>
+                  <span className="text-[10px] text-stone-400 block pt-1">
+                    Unlocked {badge.unlockedAt}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* PATRON SUPPORT & BANKING BOX */}
+      <div className="p-6 sm:p-8 bg-white rounded-3xl border border-[#680C07]/20 space-y-4 shadow-sm">
+        <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-[#680C07]" />
+            <h2 className="text-xl font-bold text-stone-900 font-serif">
+              Support {profile.penName || profile.displayName}&apos;s Circle
+            </h2>
+          </div>
+          {isOwnProfile && (
+            <Link href="/settings">
+              <Button size="sm" variant="outline" className="text-xs rounded-xl border-stone-300">
+                Edit Payout Settings
+              </Button>
+            </Link>
+          )}
+        </div>
+
+        <p className="text-xs text-stone-600 max-w-2xl leading-relaxed">
+          Patron support goes directly to this storyteller to enable research trips, village elder recordings, and new interactive manuscript episodes.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-          {/* Paystack CTA */}
+          {/* Paystack Button */}
           <a
             href={profile.supportDetails?.paystackLink || "https://paystack.com"}
             target="_blank"
@@ -254,22 +711,26 @@ export default function UserProfilePage() {
             className="block"
           >
             <Button className="w-full bg-[#680C07] hover:bg-[#520905] text-white font-bold py-6 rounded-2xl shadow-sm">
-              <Sparkles className="w-4 h-4 mr-2" /> Paystack Support Link
+              <Sparkles className="w-4 h-4 mr-2" /> Paystack Patron Tip Link
               <ExternalLink className="w-4 h-4 ml-2" />
             </Button>
           </a>
 
-          {/* Copy Account Box */}
-          <div className="p-3 bg-white rounded-2xl border border-[#680C07]/30 flex items-center justify-between text-xs">
+          {/* Copy Account Info Box */}
+          <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 flex items-center justify-between text-xs">
             <div>
-              <p className="text-stone-500">{profile.supportDetails?.bankName} • {profile.supportDetails?.accountName}</p>
-              <p className="font-mono font-bold text-stone-900 text-sm">{profile.supportDetails?.accountNumber}</p>
+              <p className="text-stone-500">
+                {profile.supportDetails?.bankName || "Access Bank"} • {profile.supportDetails?.accountName || profile.displayName}
+              </p>
+              <p className="font-mono font-bold text-stone-900 text-sm">
+                {profile.supportDetails?.accountNumber || "0123456789"}
+              </p>
             </div>
             <Button
               size="sm"
               variant="outline"
-              onClick={() => handleCopyAcc(profile.supportDetails?.accountNumber || "")}
-              className="text-xs rounded-xl border-[#680C07]/30"
+              onClick={() => handleCopyAcc(profile.supportDetails?.accountNumber || "0123456789")}
+              className="text-xs rounded-xl border-stone-300"
             >
               {copiedAcc ? (
                 <>
@@ -286,11 +747,13 @@ export default function UserProfilePage() {
       </div>
 
       {/* Support Author Dialog Modal */}
-      <SupportAuthorDialog
-        authorProfile={profile}
-        isOpen={showSupportModal}
-        onClose={() => setShowSupportModal(false)}
-      />
+      {!isOwnProfile && (
+        <SupportAuthorDialog
+          authorProfile={profile}
+          isOpen={showSupportModal}
+          onClose={() => setShowSupportModal(false)}
+        />
+      )}
     </div>
   );
 }
