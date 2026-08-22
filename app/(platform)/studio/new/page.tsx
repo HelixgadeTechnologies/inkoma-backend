@@ -63,8 +63,10 @@ export default function StudioNewStoryPage() {
     {
       id: "chapter-1",
       storyId: "draft-story",
+      number: 1,
       chapterNumber: 1,
       title: "Episode 1: The Gathering at Kumasi",
+      summary: "The paramount chiefs gather under the sacred silk-cotton tree to witness the miracle of Okomfo Anokye.",
       synopsis: "The paramount chiefs gather under the sacred silk-cotton tree to witness the miracle of Okomfo Anokye.",
       content: "High priest Okomfo Anokye struck his golden staff upon the sacred soil of Kumasi...",
       estimatedReadTime: 10,

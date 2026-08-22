@@ -35,18 +35,26 @@ export interface StoryNode {
 
 export interface StoryChapter {
   id: string;
+  storyId?: string;
   number: number;
+  chapterNumber?: number;
   title: string;
-  summary: string;
+  summary?: string;
+  synopsis?: string;
   content?: string;
   rootNodeId: string;
   nodes: Record<string, StoryNode>;
-  readTimeMinutes: number;
+  readTimeMinutes?: number;
+  estimatedReadTime?: number;
   status: 'draft' | 'published';
   likesCount: number;
   commentsCount?: number;
+  readsCount?: number;
+  isInteractive?: boolean;
+  hasAudioNarration?: boolean;
+  audioNarrationUrl?: string;
   publishedAt?: string;
-  updatedAt: string;
+  updatedAt?: string;
 }
 
 export interface Story {
