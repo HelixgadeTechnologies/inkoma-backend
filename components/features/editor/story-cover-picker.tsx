@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { Image as ImageIcon, Upload, Check, Sparkles } from "lucide-react";
+import { Image as ImageIcon, Upload, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 export const FOLKLORE_COVER_PRESETS = [
@@ -51,10 +51,46 @@ interface StoryCoverPickerProps {
 
 export function StoryCoverPicker({ value, onChange }: StoryCoverPickerProps) {
   const [customInput, setCustomInput] = React.useState(value || "");
+  const [isDragging, setIsDragging] = React.useState(false);
+  const [uploadedFileName, setUploadedFileName] = React.useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const handleCustomChange = (url: string) => {
     setCustomInput(url);
     onChange(url);
+  };
+
+  const processFile = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload a valid image file (PNG, JPG, WEBP).");
+      return;
+    }
+    setUploadedFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      if (dataUrl) {
+        setCustomInput(dataUrl);
+        onChange(dataUrl);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files[0]) {
+      processFile(files[0]);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const files = e.dataTransfer.files;
+    if (files && files[0]) {
+      processFile(files[0]);
+    }
   };
 
   return (
@@ -66,7 +102,7 @@ export function StoryCoverPicker({ value, onChange }: StoryCoverPickerProps) {
           </div>
           <div>
             <h3 className="text-sm font-bold text-stone-900 font-serif">Story Cover Artwork</h3>
-            <p className="text-xs text-stone-500">Select a curated folklore cover preset or paste a custom URL</p>
+            <p className="text-xs text-stone-500">Upload a custom cover image file or select a curated folklore preset</p>
           </div>
         </div>
       </div>
@@ -82,7 +118,7 @@ export function StoryCoverPicker({ value, onChange }: StoryCoverPickerProps) {
               <span className="text-xs font-semibold">No Cover Selected</span>
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent pointer-events-none" />
           <div className="relative z-10 text-white space-y-1">
             <span className="text-[10px] font-bold uppercase tracking-wider text-red-200">
               Live Preview
@@ -91,11 +127,60 @@ export function StoryCoverPicker({ value, onChange }: StoryCoverPickerProps) {
           </div>
         </div>
 
-        {/* Preset Gallery & Custom Input */}
-        <div className="md:col-span-2 space-y-4">
-          <div>
+        {/* Upload, Preset Gallery & Custom Input */}
+        <div className="md:col-span-2 space-y-5">
+          {/* Upload Image Section */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-stone-700 block uppercase tracking-wider">
+              Upload Book Cover Image File
+            </label>
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDragging(true);
+              }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className={`relative border-2 border-dashed rounded-2xl p-4 text-center cursor-pointer transition-all ${
+                isDragging
+                  ? "border-[#680C07] bg-[#680C07]/10"
+                  : "border-stone-300 hover:border-[#680C07] bg-stone-50/70 hover:bg-stone-50"
+              }`}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileInputChange}
+                className="hidden"
+              />
+              <div className="flex flex-col items-center justify-center space-y-1.5">
+                <div className="w-10 h-10 rounded-xl bg-[#680C07]/10 border border-[#680C07]/20 flex items-center justify-center text-[#680C07]">
+                  <Upload className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-stone-900">
+                    Click to upload image or drag & drop file here
+                  </p>
+                  <p className="text-[11px] text-stone-500">
+                    Supports PNG, JPG, WEBP up to 10MB
+                  </p>
+                </div>
+                {uploadedFileName && (
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold mt-1">
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Uploaded: {uploadedFileName}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Curated Presets */}
+          <div className="pt-2 border-t border-stone-100">
             <label className="text-xs font-bold text-stone-700 block mb-1.5 uppercase tracking-wider">
-              Curated African Artwork Presets
+              Or Choose Curated African Artwork Presets
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
               {FOLKLORE_COVER_PRESETS.map((preset) => {
@@ -107,6 +192,7 @@ export function StoryCoverPicker({ value, onChange }: StoryCoverPickerProps) {
                     type="button"
                     onClick={() => {
                       setCustomInput(preset.url);
+                      setUploadedFileName(null);
                       onChange(preset.url);
                     }}
                     className={`relative h-24 rounded-xl overflow-hidden border text-left transition-all group ${
@@ -137,25 +223,6 @@ export function StoryCoverPicker({ value, onChange }: StoryCoverPickerProps) {
                 );
               })}
             </div>
-          </div>
-
-          <div className="pt-2 border-t border-stone-100 space-y-1.5">
-            <label className="text-xs font-bold text-stone-700 block">
-              Or Custom Cover Image URL
-            </label>
-            <div className="relative">
-              <Input
-                type="url"
-                value={customInput}
-                onChange={(e) => handleCustomChange(e.target.value)}
-                placeholder="https://images.unsplash.com/photo-..."
-                className="bg-white border-stone-200 text-xs pr-8"
-              />
-              <Upload className="w-3.5 h-3.5 text-stone-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
-            <p className="text-[10px] text-stone-400">
-              Provide a direct link to any high-res image (Unsplash, Cloudinary, or web URL)
-            </p>
           </div>
         </div>
       </div>

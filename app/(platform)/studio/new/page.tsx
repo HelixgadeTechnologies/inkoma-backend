@@ -37,7 +37,7 @@ import { StoryChapter, StoryNode, StoryStatus } from "@/types";
 
 export default function StudioNewStoryPage() {
   const router = useRouter();
-  const [activeStep, setActiveStep] = React.useState<1 | 2 | 3 | 4>(1);
+  const [activeStep, setActiveStep] = React.useState<1 | 2 | 3>(1);
 
   // --- Step 1: Story Metadata State ---
   const [title, setTitle] = React.useState("The Legend of the Golden Stool");
@@ -208,12 +208,11 @@ export default function StudioNewStoryPage() {
         </div>
 
         {/* Wizard Steps Indicator */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-stone-100 p-1.5 rounded-2xl border border-stone-200">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-stone-100 p-1.5 rounded-2xl border border-stone-200">
           {[
             { step: 1, label: "1. Story Identity", icon: BookOpen },
             { step: 2, label: "2. Episodes & Branches", icon: GitBranch },
-            { step: 3, label: "3. Character Lore", icon: Users },
-            { step: 4, label: "4. Review & Publish", icon: Check },
+            { step: 3, label: "3. Review & Publish", icon: Check },
           ].map((s) => {
             const Icon = s.icon;
             const isActive = activeStep === s.step;
@@ -481,55 +480,14 @@ export default function StudioNewStoryPage() {
               onClick={() => setActiveStep(3)}
               className="bg-[#680C07] hover:bg-[#520905] text-white text-xs font-bold rounded-xl gap-1.5 px-6 py-5"
             >
-              Continue to Character Lore <ChevronRight className="w-4 h-4" />
+              Continue to Review & Publish <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         </div>
       )}
 
-      {/* STEP 3: CHARACTER LORE & WORLDBUILDING */}
+      {/* STEP 3: REVIEW & PUBLISH */}
       {activeStep === 3 && (
-        <div className="space-y-6 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-7 shadow-xs space-y-4">
-            <div className="border-b border-stone-100 pb-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#680C07]">
-                Worldbuilding Tree
-              </span>
-              <h3 className="text-lg font-bold text-stone-900 font-serif">
-                Character Lore & Ancestral Archetypes
-              </h3>
-              <p className="text-xs text-stone-500">
-                Define traditional characters, deities, elders, and trickster archetypes present in this story.
-              </p>
-            </div>
-
-            <CharacterTree />
-          </div>
-
-          {/* Navigation Buttons */}
-          <div className="flex items-center justify-between pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setActiveStep(2)}
-              className="text-xs rounded-xl border-stone-300 text-stone-700 gap-1.5"
-            >
-              <ChevronLeft className="w-4 h-4" /> Back to Episodes
-            </Button>
-
-            <Button
-              type="button"
-              onClick={() => setActiveStep(4)}
-              className="bg-[#680C07] hover:bg-[#520905] text-white text-xs font-bold rounded-xl gap-1.5 px-6 py-5"
-            >
-              Review & Finalize <ChevronRight className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* STEP 4: REVIEW & PUBLISH */}
-      {activeStep === 4 && (
         <div className="space-y-6 animate-in fade-in duration-200">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Story Card Simulation */}
@@ -640,10 +598,10 @@ export default function StudioNewStoryPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setActiveStep(3)}
+                  onClick={() => setActiveStep(2)}
                   className="text-xs rounded-xl border-stone-300 text-stone-700 gap-1.5"
                 >
-                  <ChevronLeft className="w-4 h-4" /> Back to Characters
+                  <ChevronLeft className="w-4 h-4" /> Back to Episodes
                 </Button>
 
                 <Button
