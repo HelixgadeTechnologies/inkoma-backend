@@ -1,5 +1,6 @@
 import { Sidebar } from "@/components/shared/sidebar";
 import { Navbar } from "@/components/shared/navbar";
+import { PwaBottomNav } from "@/components/shared/pwa-bottom-nav";
 
 export default function PlatformLayout({
   children,
@@ -7,7 +8,7 @@ export default function PlatformLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative flex min-h-screen flex-col bg-[#FAF8F5] text-stone-900">
+    <div className="relative flex min-h-screen flex-col bg-[#FAF8F5] text-stone-900 pb-16 md:pb-0">
       <Navbar />
       <div className="flex w-full flex-1 px-2 sm:px-4 lg:px-6">
         <Sidebar />
@@ -15,6 +16,7 @@ export default function PlatformLayout({
           {children}
         </main>
       </div>
+      <PwaBottomNav />
     </div>
   );
 }

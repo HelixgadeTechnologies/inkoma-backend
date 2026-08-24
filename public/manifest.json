@@ -1,0 +1,44 @@
+{
+  "name": "Inkoma Tales Hub - Living African Mythology",
+  "short_name": "Inkoma",
+  "description": "Step into centuries of African oral traditions, mythological epics, and trickster wisdom.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF8F5",
+  "theme_color": "#680C07",
+  "icons": [
+    {
+      "src": "/images/inkoma-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/inkoma-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Explore Folklore",
+      "short_name": "Explore",
+      "description": "Discover interactive tales and oral narration",
+      "url": "/explore"
+    },
+    {
+      "name": "Personal Library",
+      "short_name": "Library",
+      "description": "View saved quotes and reading progress",
+      "url": "/library"
+    },
+    {
+      "name": "Writer Studio",
+      "short_name": "Studio",
+      "description": "Draft new branching folklore episodes",
+      "url": "/studio"
+    }
+  ]
+}
