@@ -42,8 +42,8 @@ export interface StoryChapter {
   summary?: string;
   synopsis?: string;
   content?: string;
-  rootNodeId: string;
-  nodes: Record<string, StoryNode>;
+  rootNodeId?: string;
+  nodes?: Record<string, StoryNode>;
   readTimeMinutes?: number;
   estimatedReadTime?: number;
   status?: 'draft' | 'published';
