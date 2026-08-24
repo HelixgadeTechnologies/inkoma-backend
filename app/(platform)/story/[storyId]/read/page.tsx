@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useStory } from "@/hooks/useStory";
+import { useStory, useStoryStore } from "@/hooks/useStory";
 import { useLibrary } from "@/hooks/useLibrary";
 import { StoryNode, StoryChapter, StoryChoice } from "@/types";
 import {
@@ -18,8 +18,9 @@ import {
   Quote,
   Check,
   RotateCcw,
-  Volume2,
-  Sliders,
+  Maximize2,
+  Minimize2,
+  BookOpenCheck,
   Send,
   CornerDownRight,
   ThumbsUp,
@@ -37,12 +38,16 @@ export default function ChapterReaderPage() {
   const storyId = params?.storyId as string;
   const { currentStory } = useStory(storyId);
   const { isBookmarked, toggleBookmark, addSavedQuote, updateReadingProgress } = useLibrary();
+  const { fontSize, readingTheme } = useStoryStore();
 
   // Active Chapter & Node State
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
   const [currentNodeId, setCurrentNodeId] = useState<string>("node-1");
   const [history, setHistory] = useState<string[]>([]);
   const [scrollProgress, setScrollProgress] = useState(0);
+
+  // Focus Read Mode & Customizer State
+  const [isFocusReadMode, setIsFocusReadMode] = useState(false);
 
   // Chapter Engagement State
   const [chapterLiked, setChapterLiked] = useState(false);
@@ -141,6 +146,17 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
       content: "The tale continues in the oral archives...",
       choices: [],
     };
+
+  // Keyboard shortcut listener (Escape exits Focus Mode)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isFocusReadMode) {
+        setIsFocusReadMode(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isFocusReadMode]);
 
   // Track scroll progress
   useEffect(() => {
@@ -298,10 +314,34 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
 
   const bookmarked = isBookmarked(currentStory.id);
 
+  // Dynamic Theme Class Mappings
+  const themePageBg =
+    readingTheme === "night"
+      ? "bg-[#121110] text-[#E6E1D5]"
+      : readingTheme === "sandstone"
+      ? "bg-[#F4ECD8] text-[#3D2612]"
+      : "bg-[#FAF6EE] text-stone-900";
+
+  const themeCardBg =
+    readingTheme === "night"
+      ? "bg-[#1A1817] text-[#E6E1D5] border-[#2D2A26] shadow-2xl"
+      : readingTheme === "sandstone"
+      ? "bg-[#FDFBF7] text-[#3D2612] border-[#E2D2B8] shadow-sm"
+      : "bg-white text-stone-900 border-[#E8DFD1] shadow-sm";
+
+  const fontSizeClass =
+    fontSize === "sm"
+      ? "text-sm sm:text-base leading-relaxed"
+      : fontSize === "lg"
+      ? "text-lg sm:text-xl leading-relaxed sm:leading-loose"
+      : fontSize === "xl"
+      ? "text-xl sm:text-2xl leading-relaxed sm:leading-loose"
+      : "text-base sm:text-lg leading-relaxed sm:leading-loose";
+
   return (
-    <div className="min-h-screen bg-[#FAF8F5] pb-24 relative px-4 sm:px-6 lg:px-8">
+    <div className={`min-h-screen ${themePageBg} pb-24 relative transition-colors duration-300 px-3 sm:px-6 lg:px-8`}>
       {/* Top Floating Reading Progress Bar */}
-      <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-stone-200">
+      <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-stone-300/30">
         <div
           className="h-full bg-[#680C07] transition-all duration-150"
           style={{ width: `${scrollProgress}%` }}
@@ -309,21 +349,31 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
       </div>
 
       {/* Reader Top Navigation Bar */}
-      <header className="sticky top-0 z-40 bg-[#FAF8F5]/90 backdrop-blur-md border-b border-stone-200 py-3 px-4 sm:px-8">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+      <header
+        className={`sticky top-0 z-40 backdrop-blur-md border-b py-3 px-4 sm:px-8 transition-colors duration-300 ${
+          readingTheme === "night"
+            ? "bg-[#121110]/90 border-[#2D2A26]"
+            : readingTheme === "sandstone"
+            ? "bg-[#F4ECD8]/90 border-[#E2D2B8]"
+            : "bg-[#FAF6EE]/90 border-stone-200/80"
+        }`}
+      >
+        <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <Link
               href={`/story/${currentStory.id}`}
-              className="p-2 rounded-xl text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-colors"
+              className={`p-2 rounded-xl transition-colors ${
+                readingTheme === "night" ? "hover:bg-stone-800 text-stone-300" : "hover:bg-stone-200/60 text-stone-700"
+              }`}
               aria-label="Back to story details"
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>
             <div className="min-w-0">
-              <h1 className="text-xs sm:text-sm font-bold text-stone-900 truncate font-serif">
+              <h1 className="text-xs sm:text-sm font-bold truncate font-serif">
                 {currentStory.title}
               </h1>
-              <p className="text-[10px] sm:text-xs text-[#680C07] font-medium truncate">
+              <p className="text-[10px] sm:text-xs text-[#680C07] font-semibold truncate">
                 Chapter {currentChapter.number}: {currentChapter.title}
               </p>
             </div>
@@ -331,6 +381,30 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
 
           {/* Reader Tools & Customizers */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Focus Read Mode Toggle */}
+            <Button
+              size="sm"
+              onClick={() => setIsFocusReadMode(!isFocusReadMode)}
+              className={`gap-1.5 text-xs font-bold rounded-xl transition-all ${
+                isFocusReadMode
+                  ? "bg-[#680C07] text-white shadow-sm"
+                  : "bg-white text-stone-800 border border-stone-300 hover:bg-stone-100"
+              }`}
+              title={isFocusReadMode ? "Exit Focus Mode (Esc)" : "Enter Focus Read Mode"}
+            >
+              {isFocusReadMode ? (
+                <>
+                  <Minimize2 className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Exit Focus</span>
+                </>
+              ) : (
+                <>
+                  <Maximize2 className="w-3.5 h-3.5 text-[#680C07]" />
+                  <span className="hidden sm:inline">Focus Read Mode</span>
+                </>
+              )}
+            </Button>
+
             <TypographyCustomizer />
 
             <button
@@ -375,7 +449,26 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
       </header>
 
       {/* Main Prose & Reader Container */}
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 space-y-8">
+      <main className={`mx-auto px-2 sm:px-6 pt-6 sm:pt-10 space-y-8 transition-all duration-300 ${
+        isFocusReadMode ? "max-w-4xl" : "max-w-3xl"
+      }`}>
+        {/* Focus Mode Active Banner */}
+        {isFocusReadMode && (
+          <div className="flex items-center justify-between p-3.5 bg-[#680C07] text-white rounded-2xl shadow-md text-xs">
+            <div className="flex items-center gap-2">
+              <BookOpenCheck className="w-4 h-4 text-amber-300" />
+              <span className="font-semibold">Distraction-Free Focus Read Mode Active</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsFocusReadMode(false)}
+              className="px-3 py-1 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-[11px] transition-colors"
+            >
+              Press ESC or Exit Focus
+            </button>
+          </div>
+        )}
+
         {/* Oral Audio Player */}
         {currentStory.hasAudioNarration && (
           <AudioPlayer
@@ -404,33 +497,33 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
         )}
 
         {/* Reader Prose Card */}
-        <article className="bg-white rounded-3xl border border-stone-200 p-8 sm:p-12 shadow-sm space-y-6">
-          <div className="space-y-2 border-b border-stone-100 pb-5">
-            <div className="flex items-center justify-between text-xs text-stone-500">
+        <article className={`rounded-3xl p-6 sm:p-12 space-y-6 transition-all duration-300 ${themeCardBg}`}>
+          <div className="space-y-2 border-b border-stone-200/50 pb-5">
+            <div className="flex items-center justify-between text-xs opacity-75">
               <span className="font-semibold uppercase tracking-wider text-[#680C07]">
                 Chapter {currentChapter.number} of {chapters.length || 1}
               </span>
               <span>{currentChapter.readTimeMinutes} min estimated read</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900 font-serif">
+            <h2 className="text-2xl sm:text-3xl font-extrabold font-serif">
               {currentNode.title || currentChapter.title}
             </h2>
           </div>
 
-          {/* Node Prose Content */}
-          <div className="text-stone-800 text-base sm:text-lg leading-relaxed sm:leading-loose whitespace-pre-line font-serif select-text">
+          {/* Node Prose Content with Custom Font Size */}
+          <div className={`${fontSizeClass} whitespace-pre-line font-serif select-text`}>
             {currentNode.content}
           </div>
 
           {/* Moral Lesson / Ending Banner */}
           {currentNode.isEnding && (
-            <div className="p-5 bg-white rounded-2xl border border-[#680C07]/30 space-y-2 mt-8 animate-in fade-in duration-300">
+            <div className="p-5 rounded-2xl border border-[#680C07]/30 space-y-2 mt-8 animate-in fade-in duration-300">
               <div className="flex items-center gap-2 text-[#680C07] font-bold text-sm">
                 <Sparkles className="w-4 h-4 text-[#680C07]" />
                 {currentNode.endingType === "triumph" ? "Tale Completed with Honor" : "The Lesson of the Ancients"}
               </div>
               {currentNode.moralLesson && (
-                <p className="text-xs sm:text-sm text-stone-700 italic">
+                <p className="text-xs sm:text-sm italic opacity-90">
                   &ldquo;{currentNode.moralLesson}&rdquo;
                 </p>
               )}
@@ -458,63 +551,65 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
 
           {/* Branching Choice Prompt */}
           {!currentNode.isEnding && currentNode.choices && currentNode.choices.length > 0 && (
-            <div className="pt-6 border-t border-stone-100">
+            <div className="pt-6 border-t border-stone-200/50">
               <ChoicePrompt choices={currentNode.choices} onSelectChoice={handleChoice} />
             </div>
           )}
         </article>
 
-        {/* Chapter Bottom Actions & Like */}
-        <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-white rounded-2xl border border-stone-200 shadow-xs">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setChapterLiked(!chapterLiked);
-                setChapterLikesCount((prev) => (chapterLiked ? prev - 1 : prev + 1));
-              }}
-              className={`border-stone-300 rounded-xl text-xs ${
-                chapterLiked ? "bg-red-50 border-red-300 text-red-600 font-semibold" : "text-stone-700"
-              }`}
-            >
-              <Heart className={`w-4 h-4 mr-1.5 ${chapterLiked ? "fill-red-500 text-red-500" : ""}`} />
-              {chapterLiked ? "Liked Chapter" : "Like Chapter"} ({chapterLikesCount})
-            </Button>
+        {/* Chapter Bottom Actions & Navigation */}
+        {!isFocusReadMode && (
+          <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-white rounded-2xl border border-stone-200 shadow-xs">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setChapterLiked(!chapterLiked);
+                  setChapterLikesCount((prev) => (chapterLiked ? prev - 1 : prev + 1));
+                }}
+                className={`border-stone-300 rounded-xl text-xs ${
+                  chapterLiked ? "bg-red-50 border-red-300 text-red-600 font-semibold" : "text-stone-700"
+                }`}
+              >
+                <Heart className={`w-4 h-4 mr-1.5 ${chapterLiked ? "fill-red-500 text-red-500" : ""}`} />
+                {chapterLiked ? "Liked Chapter" : "Like Chapter"} ({chapterLikesCount})
+              </Button>
 
-            <Button
-              variant="outline"
-              onClick={handleShare}
-              className="border-stone-300 text-stone-700 rounded-xl text-xs"
-            >
-              <Share2 className="w-3.5 h-3.5 mr-1.5" /> Share
-            </Button>
-          </div>
+              <Button
+                variant="outline"
+                onClick={handleShare}
+                className="border-stone-300 text-stone-700 rounded-xl text-xs"
+              >
+                <Share2 className="w-3.5 h-3.5 mr-1.5" /> Share
+              </Button>
+            </div>
 
-          {/* Chapter Navigation Pagination */}
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={currentChapterIndex === 0}
-              onClick={() => handleChapterSelect(currentChapter.number - 1)}
-              className="border-stone-300 rounded-xl text-xs"
-            >
-              <ChevronLeft className="w-4 h-4 mr-1" /> Previous Chapter
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={currentChapterIndex >= chapters.length - 1}
-              onClick={() => handleChapterSelect(currentChapter.number + 1)}
-              className="border-stone-300 rounded-xl text-xs bg-[#680C07]/10 border-[#680C07]/20 text-[#680C07] font-semibold"
-            >
-              Next Chapter <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
+            {/* Chapter Navigation Pagination */}
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={currentChapterIndex === 0}
+                onClick={() => handleChapterSelect(currentChapter.number - 1)}
+                className="border-stone-300 rounded-xl text-xs"
+              >
+                <ChevronLeft className="w-4 h-4 mr-1" /> Previous Chapter
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={currentChapterIndex >= chapters.length - 1}
+                onClick={() => handleChapterSelect(currentChapter.number + 1)}
+                className="border-stone-300 rounded-xl text-xs bg-[#680C07]/10 border-[#680C07]/20 text-[#680C07] font-semibold"
+              >
+                Next Chapter <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Chapter Comments Section Drawer */}
-        {showComments && (
+        {showComments && !isFocusReadMode && (
           <section className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm space-y-6 animate-in fade-in slide-in-from-top-3 duration-200">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
               <h3 className="text-lg font-bold text-stone-900 font-serif flex items-center gap-2">
