@@ -32,7 +32,7 @@ export function SupportInkomaBanner() {
           <p className="text-stone-200 text-xs sm:text-sm leading-relaxed">
             Inkoma is 100% committed to digitizing oral traditions, indigenous dialects, and branching interactive mythology. Your patron support directly funds creator stipends, elder audio recording sessions, and open folklore archives.
           </p>
-          <div className="flex items-center gap-4 text-xs text-stone-200/90 pt-1">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-stone-200/90 pt-1">
             <span className="flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Secure Paystack Patron
             </span>

@@ -165,7 +165,7 @@ export function CategoryCarousel() {
           <Link
             key={cat.id}
             href={cat.href}
-            className="group relative flex flex-col justify-between w-[240px] sm:w-[260px] shrink-0 snap-start rounded-2xl border border-stone-200 bg-white overflow-hidden p-4 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-300"
+            className="group relative flex flex-col justify-between w-[76vw] max-w-[260px] sm:w-[260px] shrink-0 snap-start rounded-2xl border border-stone-200 bg-white overflow-hidden p-4 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-300 min-w-0"
           >
             {/* Background Image Overlay */}
             <div className="relative h-32 w-full rounded-xl overflow-hidden mb-3 bg-stone-900">

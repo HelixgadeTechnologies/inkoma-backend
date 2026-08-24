@@ -86,7 +86,7 @@ export function StoryShelf({ title, subtitle, icon, stories, viewAllHref }: Stor
           return (
             <div
               key={story.id}
-              className="group relative flex flex-col bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 w-[82vw] max-w-[300px] sm:max-w-none sm:w-auto shrink-0 sm:shrink snap-start"
+              className="group relative flex flex-col bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 w-[80vw] max-w-[285px] sm:max-w-none sm:w-auto shrink-0 sm:shrink snap-start min-w-0"
             >
               {/* Cover Image */}
               <Link href={`/story/${story.id}`} className="relative h-48 w-full overflow-hidden bg-stone-100 block">
@@ -99,8 +99,8 @@ export function StoryShelf({ title, subtitle, icon, stories, viewAllHref }: Stor
                 <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent" />
 
                 {/* Top Badges */}
-                <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
-                  <Badge className="bg-[#680C07] text-white backdrop-blur-xs text-[10px] font-medium border-0 shadow-xs">
+                <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10 gap-2 min-w-0">
+                  <Badge className="bg-[#680C07] text-white backdrop-blur-xs text-[10px] font-medium border-0 shadow-xs truncate max-w-[140px]">
                     {story.tradition}
                   </Badge>
 
