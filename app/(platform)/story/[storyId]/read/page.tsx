@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useStory, useStoryStore } from "@/hooks/useStory";
 import { useLibrary } from "@/hooks/useLibrary";
-import { StoryNode, StoryChapter, StoryChoice } from "@/types";
+import { StoryChapter } from "@/types";
 import {
   ArrowLeft,
   ChevronLeft,
@@ -26,10 +26,8 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { AudioPlayer } from "@/components/features/reader/audio-player";
 import { TypographyCustomizer } from "@/components/features/reader/typography-customizer";
-import { ChoicePrompt } from "@/components/features/reader/choice-prompt";
 import { ChapterNavigator } from "@/components/features/reader/chapter-navigator";
 
 export default function ChapterReaderPage() {
@@ -40,13 +38,11 @@ export default function ChapterReaderPage() {
   const { isBookmarked, toggleBookmark, addSavedQuote, updateReadingProgress } = useLibrary();
   const { fontSize, readingTheme } = useStoryStore();
 
-  // Active Chapter & Node State
+  // Active Chapter State
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
-  const [currentNodeId, setCurrentNodeId] = useState<string>("node-1");
-  const [history, setHistory] = useState<string[]>([]);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  // Focus Read Mode & Customizer State
+  // Focus Read Mode State
   const [isFocusReadMode, setIsFocusReadMode] = useState(false);
 
   // Chapter Engagement State
@@ -91,61 +87,13 @@ export default function ChapterReaderPage() {
     readTimeMinutes: 5,
     status: "published" as const,
     likesCount: 120,
-    rootNodeId: "node-1",
-    nodes: {
-      "node-1": {
-        id: "node-1",
-        title: "The Celestial Court of Nyame",
-        content: `In the celestial court above the clouds of Asase Yaa, Nyame the Sky God looked down upon Kwaku Anansi with amused eyes.
+    content: `In the celestial court above the clouds of Asase Yaa, Nyame the Sky God looked down upon Kwaku Anansi with amused eyes.
 
 "You ask for that which cannot be contained, little weaver," Nyame spoke, his voice echoing like rolling thunder across the canopy. "All the wisdom in the heavens and earth resides in this clay pot. Guard it with humility, or its weight will scatter upon the four winds."
 
-Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling legs.`,
-        choices: [
-          {
-            id: "c1",
-            label: "Pledge to share the calabash with the village elders",
-            targetNodeId: "node-2a",
-            consequenceHint: "Honors communal traditions...",
-          },
-          {
-            id: "c2",
-            label: "Flee into the deep baobab forest to hoard the knowledge",
-            targetNodeId: "node-2b",
-            consequenceHint: "Fosters secret pride...",
-          },
-        ],
-      },
-      "node-2a": {
-        id: "node-2a",
-        title: "The Village Gathering",
-        content: `The elders beneath the shade of the sacred silk-cotton tree welcomed Anansi with song and praise. Realizing that wisdom is like water that nourishes only when shared, Anansi uncapped the calabash, letting streams of golden light scatter across every village on earth.`,
-        choices: [],
-        isEnding: true,
-        endingType: "triumph",
-        moralLesson: "True wisdom is communal; no single creature can claim its entirety.",
-      },
-      "node-2b": {
-        id: "node-2b",
-        title: "The Shattered Pot",
-        content: `Unable to scale the baobab with the heavy pot on his belly, Anansi grew enraged when his young child suggested tying it behind his back. In fury, Anansi hurled the pot to the ground, shattering it into pieces. A great wind swept the wisdom across the four corners of the earth.`,
-        choices: [],
-        isEnding: true,
-        endingType: "lesson",
-        moralLesson: "Pride shatters what humility was meant to preserve.",
-      },
-    },
+Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling legs. He journeyed across ancient plains, learning that wisdom is like water that nourishes only when shared with the human collective.`,
     updatedAt: "2026-01-10",
   };
-
-  const currentNode: StoryNode =
-    currentChapter.nodes[currentNodeId] ||
-    currentChapter.nodes[currentChapter.rootNodeId] || {
-      id: "default",
-      title: currentChapter.title,
-      content: "The tale continues in the oral archives...",
-      choices: [],
-    };
 
   // Keyboard shortcut listener (Escape exits Focus Mode)
   useEffect(() => {
@@ -217,25 +165,10 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
     setTimeout(() => setQuoteSavedToast(false), 3000);
   };
 
-  const handleChoice = (choice: StoryChoice | string) => {
-    const targetNodeId = typeof choice === "string" ? choice : choice.targetNodeId;
-    setHistory((prev) => [...prev, currentNodeId]);
-    setCurrentNodeId(targetNodeId);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const handleRestart = () => {
-    setHistory([]);
-    setCurrentNodeId(currentChapter.rootNodeId);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   const handleChapterSelect = (chapterNum: number) => {
     const targetIdx = chapters.findIndex((c) => c.number === chapterNum);
     if (targetIdx !== -1) {
       setCurrentChapterIndex(targetIdx);
-      setCurrentNodeId(chapters[targetIdx].rootNodeId);
-      setHistory([]);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -473,7 +406,7 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
         {currentStory.hasAudioNarration && (
           <AudioPlayer
             title={`${currentStory.title} • Ch. ${currentChapter.number}`}
-            textToRead={currentNode.content}
+            textToRead={currentChapter.content || ""}
           />
         )}
 
@@ -503,58 +436,17 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
               <span className="font-semibold uppercase tracking-wider text-[#680C07]">
                 Chapter {currentChapter.number} of {chapters.length || 1}
               </span>
-              <span>{currentChapter.readTimeMinutes} min estimated read</span>
+              <span>{currentChapter.readTimeMinutes || 5} min estimated read</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold font-serif">
-              {currentNode.title || currentChapter.title}
+              {currentChapter.title}
             </h2>
           </div>
 
-          {/* Node Prose Content with Custom Font Size */}
+          {/* Chapter Content Prose */}
           <div className={`${fontSizeClass} whitespace-pre-line font-serif select-text`}>
-            {currentNode.content}
+            {currentChapter.content}
           </div>
-
-          {/* Moral Lesson / Ending Banner */}
-          {currentNode.isEnding && (
-            <div className="p-5 rounded-2xl border border-[#680C07]/30 space-y-2 mt-8 animate-in fade-in duration-300">
-              <div className="flex items-center gap-2 text-[#680C07] font-bold text-sm">
-                <Sparkles className="w-4 h-4 text-[#680C07]" />
-                {currentNode.endingType === "triumph" ? "Tale Completed with Honor" : "The Lesson of the Ancients"}
-              </div>
-              {currentNode.moralLesson && (
-                <p className="text-xs sm:text-sm italic opacity-90">
-                  &ldquo;{currentNode.moralLesson}&rdquo;
-                </p>
-              )}
-              <div className="pt-2 flex items-center gap-3">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleRestart}
-                  className="bg-white border-[#680C07]/30 text-[#680C07] text-xs rounded-xl"
-                >
-                  <RotateCcw className="w-3.5 h-3.5 mr-1" /> Replay this Chapter
-                </Button>
-                {currentChapterIndex < chapters.length - 1 && (
-                  <Button
-                    size="sm"
-                    onClick={() => handleChapterSelect(currentChapterIndex + 2)}
-                    className="bg-[#680C07] hover:bg-[#520905] text-white text-xs rounded-xl"
-                  >
-                    Next Chapter <ChevronRight className="w-3.5 h-3.5 ml-1" />
-                  </Button>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Branching Choice Prompt */}
-          {!currentNode.isEnding && currentNode.choices && currentNode.choices.length > 0 && (
-            <div className="pt-6 border-t border-stone-200/50">
-              <ChoicePrompt choices={currentNode.choices} onSelectChoice={handleChoice} />
-            </div>
-          )}
         </article>
 
         {/* Chapter Bottom Actions & Navigation */}

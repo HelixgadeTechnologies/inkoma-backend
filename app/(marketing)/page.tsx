@@ -25,11 +25,11 @@ export default function HomePage() {
         </div>
 
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-stone-900 tracking-tight font-serif max-w-3xl mx-auto leading-tight">
-          Where Ancient Lore Meets <span className="text-[#680C07]">Interactive Destiny</span>
+          Where Ancient Lore Meets <span className="text-[#680C07]">Living Storytelling</span>
         </h1>
 
         <p className="text-stone-600 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-          Step into centuries of African oral traditions, mythological epics, and trickster wisdom. Read, listen with authentic oral voice narration, and forge your own path through branching moral choices.
+          Step into centuries of African oral traditions, mythological epics, and trickster wisdom. Read, listen with authentic oral voice narration, and explore rich chapter-by-chapter folklore books.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -63,8 +63,8 @@ export default function HomePage() {
           <div className="flex items-center gap-3 p-3 bg-white/70 rounded-2xl border border-stone-200">
             <Compass className="w-5 h-5 text-[#680C07] shrink-0" />
             <div>
-              <p className="text-xs font-bold text-stone-900">Branching Tales</p>
-              <p className="text-[10px] text-stone-500">Choice-driven endings</p>
+              <p className="text-xs font-bold text-stone-900">Book Chapters</p>
+              <p className="text-[10px] text-stone-500">Structured folklore lore</p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 bg-white/70 rounded-2xl border border-stone-200">

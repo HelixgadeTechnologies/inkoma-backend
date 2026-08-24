@@ -7,33 +7,24 @@ import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Save,
-  Sparkles,
-  GitBranch,
-  GitFork,
-  Play,
   Check,
-  Eye,
   BookOpen,
   Volume2,
-  Users,
   Send,
-  Layers,
-  HelpCircle,
   Clock,
-  Heart,
   ChevronRight,
   ChevronLeft,
+  FileText,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select } from "@/components/ui/select";
 import { StoryCoverPicker, FOLKLORE_COVER_PRESETS } from "@/components/features/editor/story-cover-picker";
-import { ChapterListBuilder } from "@/components/features/editor/chapter-list-builder";
-import { BranchNodeCreator } from "@/components/features/editor/branch-node-creator";
-import { CharacterTree } from "@/components/features/editor/character-tree";
+import { ChapterListBuilder, calculateReadTime } from "@/components/features/editor/chapter-list-builder";
 import { TRADITIONS, GENRES } from "@/config/genres";
-import { StoryChapter, StoryNode, StoryStatus } from "@/types";
+import { StoryChapter, StoryStatus } from "@/types";
 
 export default function StudioNewStoryPage() {
   const router = useRouter();
@@ -53,68 +44,38 @@ export default function StudioNewStoryPage() {
   const [tagInput, setTagInput] = React.useState("");
 
   // Format Toggles
-  const [isInteractive, setIsInteractive] = React.useState(true);
   const [hasAudioNarration, setHasAudioNarration] = React.useState(true);
   const [enableTips, setEnableTips] = React.useState(true);
   const [status, setStatus] = React.useState<StoryStatus>("ongoing");
 
-  // --- Step 2: Chapters State ---
+  // --- Step 2: Book Chapters State ---
+  const defaultInitialContent = `High priest Okomfo Anokye struck his golden staff upon the sacred soil of Kumasi. A fierce storm gathered overhead as the clouds parted to reveal a solid gold stool descending from the heavens...`;
+
   const [chapters, setChapters] = React.useState<StoryChapter[]>([
     {
       id: "chapter-1",
       storyId: "draft-story",
       number: 1,
       chapterNumber: 1,
-      title: "Episode 1: The Gathering at Kumasi",
+      title: "Chapter 1: The Gathering at Kumasi",
       summary: "The paramount chiefs gather under the sacred silk-cotton tree to witness the miracle of Okomfo Anokye.",
       synopsis: "The paramount chiefs gather under the sacred silk-cotton tree to witness the miracle of Okomfo Anokye.",
-      content: "High priest Okomfo Anokye struck his golden staff upon the sacred soil of Kumasi...",
+      content: defaultInitialContent,
       status: "draft",
-      estimatedReadTime: 10,
+      estimatedReadTime: calculateReadTime(defaultInitialContent),
       publishedAt: new Date().toISOString().split("T")[0],
       updatedAt: new Date().toISOString().split("T")[0],
-      isInteractive: true,
       hasAudioNarration: true,
-      audioNarrationUrl: "https://example.com/audio-episode-1.mp3",
+      audioNarrationUrl: "https://example.com/audio-chapter-1.mp3",
       readsCount: 0,
       likesCount: 0,
       commentsCount: 0,
-      rootNodeId: "node-root",
-      nodes: {
-        "node-root": {
-          id: "node-root",
-          title: "The Descent from the Clouds",
-          content: `High priest Okomfo Anokye struck his golden staff upon the sacred soil of Kumasi. A fierce storm gathered overhead as the clouds parted to reveal a solid gold stool descending from the heavens.`,
-          choices: [
-            {
-              id: "choice-1",
-              label: "Proclaim the stool as the sacred soul (Sunsum) of the entire Ashanti nation",
-              targetNodeId: "node-sunsum-unite",
-              consequenceHint: "Unites the seven royal clans under one unified destiny...",
-            },
-            {
-              id: "choice-2",
-              label: "Bury the golden swords around the tree to seal an eternal pact",
-              targetNodeId: "node-swords-covenant",
-              consequenceHint: "Tests the loyalty of the paramount chiefs...",
-            },
-          ],
-        },
-      },
     },
   ]);
 
-  // Selected Chapter for Node Editing
+  // Selected Chapter for Editing
   const [selectedChapterId, setSelectedChapterId] = React.useState<string>("chapter-1");
   const activeChapter = chapters.find((c) => c.id === selectedChapterId) || chapters[0];
-
-  // Active node inside active chapter
-  const activeRootNode = activeChapter?.nodes?.[activeChapter?.rootNodeId || "node-root"] || {
-    id: "node-root",
-    title: "Chapter Entry Node",
-    content: "Draft your chapter choices here...",
-    choices: [],
-  };
 
   // --- Actions ---
   const [saved, setSaved] = React.useState(false);
@@ -131,17 +92,43 @@ export default function StudioNewStoryPage() {
     setSubGenres(subGenres.filter((t) => t !== tag));
   };
 
-  const handleUpdateNode = (updatedNode: StoryNode) => {
+  const handleAddNewChapter = () => {
+    const nextNum = chapters.length + 1;
+    const defaultContent = `The sun rose higher over the sacred hills as Chapter ${nextNum} unfolded...`;
+    const newChap: StoryChapter = {
+      id: `chapter-${Date.now()}`,
+      storyId: "draft-story",
+      number: nextNum,
+      chapterNumber: nextNum,
+      title: `Chapter ${nextNum}: The Covenant of Kings`,
+      summary: "The journey deepens as ancestral secrets come to light.",
+      synopsis: "The journey deepens as ancestral secrets come to light.",
+      content: defaultContent,
+      estimatedReadTime: calculateReadTime(defaultContent),
+      publishedAt: new Date().toISOString().split("T")[0],
+      updatedAt: new Date().toISOString().split("T")[0],
+      hasAudioNarration: false,
+      readsCount: 0,
+      likesCount: 0,
+      commentsCount: 0,
+    };
+
+    setChapters((prev) => [...prev, newChap]);
+    setSelectedChapterId(newChap.id);
+  };
+
+  const handleUpdateActiveChapter = (field: keyof StoryChapter, value: any) => {
     setChapters((prev) =>
       prev.map((chap) => {
         if (chap.id === selectedChapterId) {
-          return {
+          const updated = {
             ...chap,
-            nodes: {
-              ...chap.nodes,
-              [updatedNode.id]: updatedNode,
-            },
+            [field]: value,
           };
+          if (field === "content") {
+            updated.estimatedReadTime = calculateReadTime(value);
+          }
+          return updated;
         }
         return chap;
       })
@@ -156,6 +143,11 @@ export default function StudioNewStoryPage() {
       router.push("/studio");
     }, 1200);
   };
+
+  const activeWordCount = activeChapter?.content
+    ? activeChapter.content.trim().split(/\s+/).filter(Boolean).length
+    : 0;
+  const activeReadTime = calculateReadTime(activeChapter?.content);
 
   return (
     <div className="space-y-8 pb-24 w-full">
@@ -204,18 +196,18 @@ export default function StudioNewStoryPage() {
             Inkoma Story Studio
           </span>
           <h1 className="text-3xl font-extrabold text-stone-900 font-serif tracking-tight mt-0.5">
-            Create & Publish Folklore Epic
+            Create & Publish Book Chapters
           </h1>
           <p className="text-sm text-stone-600">
-            Pen traditional oral narratives, build branching interactive paths, attach audio episodes, and manage character lore.
+            Write oral narratives, structure your book into chapters, attach audio recordings, and publish to the folklore archive.
           </p>
         </div>
 
         {/* Wizard Steps Indicator */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-stone-100 p-1.5 rounded-2xl border border-stone-200">
           {[
-            { step: 1, label: "1. Story Identity", icon: BookOpen },
-            { step: 2, label: "2. Episodes & Branches", icon: GitBranch },
+            { step: 1, label: "1. Story Identity", icon: FileText },
+            { step: 2, label: "2. Book Chapters", icon: BookOpen },
             { step: 3, label: "3. Review & Publish", icon: Check },
           ].map((s) => {
             const Icon = s.icon;
@@ -258,7 +250,7 @@ export default function StudioNewStoryPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
-                  Story Title *
+                  Book Title *
                 </label>
                 <Input
                   value={title}
@@ -392,20 +384,7 @@ export default function StudioNewStoryPage() {
             </div>
 
             {/* Format Toggles */}
-            <div className="pt-4 border-t border-stone-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <label className="flex items-center justify-between p-3.5 bg-stone-50 rounded-2xl border border-stone-200 cursor-pointer">
-                <div>
-                  <span className="font-bold text-stone-900 text-xs block">Interactive Branching Paths</span>
-                  <span className="text-[11px] text-stone-500">Allow readers to make choice decisions shaping the story</span>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={isInteractive}
-                  onChange={(e) => setIsInteractive(e.target.checked)}
-                  className="rounded text-[#680C07] focus:ring-[#680C07] w-4 h-4"
-                />
-              </label>
-
+            <div className="pt-4 border-t border-stone-100">
               <label className="flex items-center justify-between p-3.5 bg-stone-50 rounded-2xl border border-stone-200 cursor-pointer">
                 <div>
                   <span className="font-bold text-stone-900 text-xs block">Audio Narration Enabled</span>
@@ -428,13 +407,13 @@ export default function StudioNewStoryPage() {
               onClick={() => setActiveStep(2)}
               className="bg-[#680C07] hover:bg-[#520905] text-white text-xs font-bold rounded-xl gap-1.5 px-6 py-5"
             >
-              Continue to Episodes & Branches <ChevronRight className="w-4 h-4" />
+              Continue to Book Chapters <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         </div>
       )}
 
-      {/* STEP 2: EPISODES & INTERACTIVE BRANCHES */}
+      {/* STEP 2: BOOK CHAPTERS CREATOR */}
       {activeStep === 2 && (
         <div className="space-y-6 animate-in fade-in duration-200">
           {/* Chapter Manager List */}
@@ -444,27 +423,111 @@ export default function StudioNewStoryPage() {
             onSelectChapterToEdit={(chap) => setSelectedChapterId(chap.id)}
           />
 
-          {/* Interactive Branch Node Editor */}
+          {/* Chapter Content & Oral Prose Editor */}
           {activeChapter && (
-            <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-7 shadow-xs space-y-4">
+            <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-7 shadow-xs space-y-5">
               <div className="flex items-center justify-between border-b border-stone-100 pb-3">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[#680C07]">
-                    Branch Node Editor • {activeChapter.title}
+                    Book Chapter Content Editor
                   </span>
                   <h3 className="text-base font-bold text-stone-900 font-serif">
-                    Interactive Path & Choices
+                    {activeChapter.title}
                   </h3>
                 </div>
                 <Badge variant="gold" className="text-[10px]">
-                  {Object.keys(activeChapter.nodes || {}).length} Node Choices
+                  Chapter {activeChapter.chapterNumber} Selected
                 </Badge>
               </div>
 
-              <BranchNodeCreator
-                node={activeRootNode}
-                onChange={(updatedNode) => handleUpdateNode(updatedNode)}
-              />
+              {/* Chapter Meta Details & Auto Calculated Read Time */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
+                    Chapter Title *
+                  </label>
+                  <Input
+                    value={activeChapter.title}
+                    onChange={(e) => handleUpdateActiveChapter("title", e.target.value)}
+                    placeholder="e.g. Chapter 1: The Gathering at Kumasi"
+                    className="bg-white border-stone-200 text-stone-900 font-serif font-bold text-sm"
+                  />
+                </div>
+
+                <div className="space-y-1.5 flex flex-col justify-end">
+                  <span className="text-xs font-bold text-stone-700 uppercase tracking-wider block">
+                    Estimated Reading Time (Auto-Calculated)
+                  </span>
+                  <div className="flex items-center gap-2 p-2.5 bg-[#680C07]/10 border border-[#680C07]/20 rounded-xl text-[#680C07] text-xs font-bold">
+                    <Clock className="w-4 h-4 shrink-0 text-[#680C07]" />
+                    <span>~{activeReadTime} min read ({activeWordCount} words)</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Chapter Summary */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
+                  Chapter Teaser / Summary
+                </label>
+                <Input
+                  value={activeChapter.synopsis || activeChapter.summary || ""}
+                  onChange={(e) => {
+                    handleUpdateActiveChapter("synopsis", e.target.value);
+                    handleUpdateActiveChapter("summary", e.target.value);
+                  }}
+                  placeholder="Brief chapter summary for readers navigating the book table of contents..."
+                  className="bg-white border-stone-200 text-xs text-stone-900"
+                />
+              </div>
+
+              {/* Oral Narration Audio URL */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
+                  Oral Audio Recording URL (Optional)
+                </label>
+                <Input
+                  value={activeChapter.audioNarrationUrl || ""}
+                  onChange={(e) => {
+                    handleUpdateActiveChapter("audioNarrationUrl", e.target.value);
+                    handleUpdateActiveChapter("hasAudioNarration", Boolean(e.target.value.trim()));
+                  }}
+                  placeholder="https://example.com/audio-chapter-1.mp3"
+                  className="bg-white border-stone-200 text-xs text-stone-900"
+                />
+              </div>
+
+              {/* Chapter Prose Text Content */}
+              <div className="space-y-1.5 pt-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
+                    Chapter Oral Prose & Story Text *
+                  </label>
+                  <span className="text-[11px] text-stone-500 font-mono">
+                    {activeWordCount} words • {activeChapter.content?.length || 0} characters
+                  </span>
+                </div>
+                <textarea
+                  rows={12}
+                  value={activeChapter.content || ""}
+                  onChange={(e) => handleUpdateActiveChapter("content", e.target.value)}
+                  placeholder="Write or paste your full book chapter text here..."
+                  className="w-full bg-[#FAF8F5] border border-stone-200 rounded-2xl p-4 text-sm text-stone-900 font-serif leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#680C07]"
+                  required
+                />
+              </div>
+
+              {/* Button to add another chapter directly under active chapter editor */}
+              <div className="pt-4 border-t border-stone-100 flex justify-center">
+                <Button
+                  type="button"
+                  onClick={handleAddNewChapter}
+                  className="bg-[#680C07] hover:bg-[#520905] text-white text-xs font-bold rounded-xl gap-2 px-6 py-5 shadow-sm"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Chapter {chapters.length + 1} to Book</span>
+                </Button>
+              </div>
             </div>
           )}
 
@@ -476,7 +539,7 @@ export default function StudioNewStoryPage() {
               onClick={() => setActiveStep(1)}
               className="text-xs rounded-xl border-stone-300 text-stone-700 gap-1.5"
             >
-              <ChevronLeft className="w-4 h-4" /> Back to Metadata
+              <ChevronLeft className="w-4 h-4" /> Back to Story Identity
             </Button>
 
             <Button
@@ -512,7 +575,7 @@ export default function StudioNewStoryPage() {
 
                   <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-white text-[11px] font-medium">
                     <span className="flex items-center gap-1 drop-shadow-xs">
-                      <Clock className="w-3 h-3 text-red-200" /> 10 min
+                      <Clock className="w-3 h-3 text-red-200" /> ~{activeReadTime} min
                     </span>
                     <div className="flex items-center gap-2">
                       {hasAudioNarration && (
@@ -520,11 +583,9 @@ export default function StudioNewStoryPage() {
                           <Volume2 className="w-2.5 h-2.5" /> Audio
                         </span>
                       )}
-                      {isInteractive && (
-                        <span className="flex items-center gap-1 bg-black/40 px-1.5 py-0.5 rounded-md text-[10px] text-red-200">
-                          <GitFork className="w-2.5 h-2.5" /> {chapters.length} episodes
-                        </span>
-                      )}
+                      <span className="flex items-center gap-1 bg-black/40 px-1.5 py-0.5 rounded-md text-[10px] text-red-200">
+                        <BookOpen className="w-2.5 h-2.5" /> {chapters.length} chapters
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -555,8 +616,8 @@ export default function StudioNewStoryPage() {
                     value={status}
                     onChange={(val) => setStatus(val as StoryStatus)}
                     options={[
-                      { value: "ongoing", label: "Ongoing Manuscript (Publishing chapters progressively)" },
-                      { value: "completed", label: "Completed Epic (All episodes ready)" },
+                      { value: "ongoing", label: "Ongoing Manuscript (Publishing book chapters progressively)" },
+                      { value: "completed", label: "Completed Book (All chapters ready)" },
                       { value: "draft", label: "Private Draft (Visible only to you)" },
                     ]}
                     className="max-w-sm"
@@ -580,12 +641,12 @@ export default function StudioNewStoryPage() {
               {/* Story Summary checklist */}
               <div className="p-4 bg-[#680C07]/5 rounded-2xl border border-[#680C07]/20 space-y-2 text-xs text-stone-800">
                 <span className="font-bold text-[#680C07] block uppercase tracking-wider text-[11px]">
-                  Manuscript Summary
+                  Book Manuscript Summary
                 </span>
                 <ul className="space-y-1.5">
                   <li className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span><strong>{chapters.length}</strong> Chapter(s) configured</span>
+                    <span><strong>{chapters.length}</strong> Book Chapter(s) configured</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -593,7 +654,7 @@ export default function StudioNewStoryPage() {
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Format: <strong>{isInteractive ? "Interactive Branching" : "Linear Narrative"}</strong></span>
+                    <span>Format: <strong>Linear Book Chapters</strong></span>
                   </li>
                 </ul>
               </div>
@@ -605,7 +666,7 @@ export default function StudioNewStoryPage() {
                   onClick={() => setActiveStep(2)}
                   className="text-xs rounded-xl border-stone-300 text-stone-700 gap-1.5"
                 >
-                  <ChevronLeft className="w-4 h-4" /> Back to Episodes
+                  <ChevronLeft className="w-4 h-4" /> Back to Book Chapters
                 </Button>
 
                 <Button
@@ -615,7 +676,7 @@ export default function StudioNewStoryPage() {
                   className="bg-[#680C07] hover:bg-[#520905] text-white text-xs font-bold rounded-xl gap-2 px-8 py-6 shadow-md"
                 >
                   <Send className="w-4 h-4" />
-                  <span>{isPublishing ? "Publishing Manuscript..." : "Publish to Inkoma Archive"}</span>
+                  <span>{isPublishing ? "Publishing Book..." : "Publish Book to Archive"}</span>
                 </Button>
               </div>
             </div>

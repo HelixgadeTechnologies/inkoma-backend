@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Story } from "@/types";
-import { Heart, Eye, Clock, Bookmark, Sparkles, Volume2, GitFork, ChevronLeft, ChevronRight } from "lucide-react";
+import { Heart, Eye, Clock, Bookmark, Sparkles, Volume2, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useLibrary } from "@/hooks/useLibrary";
 
@@ -133,11 +133,9 @@ export function StoryShelf({ title, subtitle, icon, stories, viewAllHref }: Stor
                         <Volume2 className="w-2.5 h-2.5" /> Audio
                       </span>
                     )}
-                    {story.isInteractive && (
-                      <span className="flex items-center gap-1 bg-black/40 px-1.5 py-0.5 rounded-md text-[10px] text-red-200">
-                        <GitFork className="w-2.5 h-2.5" /> {story.totalBranches} paths
-                      </span>
-                    )}
+                    <span className="flex items-center gap-1 bg-black/40 px-1.5 py-0.5 rounded-md text-[10px] text-red-200">
+                      <BookOpen className="w-2.5 h-2.5" /> {story.chaptersCount || 3} chapters
+                    </span>
                   </div>
                 </div>
               </Link>
