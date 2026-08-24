@@ -85,7 +85,7 @@ export interface Story {
   estimatedReadTime: number; // in minutes
   totalChapters: number;
   chapters?: StoryChapter[];
-  totalBranches: number;
+  totalBranches?: number;
   rootNodeId?: string;
   content?: string;
   

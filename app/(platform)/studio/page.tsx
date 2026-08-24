@@ -99,6 +99,7 @@ export default function StudioPage() {
       bookmarksCount: 0,
       commentsCount: 0,
       totalChapters: 1,
+      totalBranches: 0,
       estimatedReadTime: 6,
       hasAudioNarration: false,
       isInteractive: false,
