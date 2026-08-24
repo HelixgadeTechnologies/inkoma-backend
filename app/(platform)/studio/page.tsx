@@ -13,17 +13,12 @@ import {
   Heart,
   MessageSquare,
   DollarSign,
-  Edit,
+  Edit3,
   Trash2,
-  Sparkles,
-  GitFork,
-  MoreVertical,
-  CheckCircle2,
   FileText,
-  Sliders,
   TrendingUp,
-  X,
-  Upload,
+  Lock,
+  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -40,6 +35,7 @@ import {
 
 export default function StudioPage() {
   const [stories, setStories] = useState<Story[]>(MOCK_STORIES);
+  const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "published">("all");
   const [showCreateStoryModal, setShowCreateStoryModal] = useState(false);
   const [showCreateChapterModal, setShowCreateChapterModal] = useState(false);
   const [selectedStoryForChapter, setSelectedStoryForChapter] = useState<Story | null>(null);
@@ -54,20 +50,27 @@ export default function StudioPage() {
   const [newCoverUrl, setNewCoverUrl] = useState(
     "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=800&auto=format&fit=crop"
   );
-  const [newStatus, setNewStatus] = useState<StoryStatus>("ongoing");
+  const [newStatus, setNewStatus] = useState<StoryStatus>("draft");
 
   // New Chapter Form State
   const [newChapterTitle, setNewChapterTitle] = useState("");
   const [newChapterSummary, setNewChapterSummary] = useState("");
-  const [newChapterReadTime, setNewChapterReadTime] = useState(5);
 
   // Calculate Metrics
+  const draftStoriesCount = stories.filter((s) => s.status === "draft").length;
+  const publishedStoriesCount = stories.filter((s) => s.status !== "draft").length;
   const totalStories = stories.length;
   const totalChapters = stories.reduce((acc, s) => acc + (s.totalChapters || 1), 0);
   const totalReads = stories.reduce((acc, s) => acc + s.readsCount, 0);
   const totalLikes = stories.reduce((acc, s) => acc + s.likesCount, 0);
   const totalComments = stories.reduce((acc, s) => acc + s.commentsCount, 0);
   const totalTips = MOCK_CURRENT_USER.supportDetails?.totalTipsReceived || 1250;
+
+  const filteredStories = stories.filter((s) => {
+    if (statusFilter === "draft") return s.status === "draft";
+    if (statusFilter === "published") return s.status === "ongoing" || s.status === "completed";
+    return true;
+  });
 
   const handleCreateStory = (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,41 +99,29 @@ export default function StudioPage() {
       bookmarksCount: 0,
       commentsCount: 0,
       totalChapters: 1,
-      totalBranches: 2,
       estimatedReadTime: 6,
       hasAudioNarration: false,
-      isInteractive: true,
+      isInteractive: false,
       publishedAt: new Date().toISOString().split("T")[0],
       createdAt: new Date().toISOString().split("T")[0],
       updatedAt: new Date().toISOString().split("T")[0],
-      rootNodeId: "node-1",
       chapters: [
         {
           id: `chap-${Date.now()}-1`,
           number: 1,
-          title: "Chapter 1: The Threshold",
+          title: "Chapter 1: The Gathering",
           summary: newSynopsis,
           readTimeMinutes: 5,
           status: "draft",
           likesCount: 0,
           commentsCount: 0,
-          rootNodeId: "node-1",
           updatedAt: new Date().toISOString().split("T")[0],
-          nodes: {
-            "node-1": {
-              id: "node-1",
-              title: "The Threshold",
-              content: "Write the opening lines of your tale here...",
-              choices: [],
-            },
-          },
         },
       ],
     };
 
     setStories([newStory, ...stories]);
     setShowCreateStoryModal(false);
-    // Reset fields
     setNewTitle("");
     setNewSubtitle("");
     setNewSynopsis("");
@@ -146,20 +137,11 @@ export default function StudioPage() {
       number: nextChapNum,
       title: `Chapter ${nextChapNum}: ${newChapterTitle}`,
       summary: newChapterSummary,
-      readTimeMinutes: Number(newChapterReadTime) || 5,
+      readTimeMinutes: 5,
       status: "draft",
       likesCount: 0,
       commentsCount: 0,
-      rootNodeId: "node-1",
       updatedAt: new Date().toISOString().split("T")[0],
-      nodes: {
-        "node-1": {
-          id: "node-1",
-          title: newChapterTitle,
-          content: "Draft your chapter choices and dialogue...",
-          choices: [],
-        },
-      },
     };
 
     setStories((prev) =>
@@ -195,13 +177,13 @@ export default function StudioPage() {
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] text-xs font-semibold uppercase tracking-wider">
             <Flame className="w-3.5 h-3.5 text-[#680C07]" />
-            Author Studio
+            Author Studio Workspace
           </div>
           <h1 className="text-3xl font-extrabold text-stone-900 font-serif tracking-tight">
             Writer Dashboard
           </h1>
           <p className="text-sm text-stone-600">
-            Pen new oral accounts, build branching choice webs, and monitor community engagement.
+            Pen new oral accounts, manage private draft books, and publish chapters to the archive.
           </p>
         </div>
 
@@ -210,31 +192,52 @@ export default function StudioPage() {
             className="bg-[#680C07] hover:bg-[#520905] text-white font-bold px-6 py-5 rounded-2xl shadow-md gap-2 shrink-0"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
-            Create New Story
+            Create New Book
           </Button>
         </Link>
       </div>
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-        <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-1">
-          <div className="flex items-center justify-between text-stone-500 text-xs">
-            <span>Stories</span>
-            <BookOpen className="w-4 h-4 text-[#680C07]" />
+        <div
+          onClick={() => setStatusFilter("all")}
+          className={`p-4 rounded-2xl border shadow-xs space-y-1 cursor-pointer transition-all ${
+            statusFilter === "all"
+              ? "bg-[#680C07] text-white border-[#680C07]"
+              : "bg-white text-stone-900 border-stone-200 hover:border-stone-300"
+          }`}
+        >
+          <div className="flex items-center justify-between text-xs opacity-80">
+            <span>Total Books</span>
+            <BookOpen className="w-4 h-4" />
           </div>
-          <p className="text-2xl font-extrabold text-stone-900 font-serif">{totalStories}</p>
-          <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-0.5">
-            <TrendingUp className="w-2.5 h-2.5" /> Published
-          </span>
+          <p className="text-2xl font-extrabold font-serif">{totalStories}</p>
+          <span className="text-[10px] font-semibold opacity-90">All manuscripts</span>
+        </div>
+
+        <div
+          onClick={() => setStatusFilter("draft")}
+          className={`p-4 rounded-2xl border shadow-xs space-y-1 cursor-pointer transition-all ${
+            statusFilter === "draft"
+              ? "bg-[#680C07] text-white border-[#680C07]"
+              : "bg-white text-stone-900 border-stone-200 hover:border-stone-300"
+          }`}
+        >
+          <div className="flex items-center justify-between text-xs opacity-80">
+            <span>Draft Books</span>
+            <Lock className="w-4 h-4" />
+          </div>
+          <p className="text-2xl font-extrabold font-serif">{draftStoriesCount}</p>
+          <span className="text-[10px] font-semibold text-amber-600">Unpublished drafts</span>
         </div>
 
         <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-1">
           <div className="flex items-center justify-between text-stone-500 text-xs">
-            <span>Chapters</span>
+            <span>Book Chapters</span>
             <FileText className="w-4 h-4 text-[#680C07]" />
           </div>
           <p className="text-2xl font-extrabold text-stone-900 font-serif">{totalChapters}</p>
-          <span className="text-[10px] text-stone-400">Total episodes</span>
+          <span className="text-[10px] text-stone-400">Total chapters</span>
         </div>
 
         <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-1">
@@ -261,15 +264,6 @@ export default function StudioPage() {
 
         <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-1">
           <div className="flex items-center justify-between text-stone-500 text-xs">
-            <span>Discussions</span>
-            <MessageSquare className="w-4 h-4 text-[#680C07]" />
-          </div>
-          <p className="text-2xl font-extrabold text-stone-900 font-serif">{totalComments}</p>
-          <span className="text-[10px] text-stone-400">Reflections</span>
-        </div>
-
-        <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-1">
-          <div className="flex items-center justify-between text-stone-500 text-xs">
             <span>Patron Support</span>
             <DollarSign className="w-4 h-4 text-[#680C07]" />
           </div>
@@ -280,86 +274,156 @@ export default function StudioPage() {
         </div>
       </div>
 
-      {/* Story Manuscripts List */}
+      {/* Story Manuscripts List with Draft Filter Tabs */}
       <div className="space-y-4 bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm">
-        <div className="flex items-center justify-between border-b border-stone-100 pb-4">
-          <h2 className="text-xl font-bold text-stone-900 font-serif">
-            Your Manuscripts ({stories.length})
-          </h2>
-          <span className="text-xs text-stone-400">Click &ldquo;Add Chapter&rdquo; to expand branches</span>
-        </div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-100 pb-4">
+          <div>
+            <h2 className="text-xl font-bold text-stone-900 font-serif">
+              Your Book Manuscripts ({filteredStories.length})
+            </h2>
+            <p className="text-xs text-stone-500">
+              Manage saved draft books and published manuscripts. Click &ldquo;Edit Book&rdquo; to modify chapters anytime.
+            </p>
+          </div>
 
-        <div className="space-y-4">
-          {stories.map((story) => (
-            <div
-              key={story.id}
-              className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 rounded-2xl border border-stone-200 bg-stone-50/50 hover:bg-stone-50 transition-all"
+          {/* Status Filter Buttons */}
+          <div className="flex items-center gap-1.5 bg-stone-100 p-1 rounded-xl border border-stone-200 self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={() => setStatusFilter("all")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                statusFilter === "all"
+                  ? "bg-[#680C07] text-white shadow-xs"
+                  : "text-stone-600 hover:text-stone-900"
+              }`}
             >
-              {/* Cover & Title */}
-              <div className="flex items-center gap-4 min-w-0">
-                <div className="relative w-16 h-20 rounded-xl overflow-hidden shrink-0 border border-stone-200">
-                  <Image src={story.coverImage} alt={story.title} fill className="object-cover" />
-                </div>
-                <div className="space-y-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <Badge className="bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20 text-[10px]">
-                      {story.tradition}
-                    </Badge>
-                    <span
-                      className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                        story.status === "completed"
-                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                          : "bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20"
-                      }`}
-                    >
-                      {story.status}
-                    </span>
-                  </div>
-                  <h3 className="text-base font-bold text-stone-900 truncate font-serif">
-                    {story.title}
-                  </h3>
-                  <div className="flex items-center gap-3 text-xs text-stone-500">
-                    <span>{story.totalChapters} chapters</span>
-                    <span>•</span>
-                    <span>{story.readsCount} reads</span>
-                    <span>•</span>
-                    <span>{story.likesCount} likes</span>
-                  </div>
-                </div>
-              </div>
+              All ({stories.length})
+            </button>
 
-              {/* Actions */}
-              <div className="flex flex-wrap items-center gap-2 self-end md:self-center">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    setSelectedStoryForChapter(story);
-                    setShowCreateChapterModal(true);
-                  }}
-                  className="bg-white border-stone-300 text-stone-700 text-xs rounded-xl hover:bg-stone-100"
-                >
-                  <Plus className="w-3.5 h-3.5 mr-1 text-[#680C07]" /> Add Chapter
-                </Button>
+            <button
+              type="button"
+              onClick={() => setStatusFilter("draft")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
+                statusFilter === "draft"
+                  ? "bg-[#680C07] text-white shadow-xs"
+                  : "text-stone-600 hover:text-stone-900"
+              }`}
+            >
+              <Lock className="w-3 h-3" />
+              Draft Books ({draftStoriesCount})
+            </button>
 
-                <Link href={`/story/${story.id}`}>
-                  <Button size="sm" variant="outline" className="bg-white border-stone-300 text-stone-700 text-xs rounded-xl">
-                    View Story
-                  </Button>
-                </Link>
-
-                <button
-                  type="button"
-                  onClick={() => setStoryToDeleteId(story.id)}
-                  className="p-2 rounded-xl text-stone-400 hover:text-[#680C07] hover:bg-[#680C07]/10 transition-colors"
-                  title="Delete manuscript"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))}
+            <button
+              type="button"
+              onClick={() => setStatusFilter("published")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                statusFilter === "published"
+                  ? "bg-[#680C07] text-white shadow-xs"
+                  : "text-stone-600 hover:text-stone-900"
+              }`}
+            >
+              Published ({publishedStoriesCount})
+            </button>
+          </div>
         </div>
+
+        {filteredStories.length === 0 ? (
+          <div className="text-center py-12 space-y-3">
+            <Lock className="w-8 h-8 text-stone-400 mx-auto" />
+            <p className="text-sm font-bold text-stone-700 font-serif">No draft books found</p>
+            <p className="text-xs text-stone-500">Start a new manuscript and save it as a draft anytime.</p>
+            <Link href="/studio/new">
+              <Button size="sm" className="bg-[#680C07] text-white text-xs">
+                Create New Book
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredStories.map((story) => (
+              <div
+                key={story.id}
+                className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 rounded-2xl border border-stone-200 bg-stone-50/50 hover:bg-stone-50 transition-all"
+              >
+                {/* Cover & Title */}
+                <div className="flex items-center gap-4 min-w-0">
+                  <div className="relative w-16 h-20 rounded-xl overflow-hidden shrink-0 border border-stone-200">
+                    <Image src={story.coverImage} alt={story.title} fill className="object-cover" />
+                  </div>
+                  <div className="space-y-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20 text-[10px]">
+                        {story.tradition}
+                      </Badge>
+                      <span
+                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 ${
+                          story.status === "draft"
+                            ? "bg-amber-50 text-amber-700 border border-amber-300 font-bold"
+                            : story.status === "completed"
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            : "bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20"
+                        }`}
+                      >
+                        {story.status === "draft" && <Lock className="w-2.5 h-2.5" />}
+                        {story.status === "draft" ? "Private Draft" : story.status === "completed" ? "Completed Book" : "Ongoing Book"}
+                      </span>
+                    </div>
+                    <h3 className="text-base font-bold text-stone-900 truncate font-serif">
+                      {story.title}
+                    </h3>
+                    <div className="flex items-center gap-3 text-xs text-stone-500">
+                      <span>{story.totalChapters || story.chapters?.length || 1} chapters</span>
+                      <span>•</span>
+                      <span>{story.readsCount} reads</span>
+                      <span>•</span>
+                      <span>Updated {story.updatedAt || "recently"}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex flex-wrap items-center gap-2 self-end md:self-center">
+                  <Link href="/studio/new">
+                    <Button
+                      size="sm"
+                      className="bg-[#680C07] hover:bg-[#520905] text-white text-xs rounded-xl font-bold gap-1 shadow-xs"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                      {story.status === "draft" ? "Edit Draft Book" : "Edit Book"}
+                    </Button>
+                  </Link>
+
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedStoryForChapter(story);
+                      setShowCreateChapterModal(true);
+                    }}
+                    className="bg-white border-stone-300 text-stone-700 text-xs rounded-xl hover:bg-stone-100"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1 text-[#680C07]" /> Add Chapter
+                  </Button>
+
+                  <Link href={`/story/${story.id}`}>
+                    <Button size="sm" variant="outline" className="bg-white border-stone-300 text-stone-700 text-xs rounded-xl">
+                      View Details
+                    </Button>
+                  </Link>
+
+                  <button
+                    type="button"
+                    onClick={() => setStoryToDeleteId(story.id)}
+                    className="p-2 rounded-xl text-stone-400 hover:text-[#680C07] hover:bg-[#680C07]/10 transition-colors"
+                    title="Delete manuscript"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Modal: Create New Story */}
@@ -367,17 +431,17 @@ export default function StudioPage() {
         <DialogContent className="max-w-lg w-full bg-white border border-stone-200 shadow-2xl rounded-3xl p-6 sm:p-8 space-y-5">
           <DialogHeader className="space-y-1">
             <DialogTitle className="text-2xl font-bold font-serif text-stone-900">
-              Create New Folklore Manuscript
+              Create New Folklore Book
             </DialogTitle>
             <DialogDescription className="text-xs text-stone-500">
-              Initialize a new living tale. You can configure branching choice trees and audio narration next.
+              Initialize a new living book manuscript. Save as private draft or publish to the archive.
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleCreateStory} className="space-y-4">
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
-                Story Title
+                Book Title
               </label>
               <Input
                 type="text"
@@ -385,7 +449,7 @@ export default function StudioPage() {
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 required
-                className="bg-white border-stone-300 text-stone-900"
+                className="bg-white border-stone-300 text-stone-900 font-serif font-bold text-sm"
               />
             </div>
 
@@ -398,7 +462,7 @@ export default function StudioPage() {
                 placeholder="e.g. A Yoruba Myth of Devotion and High Waters"
                 value={newSubtitle}
                 onChange={(e) => setNewSubtitle(e.target.value)}
-                className="bg-white border-stone-300 text-stone-900"
+                className="bg-white border-stone-300 text-stone-900 text-xs"
               />
             </div>
 
@@ -432,10 +496,10 @@ export default function StudioPage() {
               </label>
               <textarea
                 rows={3}
-                placeholder="Describe the background and central conflict of your tale..."
+                placeholder="Describe the background and central conflict of your book..."
                 value={newSynopsis}
                 onChange={(e) => setNewSynopsis(e.target.value)}
-                className="w-full bg-stone-50 border border-stone-300 rounded-xl p-3 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full bg-stone-50 border border-stone-300 rounded-xl p-3 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#680C07]"
               />
             </div>
 
@@ -452,7 +516,7 @@ export default function StudioPage() {
                 type="submit"
                 className="bg-[#680C07] hover:bg-[#520905] text-white text-xs font-bold px-6"
               >
-                Create Story
+                Save Draft Book
               </Button>
             </div>
           </form>
@@ -478,38 +542,24 @@ export default function StudioPage() {
               </label>
               <Input
                 type="text"
-                placeholder="e.g. The River of Echoes"
+                placeholder="e.g. Chapter 2: The River of Echoes"
                 value={newChapterTitle}
                 onChange={(e) => setNewChapterTitle(e.target.value)}
                 required
-                className="bg-white border-stone-300 text-stone-900"
+                className="bg-white border-stone-300 text-stone-900 font-serif font-bold text-xs"
               />
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
-                Chapter Summary
+                Chapter Summary / Teaser
               </label>
               <textarea
                 rows={2}
-                placeholder="Brief summary of this episode..."
+                placeholder="Brief summary of this chapter..."
                 value={newChapterSummary}
                 onChange={(e) => setNewChapterSummary(e.target.value)}
-                className="w-full bg-stone-50 border border-stone-300 rounded-xl p-3 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
-                Estimated Read Time (Minutes)
-              </label>
-              <Input
-                type="number"
-                min={1}
-                max={60}
-                value={newChapterReadTime}
-                onChange={(e) => setNewChapterReadTime(Number(e.target.value))}
-                className="bg-white border-stone-300 text-stone-900"
+                className="w-full bg-stone-50 border border-stone-300 rounded-xl p-3 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#680C07]"
               />
             </div>
 
@@ -538,8 +588,8 @@ export default function StudioPage() {
         isOpen={!!storyToDeleteId}
         onClose={() => setStoryToDeleteId(null)}
         onConfirm={confirmDeleteStory}
-        title="Delete Story Manuscript?"
-        description="Are you sure you want to permanently delete this manuscript? All written chapters and choice paths will be removed from your circle archive."
+        title="Delete Book Manuscript?"
+        description="Are you sure you want to permanently delete this book manuscript? All written chapters will be removed from your circle archive."
         confirmText="Delete Manuscript"
         cancelText="Keep Story"
         variant="danger"
