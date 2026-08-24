@@ -22,7 +22,8 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate user registration and proceed to onboarding
+    // Persist session upon registration
+    localStorage.setItem("inkoma_authenticated", "true");
     setTimeout(() => {
       setIsLoading(false);
       router.push("/onboarding");

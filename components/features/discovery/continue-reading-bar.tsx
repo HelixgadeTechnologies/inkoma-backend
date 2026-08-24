@@ -5,11 +5,14 @@ import Image from "next/image";
 import { BookOpen, Play, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLibrary } from "@/hooks/useLibrary";
+import { useAuth } from "@/hooks/useAuth";
 
 export function ContinueReadingBar() {
   const { continueReading, isLoaded } = useLibrary();
+  const { user } = useAuth();
 
-  if (!isLoaded || !continueReading || continueReading.length === 0) {
+  // Do not render Continue Reading for unregistered / logged out guest users
+  if (!user || !isLoaded || !continueReading || continueReading.length === 0) {
     return null;
   }
 

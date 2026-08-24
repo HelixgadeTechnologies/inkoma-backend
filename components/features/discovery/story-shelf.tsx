@@ -1,9 +1,10 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Story } from "@/types";
-import { Heart, Eye, Clock, Bookmark, Sparkles, Volume2, GitFork } from "lucide-react";
+import { Heart, Eye, Clock, Bookmark, Sparkles, Volume2, GitFork, ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useLibrary } from "@/hooks/useLibrary";
 
@@ -17,39 +18,75 @@ interface StoryShelfProps {
 
 export function StoryShelf({ title, subtitle, icon, stories, viewAllHref }: StoryShelfProps) {
   const { isBookmarked, toggleBookmark } = useLibrary();
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+
+  const handleScroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const amount = direction === "left" ? -300 : 300;
+      scrollRef.current.scrollBy({ left: amount, behavior: "smooth" });
+    }
+  };
 
   if (!stories || stories.length === 0) return null;
 
   return (
     <section className="space-y-4">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="space-y-0.5">
+        <div className="space-y-0.5 min-w-0">
           <div className="flex items-center gap-2">
             {icon}
-            <h2 className="text-xl font-extrabold text-stone-900 font-serif tracking-tight">
+            <h2 className="text-xl font-extrabold text-stone-900 font-serif tracking-tight truncate">
               {title}
             </h2>
           </div>
-          {subtitle && <p className="text-xs text-stone-500">{subtitle}</p>}
+          {subtitle && <p className="text-xs text-stone-500 truncate">{subtitle}</p>}
         </div>
-        {viewAllHref && (
-          <Link
-            href={viewAllHref}
-            className="text-xs font-semibold text-[#680C07] hover:underline transition-colors"
-          >
-            Explore all →
-          </Link>
-        )}
+
+        <div className="flex items-center gap-3 shrink-0">
+          {/* Scroll Nav Arrow Buttons */}
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => handleScroll("left")}
+              className="p-1.5 sm:p-2 rounded-xl border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 transition-all shadow-xs"
+              aria-label="Scroll left"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => handleScroll("right")}
+              className="p-1.5 sm:p-2 rounded-xl border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 transition-all shadow-xs"
+              aria-label="Scroll right"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          {viewAllHref && (
+            <Link
+              href={viewAllHref}
+              className="text-xs font-semibold text-[#680C07] hover:underline transition-colors hidden sm:inline-block"
+            >
+              Explore all →
+            </Link>
+          )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      {/* Story Cards Carousel - Side-by-side on mobile */}
+      <div
+        ref={scrollRef}
+        className="flex items-stretch overflow-x-auto snap-x snap-mandatory scroll-smooth gap-4 sm:gap-5 pb-4 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-x-visible sm:pb-0"
+      >
         {stories.map((story) => {
           const bookmarked = isBookmarked(story.id);
 
           return (
             <div
               key={story.id}
-              className="group relative flex flex-col bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+              className="group relative flex flex-col bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 w-[82vw] max-w-[300px] sm:max-w-none sm:w-auto shrink-0 sm:shrink snap-start"
             >
               {/* Cover Image */}
               <Link href={`/story/${story.id}`} className="relative h-48 w-full overflow-hidden bg-stone-100 block">

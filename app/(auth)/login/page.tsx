@@ -20,7 +20,8 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate login & session persistence
+    // Persist session
+    localStorage.setItem("inkoma_authenticated", "true");
     setTimeout(() => {
       setIsLoading(false);
       router.push("/explore");

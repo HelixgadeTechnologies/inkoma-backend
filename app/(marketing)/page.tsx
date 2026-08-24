@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, BookOpen, Compass, Flame, Volume2, ShieldCheck, ArrowRight } from "lucide-react";
 import { SupportInkomaBanner } from "@/components/features/discovery/support-inkoma-banner";
 import { ContinueReadingBar } from "@/components/features/discovery/continue-reading-bar";
+import { CategoryCarousel } from "@/components/features/discovery/category-carousel";
 import { StoryShelf } from "@/components/features/discovery/story-shelf";
 import { MOCK_STORIES } from "@/config/mock-data";
 
@@ -85,6 +86,9 @@ export default function HomePage() {
 
       {/* Support INKOMA Banner */}
       <SupportInkomaBanner />
+
+      {/* Categories & Traditions Horizontal Carousel Bar */}
+      <CategoryCarousel />
 
       {/* Continue Reading Shelf */}
       <ContinueReadingBar />

@@ -1,57 +1,51 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { UserProfile } from '@/types';
+import { useState, useEffect, useCallback } from "react";
+import { UserProfile } from "@/types";
+import { MOCK_CURRENT_USER } from "@/config/mock-data";
 
 export function useAuth() {
-  const [user, setUser] = useState<{ id: string; email?: string } | null>({
-    id: 'user-kwame-01',
-    email: 'kwame@inkoma.app',
-  });
-  const [profile, setProfile] = useState<UserProfile | null>({
-    id: 'user-kwame-01',
-    username: 'kwame_asante',
-    displayName: 'Kwame Asante',
-    bio: 'Keeper of Ashanti trickster lore and ancient Dogon constellation myths.',
-    role: 'storyteller',
-    followersCount: 1420,
-    followingCount: 89,
-    publishedStoriesCount: 12,
-    totalReadsCount: 38400,
-    badges: [
-      {
-        id: 'badge-1',
-        name: 'Spider Web Weaver',
-        description: 'Authored 5+ multi-branch interactive tales',
-        iconName: 'Sparkles',
-        tier: 'gold',
-        unlockedAt: '2026-01-15',
-      },
-      {
-        id: 'badge-2',
-        name: 'Master Storyteller',
-        description: 'Reached 25,000 oral story listeners',
-        iconName: 'Volume2',
-        tier: 'elder',
-        unlockedAt: '2026-03-20',
-      },
-    ],
-    createdAt: '2025-10-01',
-  });
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const signOut = async () => {
+  useEffect(() => {
+    try {
+      const authState = localStorage.getItem("inkoma_authenticated");
+      // Default: if inkoma_authenticated is explicitly "true", set authenticated user.
+      // If "false" or null (guest), set user to null.
+      if (authState === "true") {
+        setUser({ id: MOCK_CURRENT_USER.id, email: "kwame@inkoma.app" });
+        setProfile(MOCK_CURRENT_USER);
+      } else {
+        setUser(null);
+        setProfile(null);
+      }
+    } catch {
+      setUser(null);
+      setProfile(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const signIn = useCallback((email?: string) => {
+    localStorage.setItem("inkoma_authenticated", "true");
+    setUser({ id: MOCK_CURRENT_USER.id, email: email || "kwame@inkoma.app" });
+    setProfile(MOCK_CURRENT_USER);
+  }, []);
+
+  const signOut = useCallback(() => {
+    localStorage.setItem("inkoma_authenticated", "false");
     setUser(null);
-  };
-
-  const signIn = async (email: string) => {
-    setUser({ id: 'user-kwame-01', email });
-  };
+    setProfile(null);
+  }, []);
 
   return {
     user,
     profile,
     loading,
+    isAuthenticated: !!user,
     signIn,
     signOut,
   };
