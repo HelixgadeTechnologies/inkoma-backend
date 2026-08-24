@@ -134,7 +134,7 @@ export function StoryShelf({ title, subtitle, icon, stories, viewAllHref }: Stor
                       </span>
                     )}
                     <span className="flex items-center gap-1 bg-black/40 px-1.5 py-0.5 rounded-md text-[10px] text-red-200">
-                      <BookOpen className="w-2.5 h-2.5" /> {story.chaptersCount || 3} chapters
+                      <BookOpen className="w-2.5 h-2.5" /> {story.chaptersCount || story.totalChapters || 1} chapters
                     </span>
                   </div>
                 </div>

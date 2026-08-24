@@ -130,7 +130,7 @@ export function useStory(storyId?: string) {
   const getNode = (nodeId: string): StoryNode | undefined => {
     if (!currentStory?.chapters) return undefined;
     for (const chapter of currentStory.chapters) {
-      if (chapter.nodes[nodeId]) {
+      if (chapter.nodes?.[nodeId]) {
         return chapter.nodes[nodeId];
       }
     }
