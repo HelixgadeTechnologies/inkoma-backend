@@ -67,6 +67,8 @@ export interface Story {
   tradition: Tradition;
   mainGenre: string;
   subGenres: string[];
+  triggerWarnings?: string[];
+  targetAudience?: string;
   tags: string[];
   difficulty: StoryDifficulty;
   status: StoryStatus;

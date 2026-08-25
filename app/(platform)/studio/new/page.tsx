@@ -29,30 +29,7 @@ import { Select } from "@/components/ui/select";
 import { StoryCoverPicker, FOLKLORE_COVER_PRESETS } from "@/components/features/editor/story-cover-picker";
 import { ChapterListBuilder, calculateReadTime } from "@/components/features/editor/chapter-list-builder";
 import { StoryChapter, StoryStatus } from "@/types";
-
-const MAIN_GENRES = [
-  "Romance",
-  "Fantasy",
-  "Thriller",
-  "Horror",
-  "Drama",
-  "Mystery",
-  "Sci-Fi",
-  "Historical Fiction",
-  "Adventure",
-  "Folklore & Culture",
-  "Fan Fiction",
-  "Young Adult",
-];
-
-const TRIGGER_WARNING_OPTIONS = [
-  "None",
-  "Violence / Gore",
-  "Strong Language",
-  "Graphic Themes",
-  "Substance Abuse",
-  "Mental Health / Trauma",
-];
+import { MAIN_GENRES, SUB_GENRES, TRIGGER_WARNINGS } from "@/config/genres";
 
 export default function StudioNewStoryPage() {
   const router = useRouter();
@@ -382,31 +359,48 @@ export default function StudioNewStoryPage() {
               <label className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider block">
                 Subgenres
               </label>
-              <div className="flex items-center gap-2">
-                <Input
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      handleAddTag();
+              
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Select
+                  value=""
+                  onChange={(val) => {
+                    if (val && !subGenres.includes(val)) {
+                      setSubGenres([...subGenres, val]);
                     }
                   }}
-                  placeholder="Type a subgenre & press Enter (e.g. Mystery, Slow Burn)"
-                  className="bg-white dark:bg-stone-950 border-stone-200 dark:border-stone-800 text-xs dark:text-stone-100 max-w-md"
+                  options={[
+                    { value: "", label: "-- Select from Preset Subgenres --" },
+                    ...SUB_GENRES.map((sg) => ({ value: sg, label: sg })),
+                  ]}
+                  className="bg-white dark:bg-stone-950 border-stone-200 dark:border-stone-800 text-xs dark:text-stone-100 max-w-xs"
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleAddTag}
-                  className="text-xs rounded-xl border-stone-300 dark:border-stone-700"
-                >
-                  Add
-                </Button>
+
+                <div className="flex items-center gap-2 flex-1">
+                  <Input
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleAddTag();
+                      }
+                    }}
+                    placeholder="Or type a custom subgenre..."
+                    className="bg-white dark:bg-stone-950 border-stone-200 dark:border-stone-800 text-xs dark:text-stone-100"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAddTag}
+                    className="text-xs rounded-xl border-stone-300 dark:border-stone-700"
+                  >
+                    Add Custom
+                  </Button>
+                </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-1.5 pt-1">
+              <div className="flex flex-wrap items-center gap-1.5 pt-2">
                 {subGenres.map((tag) => (
                   <span
                     key={tag}
@@ -442,11 +436,23 @@ export default function StudioNewStoryPage() {
 
             {/* Trigger Warnings (Optional) */}
             <div className="space-y-2 pt-2 border-t border-stone-100 dark:border-stone-800">
-              <label className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider block">
-                Trigger Warnings (Optional)
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {TRIGGER_WARNING_OPTIONS.map((tw) => {
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider block">
+                  Content & Trigger Warnings ({selectedTriggerWarnings.length} selected)
+                </label>
+                {selectedTriggerWarnings.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTriggerWarnings(["None"])}
+                    className="text-[11px] text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 font-semibold"
+                  >
+                    Reset Warnings
+                  </button>
+                )}
+              </div>
+
+              <div className="max-h-48 overflow-y-auto p-3 bg-stone-50 dark:bg-stone-950 rounded-2xl border border-stone-200 dark:border-stone-800 flex flex-wrap gap-2 scrollbar-thin">
+                {TRIGGER_WARNINGS.map((tw) => {
                   const isChecked = selectedTriggerWarnings.includes(tw);
                   return (
                     <button
@@ -455,8 +461,8 @@ export default function StudioNewStoryPage() {
                       onClick={() => toggleTriggerWarning(tw)}
                       className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
                         isChecked
-                          ? "bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-stone-900 dark:border-stone-100"
-                          : "bg-stone-50 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-stone-700 hover:bg-stone-100"
+                          ? "bg-[#680C07] dark:bg-red-700 text-white border-[#680C07] dark:border-red-700 shadow-xs"
+                          : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800"
                       }`}
                     >
                       {tw}

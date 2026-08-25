@@ -23,22 +23,9 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
+import { MAIN_GENRES } from "@/config/genres";
 
-const GENRE_CATEGORIES = [
-  "All Genres",
-  "Romance",
-  "Fantasy",
-  "Thriller",
-  "Horror",
-  "Drama",
-  "Mystery",
-  "Sci-Fi",
-  "Historical Fiction",
-  "Adventure",
-  "Folklore & Culture",
-  "Fan Fiction",
-  "Young Adult",
-];
+const GENRE_CATEGORIES = ["All Genres", ...MAIN_GENRES];
 
 export default function ExplorePage() {
   const { filteredStories, filters, setFilters } = useStory();
