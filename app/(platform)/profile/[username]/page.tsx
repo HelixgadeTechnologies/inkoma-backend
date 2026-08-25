@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import { UserProfile, Story } from "@/types";
 import { MOCK_CURRENT_USER, MOCK_STORIES } from "@/config/mock-data";
 import { SupportAuthorDialog } from "@/components/features/story-details/support-author-dialog";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import {
   User,
   Heart,
@@ -257,6 +258,7 @@ export default function UserProfilePage() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followersCount, setFollowersCount] = useState(profile.followersCount);
   const [showSupportModal, setShowSupportModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [copiedAcc, setCopiedAcc] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [activeTab, setActiveTab] = useState<"stories" | "stats" | "badges" | "settings">("stories");
@@ -334,13 +336,19 @@ export default function UserProfilePage() {
 
               {/* Followers & Following Stats - Positioned Higher Up */}
               <div className="flex items-center gap-4 text-xs font-medium text-stone-700 dark:text-stone-300">
-                <span className="cursor-pointer hover:underline">
+                <Link
+                  href={`/profile/${profile.username}/network`}
+                  className="cursor-pointer hover:underline hover:text-[#680C07] dark:hover:text-red-400 transition-colors"
+                >
                   <strong className="text-stone-900 dark:text-stone-100 text-sm font-extrabold">{followersCount.toLocaleString()}</strong> Followers
-                </span>
+                </Link>
                 <span>•</span>
-                <span className="cursor-pointer hover:underline">
+                <Link
+                  href={`/profile/${profile.username}/network`}
+                  className="cursor-pointer hover:underline hover:text-[#680C07] dark:hover:text-red-400 transition-colors"
+                >
                   <strong className="text-stone-900 dark:text-stone-100 text-sm font-extrabold">{profile.followingCount}</strong> Following
-                </span>
+                </Link>
                 <span>•</span>
                 <span className="font-mono text-stone-500 dark:text-stone-400">@{profile.username}</span>
               </div>
@@ -817,9 +825,7 @@ export default function UserProfilePage() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => {
-                    alert("You have been logged out of INKOMA.");
-                  }}
+                  onClick={() => setShowLogoutModal(true)}
                   className="w-full border-red-200 dark:border-red-900 text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 text-xs font-bold rounded-xl gap-2 py-2.5"
                 >
                   <LogOut className="w-4 h-4" />
@@ -905,6 +911,20 @@ export default function UserProfilePage() {
           onClose={() => setShowSupportModal(false)}
         />
       )}
+
+      {/* Styled Log Out Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={() => {
+          setShowLogoutModal(false);
+        }}
+        title="Log Out of INKOMA"
+        description="Are you sure you want to log out of your account session? You can log back in anytime to continue reading and writing."
+        confirmText="Log Out"
+        cancelText="Stay Logged In"
+        variant="danger"
+      />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import { Image as ImageIcon, Upload, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 
 export const FOLKLORE_COVER_PRESETS = [
   {
@@ -53,6 +54,7 @@ export function StoryCoverPicker({ value, onChange }: StoryCoverPickerProps) {
   const [customInput, setCustomInput] = React.useState(value || "");
   const [isDragging, setIsDragging] = React.useState(false);
   const [uploadedFileName, setUploadedFileName] = React.useState<string | null>(null);
+  const [fileErrorMsg, setFileErrorMsg] = React.useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const handleCustomChange = (url: string) => {
@@ -62,7 +64,7 @@ export function StoryCoverPicker({ value, onChange }: StoryCoverPickerProps) {
 
   const processFile = (file: File) => {
     if (!file.type.startsWith("image/")) {
-      alert("Please upload a valid image file (PNG, JPG, WEBP).");
+      setFileErrorMsg("Please upload a valid image file (PNG, JPG, WEBP).");
       return;
     }
     setUploadedFileName(file.name);
@@ -221,11 +223,21 @@ export function StoryCoverPicker({ value, onChange }: StoryCoverPickerProps) {
                     </div>
                   </button>
                 );
-              })}
             </div>
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={Boolean(fileErrorMsg)}
+        onClose={() => setFileErrorMsg(null)}
+        onConfirm={() => setFileErrorMsg(null)}
+        title="Invalid File Type"
+        description={fileErrorMsg || ""}
+        confirmText="Got it"
+        cancelText="Close"
+        variant="warning"
+      />
     </div>
   );
 }
