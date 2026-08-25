@@ -258,6 +258,7 @@ export default function UserProfilePage() {
   const [followersCount, setFollowersCount] = useState(profile.followersCount);
   const [showSupportModal, setShowSupportModal] = useState(false);
   const [copiedAcc, setCopiedAcc] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
   const [activeTab, setActiveTab] = useState<"stories" | "stats" | "badges" | "settings">("stories");
 
   // Settings State
