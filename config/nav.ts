@@ -7,17 +7,18 @@ export interface NavItem {
 }
 
 export const marketingNav: NavItem[] = [
-  { title: "Explore Tales", href: "/explore" },
-  { title: "Personal Library", href: "/library" },
-  { title: "Writer Studio", href: "/studio" },
-  { title: "Support INKOMA", href: "/support" },
+  { title: "Home", href: "/" },
+  { title: "Explore", href: "/explore" },
+  { title: "Library", href: "/library" },
+  { title: "Studio", href: "/studio" },
+  { title: "Profile", href: "/profile" },
 ];
 
 export const platformSidebarNav: NavItem[] = [
-  { title: "Discover & Explore", href: "/explore", icon: "Compass" },
-  { title: "My Library", href: "/library", icon: "BookOpen" },
-  { title: "Writer Dashboard", href: "/studio", icon: "Feather", badge: "Studio" },
-  { title: "My Storyteller Profile", href: "/profile/kwame_asante", icon: "User" },
-  { title: "Account & Settings", href: "/settings", icon: "Sliders" },
-  { title: "Support & FAQs", href: "/support", icon: "HelpCircle" },
+  { title: "Home", href: "/", icon: "Home" },
+  { title: "Explore", href: "/explore", icon: "Compass" },
+  { title: "Library", href: "/library", icon: "BookOpen" },
+  { title: "Studio", href: "/studio", icon: "Feather" },
+  { title: "Profile", href: "/profile", icon: "User" },
+  { title: "Support INKOMA", href: "/support", icon: "HelpCircle" },
 ];

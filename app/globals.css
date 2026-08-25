@@ -74,7 +74,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-[#FAF8F5] text-foreground font-sans antialiased;
+    @apply bg-[#FAF8F5] dark:bg-stone-950 text-stone-900 dark:text-stone-100 font-sans antialiased;
     min-height: 100vh;
   }
 }

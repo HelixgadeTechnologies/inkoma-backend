@@ -1,8 +1,8 @@
 export const siteConfig = {
   name: "Inkoma",
-  title: "Inkoma — The Interactive African Folklore & Digital Storytelling Hub",
+  title: "Inkoma — Global Storytelling & Interactive Fiction Platform",
   description:
-    "Preserving ancient wisdom through immersive, interactive folklore, oral storytelling narration, and branching choice-driven narratives inspired by Anansi the Spider and African mythologies.",
+    "Discover, read, and write immersive stories across all genres — from Romance and Fantasy to Thrillers, Folklore, Sci-Fi, and Mystery. Engage with interactive chapter choices and rich audio narration.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://inkoma.app",
   ogImage: "https://inkoma.app/og.jpg",
   links: {
@@ -10,5 +10,5 @@ export const siteConfig = {
     github: "https://github.com/inkoma/inkoma",
     discord: "https://discord.gg/inkoma",
   },
-  creator: "Inkoma Storyteller Guild",
+  creator: "Inkoma Platform",
 };

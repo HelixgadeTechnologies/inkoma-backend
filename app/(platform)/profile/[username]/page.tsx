@@ -32,9 +32,14 @@ import {
   Volume2,
   Shield,
   Layers,
+  Lock,
+  LogOut,
+  Bell,
+  Save,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 
 const MOCK_USER_PROFILES: Record<string, UserProfile> = {
   kwame_asante: MOCK_CURRENT_USER,
@@ -253,8 +258,16 @@ export default function UserProfilePage() {
   const [followersCount, setFollowersCount] = useState(profile.followersCount);
   const [showSupportModal, setShowSupportModal] = useState(false);
   const [copiedAcc, setCopiedAcc] = useState(false);
-  const [copiedLink, setCopiedLink] = useState(false);
-  const [activeTab, setActiveTab] = useState<"stories" | "stats" | "badges">("stories");
+  const [activeTab, setActiveTab] = useState<"stories" | "stats" | "badges" | "settings">("stories");
+
+  // Settings State
+  const [settingsName, setSettingsName] = useState(profile.displayName);
+  const [settingsUsername, setSettingsUsername] = useState(profile.username);
+  const [settingsBio, setSettingsBio] = useState(profile.bio || "");
+  const [settingsSaved, setSettingsSaved] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordSaved, setPasswordSaved] = useState(false);
 
   // Authored stories matching this profile
   const publishedStories = MOCK_STORIES.filter(
@@ -294,11 +307,11 @@ export default function UserProfilePage() {
   return (
     <div className="space-y-8 pb-16">
       {/* Profile Header Hero */}
-      <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-9 shadow-sm space-y-6">
+      <div className="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 p-6 sm:p-9 shadow-sm space-y-6 transition-colors">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           {/* Avatar & User Info */}
           <div className="flex items-center gap-5">
-            <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-[#680C07] shadow-md bg-stone-100 shrink-0">
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-[#680C07] dark:border-red-500 shadow-md bg-stone-100 dark:bg-stone-800 shrink-0">
               <Image
                 src={profile.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"}
                 alt={profile.displayName}
@@ -309,49 +322,48 @@ export default function UserProfilePage() {
             </div>
             <div className="space-y-1.5 min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 font-serif tracking-tight">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100 font-serif tracking-tight">
                   {profile.penName || profile.displayName}
                 </h1>
-                {isOwnProfile ? (
-                  <Badge className="bg-[#680C07] text-white border-0 text-xs px-2.5 py-0.5 font-bold">
-                    Your Profile Workspace
-                  </Badge>
-                ) : (
-                  <Badge className="bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20 text-xs font-semibold">
-                    Master Storyteller
-                  </Badge>
-                )}
+                <Badge className="bg-emerald-600 dark:bg-emerald-700 text-white border-0 text-xs px-2.5 py-0.5 font-bold flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 fill-white text-emerald-600" />
+                  Verified Author
+                </Badge>
               </div>
 
-              <div className="flex flex-wrap items-center gap-3 text-xs text-stone-500 font-medium">
-                <span className="font-mono text-stone-600">@{profile.username}</span>
-                <span>•</span>
-                <span className="flex items-center gap-1">
-                  <Flame className="w-3.5 h-3.5 text-[#680C07]" /> {profile.traditionSpecialty || "Pan-African"}
+              {/* Followers & Following Stats - Positioned Higher Up */}
+              <div className="flex items-center gap-4 text-xs font-medium text-stone-700 dark:text-stone-300">
+                <span className="cursor-pointer hover:underline">
+                  <strong className="text-stone-900 dark:text-stone-100 text-sm font-extrabold">{followersCount.toLocaleString()}</strong> Followers
                 </span>
                 <span>•</span>
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5 text-stone-400" /> Joined {profile.createdAt}
+                <span className="cursor-pointer hover:underline">
+                  <strong className="text-stone-900 dark:text-stone-100 text-sm font-extrabold">{profile.followingCount}</strong> Following
                 </span>
+                <span>•</span>
+                <span className="font-mono text-stone-500 dark:text-stone-400">@{profile.username}</span>
               </div>
             </div>
           </div>
 
-          {/* Action Buttons: Own Profile vs Other User Profile */}
+          {/* Action Buttons */}
           <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
             {isOwnProfile ? (
               <>
-                <Link href="/settings" className="flex-1 sm:flex-none">
-                  <Button
-                    variant="outline"
-                    className="w-full border-stone-300 rounded-xl text-xs font-bold text-stone-700 hover:bg-stone-100 gap-1.5"
-                  >
-                    <Sliders className="w-3.5 h-3.5 text-[#680C07]" /> Account & Settings
-                  </Button>
-                </Link>
+                <Button
+                  variant="outline"
+                  onClick={() => setActiveTab("settings")}
+                  className={`rounded-xl text-xs font-bold gap-1.5 border-stone-300 dark:border-stone-700 ${
+                    activeTab === "settings"
+                      ? "bg-[#680C07] text-white dark:bg-red-700"
+                      : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800"
+                  }`}
+                >
+                  <Sliders className="w-3.5 h-3.5" /> Settings
+                </Button>
 
                 <Link href="/studio/new" className="flex-1 sm:flex-none">
-                  <Button className="w-full bg-[#680C07] hover:bg-[#520905] text-white rounded-xl text-xs font-bold gap-1.5 shadow-sm">
+                  <Button className="w-full bg-[#680C07] hover:bg-[#520905] dark:bg-red-700 dark:hover:bg-red-800 text-white rounded-xl text-xs font-bold gap-1.5 shadow-sm">
                     <Plus className="w-4 h-4 stroke-[3]" /> Create New Story
                   </Button>
                 </Link>
@@ -361,15 +373,15 @@ export default function UserProfilePage() {
                 <Button
                   variant="outline"
                   onClick={handleFollowToggle}
-                  className={`border-stone-300 rounded-xl text-xs flex-1 sm:flex-none font-bold ${
+                  className={`border-stone-300 dark:border-stone-700 rounded-xl text-xs flex-1 sm:flex-none font-bold ${
                     isFollowing
-                      ? "bg-[#680C07]/10 border-[#680C07]/20 text-[#680C07]"
-                      : "bg-white text-stone-700 hover:bg-stone-50"
+                      ? "bg-[#680C07]/10 dark:bg-red-500/20 border-[#680C07]/20 text-[#680C07] dark:text-red-400"
+                      : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800"
                   }`}
                 >
                   {isFollowing ? (
                     <>
-                      <UserCheck className="w-3.5 h-3.5 mr-1.5 text-[#680C07]" /> Following
+                      <UserCheck className="w-3.5 h-3.5 mr-1.5 text-[#680C07] dark:text-red-400" /> Following
                     </>
                   ) : (
                     <>
@@ -380,7 +392,7 @@ export default function UserProfilePage() {
 
                 <Button
                   onClick={() => setShowSupportModal(true)}
-                  className="bg-[#680C07] hover:bg-[#520905] text-white rounded-xl text-xs font-bold shadow-xs flex-1 sm:flex-none"
+                  className="bg-[#680C07] hover:bg-[#520905] dark:bg-red-700 dark:hover:bg-red-800 text-white rounded-xl text-xs font-bold shadow-xs flex-1 sm:flex-none"
                 >
                   <Heart className="w-3.5 h-3.5 mr-1.5 fill-white" />
                   Support Author
@@ -389,7 +401,7 @@ export default function UserProfilePage() {
                 <Button
                   variant="outline"
                   onClick={handleShareProfile}
-                  className="border-stone-300 rounded-xl text-xs text-stone-700 bg-white"
+                  className="border-stone-300 dark:border-stone-700 rounded-xl text-xs text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900"
                   title="Share profile link"
                 >
                   {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
@@ -400,25 +412,19 @@ export default function UserProfilePage() {
         </div>
 
         {/* Bio */}
-        <p className="text-sm text-stone-700 leading-relaxed max-w-3xl font-medium">
+        <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed max-w-3xl font-medium">
           {profile.bio}
         </p>
 
-        {/* Engagement & Metrics Bar */}
-        <div className="flex flex-wrap items-center gap-6 pt-4 border-t border-stone-100 text-xs text-stone-600 font-medium">
+        {/* Engagement Summary */}
+        <div className="flex flex-wrap items-center gap-6 pt-4 border-t border-stone-100 dark:border-stone-800 text-xs text-stone-600 dark:text-stone-400 font-medium">
           <div>
-            <strong className="text-stone-900 text-sm font-bold">{followersCount.toLocaleString()}</strong> Followers
-          </div>
-          <div>
-            <strong className="text-stone-900 text-sm font-bold">{profile.followingCount}</strong> Following
-          </div>
-          <div>
-            <strong className="text-stone-900 text-sm font-bold">
+            <strong className="text-stone-900 dark:text-stone-100 text-sm font-bold">
               {(profile.writingStats?.totalReads || 38420).toLocaleString()}
             </strong> Total Reads
           </div>
           <div>
-            <strong className="text-stone-900 text-sm font-bold">
+            <strong className="text-stone-900 dark:text-stone-100 text-sm font-bold">
               {(profile.writingStats?.totalLikes || 2840).toLocaleString()}
             </strong> Story Likes
           </div>
@@ -426,42 +432,56 @@ export default function UserProfilePage() {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex items-center gap-2 border-b border-stone-200 pb-3">
+      <div className="flex items-center gap-2 border-b border-stone-200 dark:border-stone-800 pb-3 overflow-x-auto scrollbar-none">
         <button
           onClick={() => setActiveTab("stories")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "stories"
-              ? "bg-[#680C07] text-white shadow-sm"
-              : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
+              ? "bg-[#680C07] dark:bg-red-700 text-white shadow-sm"
+              : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800"
           }`}
         >
           <BookOpen className="w-3.5 h-3.5" />
-          Authored Manuscripts ({publishedStories.length})
+          Authored Books ({publishedStories.length})
         </button>
 
         <button
           onClick={() => setActiveTab("stats")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "stats"
-              ? "bg-[#680C07] text-white shadow-sm"
-              : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
+              ? "bg-[#680C07] dark:bg-red-700 text-white shadow-sm"
+              : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800"
           }`}
         >
           <Layers className="w-3.5 h-3.5" />
-          Storytelling & Reader Journey
+          Author & Reader Metrics
         </button>
 
         <button
           onClick={() => setActiveTab("badges")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "badges"
-              ? "bg-[#680C07] text-white shadow-sm"
-              : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
+              ? "bg-[#680C07] dark:bg-red-700 text-white shadow-sm"
+              : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800"
           }`}
         >
           <Award className="w-3.5 h-3.5" />
           Badges & Achievements ({profile.badges?.length || 3})
         </button>
+
+        {isOwnProfile && (
+          <button
+            onClick={() => setActiveTab("settings")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+              activeTab === "settings"
+                ? "bg-[#680C07] dark:bg-red-700 text-white shadow-sm"
+                : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800"
+            }`}
+          >
+            <Sliders className="w-3.5 h-3.5" />
+            Account Settings
+          </button>
+        )}
       </div>
 
       {/* TAB 1: AUTHORED MANUSCRIPTS */}
@@ -680,8 +700,138 @@ export default function UserProfilePage() {
         </div>
       )}
 
+      {/* TAB 4: ACCOUNT SETTINGS (Embedded in Profile) */}
+      {activeTab === "settings" && isOwnProfile && (
+        <div className="space-y-6 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 p-6 sm:p-8 shadow-sm">
+          <div className="flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-4">
+            <div>
+              <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100 font-serif">
+                Account & Profile Settings
+              </h2>
+              <p className="text-xs text-stone-500 dark:text-stone-400">
+                Manage your public profile details, account credentials, and platform preferences.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Section 1: Edit Profile */}
+            <div className="space-y-4 p-5 bg-stone-50 dark:bg-stone-950 rounded-2xl border border-stone-200 dark:border-stone-800">
+              <div className="flex items-center gap-2 font-bold text-sm text-stone-900 dark:text-stone-100 border-b border-stone-200 dark:border-stone-800 pb-2">
+                <User className="w-4 h-4 text-[#680C07] dark:text-red-400" />
+                <span>Public Profile Info</span>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-stone-700 dark:text-stone-300">Display Name</label>
+                <Input
+                  value={settingsName}
+                  onChange={(e) => setSettingsName(e.target.value)}
+                  className="bg-white dark:bg-stone-900 border-stone-300 dark:border-stone-700 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-stone-700 dark:text-stone-300">Username</label>
+                <Input
+                  value={settingsUsername}
+                  onChange={(e) => setSettingsUsername(e.target.value)}
+                  className="bg-white dark:bg-stone-900 border-stone-300 dark:border-stone-700 text-xs font-mono"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-stone-700 dark:text-stone-300">Bio</label>
+                <textarea
+                  rows={3}
+                  value={settingsBio}
+                  onChange={(e) => setSettingsBio(e.target.value)}
+                  className="w-full bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl p-2.5 text-xs text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#680C07]"
+                />
+              </div>
+
+              <Button
+                type="button"
+                onClick={() => {
+                  setSettingsSaved(true);
+                  setTimeout(() => setSettingsSaved(false), 2000);
+                }}
+                className="bg-[#680C07] hover:bg-[#520905] dark:bg-red-700 dark:hover:bg-red-800 text-white text-xs font-bold rounded-xl gap-1.5 w-full py-2.5"
+              >
+                {settingsSaved ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
+                <span>{settingsSaved ? "Profile Saved!" : "Save Profile Details"}</span>
+              </Button>
+            </div>
+
+            {/* Section 2: Password & Security */}
+            <div className="space-y-4 p-5 bg-stone-50 dark:bg-stone-950 rounded-2xl border border-stone-200 dark:border-stone-800 flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 font-bold text-sm text-stone-900 dark:text-stone-100 border-b border-stone-200 dark:border-stone-800 pb-2">
+                  <Lock className="w-4 h-4 text-[#680C07] dark:text-red-400" />
+                  <span>Security & Password</span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-stone-700 dark:text-stone-300">Current Password</label>
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="bg-white dark:bg-stone-900 border-stone-300 dark:border-stone-700 text-xs"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-stone-700 dark:text-stone-300">New Password</label>
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="bg-white dark:bg-stone-900 border-stone-300 dark:border-stone-700 text-xs"
+                  />
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    if (currentPassword && newPassword) {
+                      setPasswordSaved(true);
+                      setCurrentPassword("");
+                      setNewPassword("");
+                      setTimeout(() => setPasswordSaved(false), 2000);
+                    }
+                  }}
+                  className="border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-200 text-xs font-bold rounded-xl gap-1.5 w-full py-2.5"
+                >
+                  {passwordSaved ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Lock className="w-3.5 h-3.5" />}
+                  <span>{passwordSaved ? "Password Updated!" : "Update Password"}</span>
+                </Button>
+              </div>
+
+              {/* Log Out Button */}
+              <div className="pt-4 border-t border-stone-200 dark:border-stone-800">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    alert("You have been logged out of INKOMA.");
+                  }}
+                  className="w-full border-red-200 dark:border-red-900 text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 text-xs font-bold rounded-xl gap-2 py-2.5"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Log Out of Account</span>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* PATRON SUPPORT & BANKING BOX */}
-      <div className="p-6 sm:p-8 bg-white rounded-3xl border border-[#680C07]/20 space-y-4 shadow-sm">
+      <div className="p-6 sm:p-8 bg-white dark:bg-stone-900 rounded-3xl border border-[#680C07]/20 dark:border-stone-800 space-y-4 shadow-sm">
         <div className="flex items-center justify-between border-b border-stone-100 pb-3">
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-[#680C07]" />

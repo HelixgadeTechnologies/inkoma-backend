@@ -16,11 +16,11 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-stone-200/80 bg-[#FAF8F5]/90 backdrop-blur-xl transition-all">
+    <header className="sticky top-0 z-40 w-full border-b border-stone-200/80 dark:border-stone-800 bg-[#FAF8F5]/90 dark:bg-stone-950/90 backdrop-blur-xl transition-colors">
       <div className="flex h-20 w-full items-center justify-between px-3 sm:px-6 lg:px-8">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center space-x-3 group">
-          <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-white p-1 border border-stone-200 shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
+          <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-white dark:bg-stone-900 p-1 border border-stone-200 dark:border-stone-800 shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
             <Image
               src="/images/inkoma-logo.png"
               alt="Inkoma Logo"
@@ -31,11 +31,11 @@ export function Navbar() {
             />
           </div>
           <div className="flex flex-col">
-            <span className="font-serif text-2xl font-bold tracking-tight text-stone-900 group-hover:text-[#680C07] transition-colors">
+            <span className="font-serif text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-100 group-hover:text-[#680C07] dark:group-hover:text-red-400 transition-colors">
               Inkoma
             </span>
-            <span className="text-[11px] tracking-widest uppercase text-[#680C07] font-semibold -mt-1">
-              Tales Hub
+            <span className="text-[10px] tracking-widest uppercase text-[#680C07] dark:text-red-400 font-semibold -mt-1">
+              Global Stories
             </span>
           </div>
         </Link>
@@ -43,16 +43,19 @@ export function Navbar() {
         {/* Center Nav Links (Desktop) */}
         <nav className="hidden md:flex items-center space-x-1 lg:space-x-2 text-sm font-medium">
           {marketingNav.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive =
+              item.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "px-3 py-1.5 rounded-lg transition-colors",
+                  "px-3.5 py-2 rounded-xl transition-all",
                   isActive
-                    ? "text-[#680C07] bg-[#680C07]/10 font-semibold"
-                    : "text-stone-700 hover:text-stone-950 hover:bg-stone-100"
+                    ? "text-[#680C07] dark:text-red-400 bg-[#680C07]/10 dark:bg-red-500/20 font-bold"
+                    : "text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
                 )}
               >
                 {item.title}
@@ -70,7 +73,7 @@ export function Navbar() {
           <Link
             href="/notifications"
             title="Notifications"
-            className="relative p-2 text-stone-700 hover:text-[#680C07] transition-colors rounded-xl hover:bg-stone-100/80"
+            className="relative p-2 text-stone-700 dark:text-stone-300 hover:text-[#680C07] dark:hover:text-red-400 transition-colors rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800"
           >
             <Bell className="h-5 w-5" />
             <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
@@ -79,12 +82,12 @@ export function Navbar() {
             </span>
           </Link>
           <Link href="/login">
-            <Button variant="ghost" size="sm" className="text-stone-800 hover:text-stone-950">
+            <Button variant="ghost" size="sm" className="text-stone-800 dark:text-stone-200 hover:text-stone-950">
               Sign In
             </Button>
           </Link>
           <Link href="/explore">
-            <Button variant="folklore" size="sm" className="gap-1.5">
+            <Button className="bg-[#680C07] hover:bg-[#520905] dark:bg-red-700 dark:hover:bg-red-800 text-white size-sm gap-1.5 rounded-xl font-bold">
               <BookOpen className="h-4 w-4" />
               Read Stories
             </Button>
@@ -98,7 +101,7 @@ export function Navbar() {
             variant="ghost"
             size="icon"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="text-stone-800 hover:text-stone-950"
+            className="text-stone-800 dark:text-stone-200 hover:text-stone-950"
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
@@ -107,7 +110,7 @@ export function Navbar() {
 
       {/* Mobile Drawer */}
       {mobileOpen && (
-        <div className="border-b border-stone-200 bg-[#FAF8F5] px-4 py-4 md:hidden animate-in slide-in-from-top-2">
+        <div className="border-b border-stone-200 dark:border-stone-800 bg-[#FAF8F5] dark:bg-stone-900 px-4 py-4 md:hidden animate-in slide-in-from-top-2">
           <div className="mb-4">
             <SearchBar />
           </div>
@@ -117,17 +120,17 @@ export function Navbar() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className="px-3 py-2 rounded-lg text-sm text-stone-800 hover:bg-stone-100 hover:text-folklore-amber font-medium"
+                className="px-3 py-2 rounded-lg text-sm text-stone-800 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-[#680C07] dark:hover:text-red-400 font-medium"
               >
                 {item.title}
               </Link>
             ))}
-            <div className="pt-2 border-t border-stone-200 flex gap-2">
-              <Link href="/login" className="flex-1" onClick={() => setMobileOpen(false)}>
-                <Button variant="outline" className="w-full">Sign In</Button>
+            <div className="pt-3 border-t border-stone-200 dark:border-stone-800 flex gap-2">
+              <Link href="/login" className="w-full" onClick={() => setMobileOpen(false)}>
+                <Button variant="outline" className="w-full text-stone-800 dark:text-stone-200 border-stone-300 dark:border-stone-700">Sign In</Button>
               </Link>
-              <Link href="/signup" className="flex-1" onClick={() => setMobileOpen(false)}>
-                <Button variant="folklore" className="w-full">Join Hub</Button>
+              <Link href="/support" className="w-full" onClick={() => setMobileOpen(false)}>
+                <Button variant="ghost" className="w-full text-stone-700 dark:text-stone-300">Support INKOMA</Button>
               </Link>
             </div>
           </div>
