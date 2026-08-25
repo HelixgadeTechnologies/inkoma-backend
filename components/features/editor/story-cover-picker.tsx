@@ -223,6 +223,7 @@ export function StoryCoverPicker({ value, onChange }: StoryCoverPickerProps) {
                     </div>
                   </button>
                 );
+              })}
             </div>
           </div>
         </div>
