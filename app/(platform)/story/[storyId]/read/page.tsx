@@ -237,7 +237,7 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
       <div className="text-center py-20 bg-white rounded-3xl border border-stone-200 p-8 space-y-4">
         <h2 className="text-2xl font-bold text-stone-900 font-serif">Story Not Found</h2>
         <Link href="/explore">
-          <Button className="bg-[#680C07] hover:bg-[#520905] text-white">
+          <Button className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold">
             Return to Explore
           </Button>
         </Link>
@@ -276,7 +276,7 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
       {/* Top Floating Reading Progress Bar */}
       <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-stone-300/30">
         <div
-          className="h-full bg-[#680C07] transition-all duration-150"
+          className="h-full bg-[#D4AF37] transition-all duration-150"
           style={{ width: `${scrollProgress}%` }}
         />
       </div>
@@ -306,7 +306,7 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
               <h1 className="text-xs sm:text-sm font-bold truncate font-serif">
                 {currentStory.title}
               </h1>
-              <p className="text-[10px] sm:text-xs text-[#680C07] font-semibold truncate">
+              <p className="text-[10px] sm:text-xs text-[#D4AF37] font-semibold truncate">
                 Chapter {currentChapter.number}: {currentChapter.title}
               </p>
             </div>
@@ -320,7 +320,7 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
               onClick={() => setIsFocusReadMode(!isFocusReadMode)}
               className={`gap-1.5 text-xs font-bold rounded-xl transition-all ${
                 isFocusReadMode
-                  ? "bg-[#680C07] text-white shadow-sm"
+                  ? "bg-[#D4AF37] text-stone-950 font-bold shadow-sm"
                   : "bg-white text-stone-800 border border-stone-300 hover:bg-stone-100"
               }`}
               title={isFocusReadMode ? "Exit Focus Mode (Esc)" : "Enter Focus Read Mode"}
@@ -332,7 +332,7 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
                 </>
               ) : (
                 <>
-                  <Maximize2 className="w-3.5 h-3.5 text-[#680C07]" />
+                  <Maximize2 className="w-3.5 h-3.5 text-[#D4AF37]" />
                   <span className="hidden sm:inline">Focus Read Mode</span>
                 </>
               )}
@@ -345,12 +345,12 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
               onClick={() => toggleBookmark(currentStory.id)}
               className={`p-2 rounded-xl border text-xs transition-all ${
                 bookmarked
-                  ? "bg-[#680C07]/10 border-[#680C07]/20 text-[#680C07]"
+                  ? "bg-[#D4AF37]/10 border-[#D4AF37]/20 text-[#D4AF37]"
                   : "bg-white border-stone-200 text-stone-600 hover:bg-stone-50"
               }`}
               title="Bookmark story"
             >
-              <Bookmark className={`w-4 h-4 ${bookmarked ? "fill-[#680C07] text-[#680C07]" : ""}`} />
+              <Bookmark className={`w-4 h-4 ${bookmarked ? "fill-[#D4AF37] text-[#D4AF37]" : ""}`} />
             </button>
 
             <button
@@ -367,7 +367,7 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
               onClick={() => setShowComments(!showComments)}
               className={`flex items-center gap-1 p-2 rounded-xl border text-xs transition-all ${
                 showComments
-                  ? "bg-[#680C07]/10 border-[#680C07]/20 text-[#680C07]"
+                  ? "bg-[#D4AF37]/10 border-[#D4AF37]/20 text-[#D4AF37]"
                   : "bg-white border-stone-200 text-stone-600 hover:bg-stone-50"
               }`}
               title="Chapter discussion"
@@ -387,15 +387,15 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
       }`}>
         {/* Focus Mode Active Banner */}
         {isFocusReadMode && (
-          <div className="flex items-center justify-between p-3.5 bg-[#680C07] text-white rounded-2xl shadow-md text-xs">
+          <div className="flex items-center justify-between p-3.5 bg-[#D4AF37] text-stone-950 font-bold rounded-2xl shadow-md text-xs">
             <div className="flex items-center gap-2">
-              <BookOpenCheck className="w-4 h-4 text-amber-300" />
+              <BookOpenCheck className="w-4 h-4 text-stone-950" />
               <span className="font-semibold">Distraction-Free Focus Read Mode Active</span>
             </div>
             <button
               type="button"
               onClick={() => setIsFocusReadMode(false)}
-              className="px-3 py-1 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-[11px] transition-colors"
+              className="px-3 py-1 rounded-xl bg-stone-950/20 hover:bg-stone-950/30 text-stone-950 font-bold text-[11px] transition-colors"
             >
               Press ESC or Exit Focus
             </button>
@@ -414,14 +414,14 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
         {selectedText && (
           <div className="sticky top-20 z-30 flex items-center justify-center animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center gap-2 p-2 bg-stone-900 text-white rounded-2xl shadow-xl border border-stone-700">
-              <Quote className="w-4 h-4 text-[#680C07] ml-1" />
+              <Quote className="w-4 h-4 text-[#D4AF37] ml-1" />
               <span className="text-xs text-stone-300 truncate max-w-[200px] sm:max-w-xs">
                 &ldquo;{selectedText}&rdquo;
               </span>
               <Button
                 size="sm"
                 onClick={handleSaveSelectedQuote}
-                className="bg-[#680C07] hover:bg-[#520905] text-white text-xs h-7 px-2.5 rounded-xl font-medium"
+                className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 text-xs h-7 px-2.5 rounded-xl font-bold"
               >
                 Save to Quotes
               </Button>
@@ -433,7 +433,7 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
         <article className={`rounded-3xl p-6 sm:p-12 space-y-6 transition-all duration-300 ${themeCardBg}`}>
           <div className="space-y-2 border-b border-stone-200/50 pb-5">
             <div className="flex items-center justify-between text-xs opacity-75">
-              <span className="font-semibold uppercase tracking-wider text-[#680C07]">
+              <span className="font-semibold uppercase tracking-wider text-[#D4AF37]">
                 Chapter {currentChapter.number} of {chapters.length || 1}
               </span>
               <span>{currentChapter.readTimeMinutes || 5} min estimated read</span>
@@ -460,10 +460,10 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
                   setChapterLikesCount((prev) => (chapterLiked ? prev - 1 : prev + 1));
                 }}
                 className={`border-stone-300 rounded-xl text-xs ${
-                  chapterLiked ? "bg-red-50 border-red-300 text-red-600 font-semibold" : "text-stone-700"
+                  chapterLiked ? "bg-[#D4AF37]/10 border-[#D4AF37]/30 text-[#D4AF37] font-semibold" : "text-stone-700"
                 }`}
               >
-                <Heart className={`w-4 h-4 mr-1.5 ${chapterLiked ? "fill-red-500 text-red-500" : ""}`} />
+                <Heart className={`w-4 h-4 mr-1.5 ${chapterLiked ? "fill-[#D4AF37] text-[#D4AF37]" : ""}`} />
                 {chapterLiked ? "Liked Chapter" : "Like Chapter"} ({chapterLikesCount})
               </Button>
 
@@ -492,7 +492,7 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
                 variant="outline"
                 disabled={currentChapterIndex >= chapters.length - 1}
                 onClick={() => handleChapterSelect(currentChapter.number + 1)}
-                className="border-stone-300 rounded-xl text-xs bg-[#680C07]/10 border-[#680C07]/20 text-[#680C07] font-semibold"
+                className="border-stone-300 rounded-xl text-xs bg-[#D4AF37]/10 border-[#D4AF37]/20 text-[#D4AF37] font-semibold"
               >
                 Next Chapter <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
@@ -505,7 +505,7 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
           <section className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm space-y-6 animate-in fade-in slide-in-from-top-3 duration-200">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
               <h3 className="text-lg font-bold text-stone-900 font-serif flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-[#680C07]" />
+                <MessageSquare className="w-5 h-5 text-[#D4AF37]" />
                 Chapter Discussions ({comments.length})
               </h3>
               <span className="text-xs text-stone-400">Share your reflections on this tale</span>
@@ -518,12 +518,12 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
                 placeholder="Write a reflection or question on this chapter..."
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                className="flex-1 bg-stone-50 border border-stone-300 rounded-2xl px-4 py-3 text-xs text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#680C07]"
+                className="flex-1 bg-stone-50 border border-stone-300 rounded-2xl px-4 py-3 text-xs text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
               />
               <Button
                 type="submit"
                 disabled={!newComment.trim()}
-                className="bg-[#680C07] hover:bg-[#520905] text-white rounded-2xl px-4"
+                className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold rounded-2xl px-4"
               >
                 <Send className="w-4 h-4" />
               </Button>
@@ -535,7 +535,7 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
                 <div key={comment.id} className="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-full bg-[#680C07]/10 border border-[#680C07]/30 flex items-center justify-center font-bold text-xs text-[#680C07] font-serif">
+                      <div className="w-8 h-8 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 flex items-center justify-center font-bold text-xs text-[#D4AF37] font-serif">
                         {comment.author[0]}
                       </div>
                       <div>
@@ -545,7 +545,7 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
                     </div>
                     <button
                       type="button"
-                      className="flex items-center gap-1 text-xs text-stone-500 hover:text-[#680C07]"
+                      className="flex items-center gap-1 text-xs text-stone-500 hover:text-[#D4AF37]"
                     >
                       <ThumbsUp className="w-3.5 h-3.5" />
                       <span>{comment.likes}</span>
@@ -559,7 +559,7 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
                     <button
                       type="button"
                       onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-                      className="text-[11px] font-semibold text-[#680C07] hover:underline flex items-center gap-1"
+                      className="text-[11px] font-semibold text-[#D4AF37] hover:underline flex items-center gap-1"
                     >
                       <CornerDownRight className="w-3 h-3" /> Reply
                     </button>
@@ -573,12 +573,12 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
                         placeholder={`Reply to ${comment.author}...`}
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
-                        className="flex-1 bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#680C07]"
+                        className="flex-1 bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
                       />
                       <Button
                         size="sm"
                         onClick={() => handleAddReply(comment.id)}
-                        className="bg-[#680C07] hover:bg-[#520905] text-white rounded-xl text-xs"
+                        className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold rounded-xl text-xs"
                       >
                         Post
                       </Button>
@@ -587,7 +587,7 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
 
                   {/* Nested Replies */}
                   {comment.replies && comment.replies.length > 0 && (
-                    <div className="pl-6 pt-2 space-y-2 border-l-2 border-[#680C07]/20">
+                    <div className="pl-6 pt-2 space-y-2 border-l-2 border-[#D4AF37]/20">
                       {comment.replies.map((reply) => (
                         <div key={reply.id} className="p-2.5 bg-white rounded-xl border border-stone-200 space-y-1">
                           <div className="flex items-center justify-between text-[11px]">

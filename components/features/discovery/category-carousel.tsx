@@ -125,7 +125,7 @@ export function CategoryCarousel() {
       <div className="flex items-center justify-between">
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-[#680C07]" />
+            <Sparkles className="w-5 h-5 text-[#D4AF37]" />
             <h2 className="text-xl font-extrabold text-stone-900 font-serif tracking-tight">
               Explore Folklore Categories & Traditions
             </h2>
@@ -175,7 +175,7 @@ export function CategoryCarousel() {
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-stone-950/30 to-transparent" />
+              <div className="absolute inset-0 bg-stone-950/50" />
 
               <div className="absolute top-2.5 left-2.5">
                 <Badge className="bg-stone-900/80 text-white backdrop-blur-md text-[10px] font-semibold flex items-center gap-1 border-0">
@@ -185,21 +185,21 @@ export function CategoryCarousel() {
               </div>
 
               <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between text-white text-[11px]">
-                <span className="font-bold font-serif drop-shadow-xs">{cat.count} Manuscripts</span>
+                <span className="font-bold drop-shadow-xs">{cat.count} Manuscripts</span>
               </div>
             </div>
 
             {/* Details */}
             <div className="space-y-1">
-              <h3 className="text-sm font-bold text-stone-900 font-serif group-hover:text-[#680C07] transition-colors line-clamp-1">
+              <h3 className="text-sm font-bold text-stone-100 group-hover:text-[#D4AF37] transition-colors line-clamp-1">
                 {cat.name}
               </h3>
-              <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">
+              <p className="text-xs text-stone-400 line-clamp-2 leading-relaxed">
                 {cat.description}
               </p>
             </div>
 
-            <div className="pt-3 mt-2 border-t border-stone-100 flex items-center justify-between text-[11px] font-bold text-[#680C07] group-hover:underline">
+            <div className="pt-3 mt-2 border-t border-stone-800 flex items-center justify-between text-[11px] font-bold text-[#D4AF37] group-hover:underline">
               <span>Explore Tradition</span>
               <span>→</span>
             </div>

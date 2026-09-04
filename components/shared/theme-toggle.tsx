@@ -11,9 +11,8 @@ export function ThemeToggle() {
   React.useEffect(() => {
     setMounted(true);
     const storedTheme = localStorage.getItem("inkoma-theme");
-    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
     
-    if (storedTheme === "dark" || (!storedTheme && prefersDark)) {
+    if (storedTheme === "dark") {
       setIsDark(true);
       document.documentElement.classList.add("dark");
       document.documentElement.classList.remove("light");
@@ -43,9 +42,9 @@ export function ThemeToggle() {
       <Button
         variant="ghost"
         size="icon"
-        className="text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800"
+        className="text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-full"
       >
-        <Moon className="h-4 w-4" />
+        <Sun className="h-4 w-4 text-[#D4AF37]" />
       </Button>
     );
   }
@@ -55,11 +54,11 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={toggleTheme}
-      className="text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+      className="text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors rounded-full"
       title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
     >
       {isDark ? (
-        <Sun className="h-4 w-4 text-amber-400 animate-in spin-in-90 duration-300" />
+        <Sun className="h-4 w-4 text-[#D4AF37] animate-in spin-in-90 duration-300" />
       ) : (
         <Moon className="h-4 w-4 text-stone-700 dark:text-stone-300 animate-in spin-in-90 duration-300" />
       )}

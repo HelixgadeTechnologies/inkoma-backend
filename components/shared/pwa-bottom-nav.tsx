@@ -18,7 +18,7 @@ export function PwaBottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-stone-200/90 dark:border-stone-800 bg-[#FAF8F5]/95 dark:bg-stone-900/95 backdrop-blur-xl py-2 px-1 md:hidden shadow-lg transition-colors">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden items-center justify-around border-t border-stone-200 bg-white/95 backdrop-blur-md py-2 px-2 shadow-lg transition-colors">
       {navItems.map((item) => {
         const Icon = item.icon;
         const isActive =
@@ -31,21 +31,17 @@ export function PwaBottomNav() {
             key={item.href}
             href={item.href}
             className={cn(
-              "flex flex-col items-center justify-center space-y-0.5 px-3 py-1 rounded-xl transition-all",
+              "relative flex flex-col items-center justify-center space-y-1 px-3 py-1 rounded-xl transition-all",
               isActive
-                ? "text-[#680C07] dark:text-red-400 font-bold"
-                : "text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 font-medium"
+                ? "text-[#B8860B] font-bold"
+                : "text-stone-600 hover:text-stone-900 font-medium"
             )}
           >
-            <div
-              className={cn(
-                "p-1 rounded-xl transition-all",
-                isActive ? "bg-[#680C07]/10 dark:bg-red-500/20" : "bg-transparent"
-              )}
-            >
-              <Icon className={cn("w-5 h-5", isActive ? "text-[#680C07] dark:text-red-400" : "text-stone-500 dark:text-stone-400")} />
-            </div>
-            <span className="text-[10px] tracking-tight">{item.label}</span>
+            <Icon className={cn("w-5 h-5 transition-colors", isActive ? "text-[#B8860B]" : "text-stone-500")} />
+            <span className="text-[11px] tracking-tight">{item.label}</span>
+            {isActive && (
+              <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-[#B8860B] rounded-full" />
+            )}
           </Link>
         );
       })}

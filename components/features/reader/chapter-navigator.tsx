@@ -55,7 +55,7 @@ export function ChapterNavigator({
             onClick={() => setInternalOpen(true)}
             className="bg-stone-900 hover:bg-black text-white rounded-2xl shadow-xl px-4 py-2.5 flex items-center gap-2 text-xs border border-stone-700"
           >
-            <Layers className="w-4 h-4 text-[#680C07]" />
+            <Layers className="w-4 h-4 text-[#D4AF37]" />
             <span>Chapters ({chapters.length})</span>
           </Button>
         </div>
@@ -66,7 +66,7 @@ export function ChapterNavigator({
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-stone-200">
             <div className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-[#680C07]" />
+              <BookOpen className="h-5 w-5 text-[#D4AF37]" />
               <h3 className="font-serif text-lg font-bold text-stone-900">Chronicles & Chapters</h3>
             </div>
             <button
@@ -93,8 +93,8 @@ export function ChapterNavigator({
                   className={cn(
                     "w-full text-left p-4 rounded-xl border transition-all flex flex-col gap-1.5",
                     isActive
-                      ? "border-[#680C07] bg-[#680C07]/10 shadow-md text-[#680C07]"
-                      : "border-stone-200 bg-white hover:border-[#680C07]/30 hover:bg-[#680C07]/5"
+                      ? "border-[#D4AF37] bg-[#D4AF37]/10 shadow-md text-[#D4AF37]"
+                      : "border-stone-200 bg-white hover:border-[#D4AF37]/30 hover:bg-[#D4AF37]/5"
                   )}
                 >
                   <div className="flex items-center justify-between">

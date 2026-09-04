@@ -66,8 +66,8 @@ export default function OnboardingPage() {
       <div className="max-w-2xl w-full bg-white rounded-3xl border border-stone-200 shadow-xl p-8 sm:p-10 space-y-8">
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] text-xs font-semibold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5 text-[#680C07]" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#D4AF37] text-xs font-semibold uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
             Step 1 of 1 • Personalize Your Circle
           </div>
           <h1 className="text-3xl font-extrabold text-stone-900 tracking-tight font-serif">
@@ -82,7 +82,7 @@ export default function OnboardingPage() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wider flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-[#680C07]" />
+              <BookOpen className="w-4 h-4 text-[#D4AF37]" />
               Select Favorite Genres ({selectedGenres.length} selected)
             </h2>
           </div>
@@ -96,7 +96,7 @@ export default function OnboardingPage() {
                   onClick={() => toggleGenre(genre.id)}
                   className={`flex items-start gap-3 p-3.5 rounded-2xl border text-left transition-all ${
                     isSelected
-                      ? "border-[#680C07] bg-[#680C07]/10 ring-2 ring-[#680C07]/20 shadow-sm"
+                      ? "border-[#D4AF37] bg-[#D4AF37]/10 ring-2 ring-[#D4AF37]/20 shadow-sm"
                       : "border-stone-200 bg-stone-50 hover:bg-stone-100/70 hover:border-stone-300"
                   }`}
                 >
@@ -105,7 +105,7 @@ export default function OnboardingPage() {
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-stone-900">{genre.name}</span>
                       {isSelected && (
-                        <div className="w-4 h-4 rounded-full bg-[#680C07] text-white flex items-center justify-center">
+                        <div className="w-4 h-4 rounded-full bg-[#D4AF37] text-stone-950 flex items-center justify-center font-bold">
                           <Check className="w-2.5 h-2.5 stroke-[3]" />
                         </div>
                       )}
@@ -123,7 +123,7 @@ export default function OnboardingPage() {
         {/* Reading Interests */}
         <div className="space-y-3 pt-2 border-t border-stone-100">
           <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wider flex items-center gap-2">
-            <Compass className="w-4 h-4 text-[#680C07]" />
+            <Compass className="w-4 h-4 text-[#D4AF37]" />
             What excites you most?
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -137,11 +137,11 @@ export default function OnboardingPage() {
                   onClick={() => toggleInterest(interest.id)}
                   className={`flex flex-col items-center justify-center text-center p-3 rounded-2xl border transition-all ${
                     isSelected
-                      ? "border-[#680C07] bg-[#680C07]/10 text-[#680C07] font-semibold ring-1 ring-[#680C07]/30 shadow-xs"
+                      ? "border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37] font-semibold ring-1 ring-[#D4AF37]/30 shadow-xs"
                       : "border-stone-200 bg-white text-stone-600 hover:bg-stone-50"
                   }`}
                 >
-                  <Icon className={`w-5 h-5 mb-1.5 ${isSelected ? "text-[#680C07]" : "text-stone-400"}`} />
+                  <Icon className={`w-5 h-5 mb-1.5 ${isSelected ? "text-[#D4AF37]" : "text-stone-400"}`} />
                   <span className="text-xs leading-tight">{interest.label}</span>
                 </button>
               );
@@ -161,7 +161,7 @@ export default function OnboardingPage() {
           <Button
             onClick={() => handleFinish(false)}
             disabled={isSubmitting}
-            className="w-full sm:w-auto px-8 bg-[#680C07] hover:bg-[#520905] text-white font-semibold shadow-md py-5"
+            className="w-full sm:w-auto px-8 bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold shadow-md py-5"
           >
             Explore Living Tales
             <ArrowRight className="w-4 h-4 ml-2" />

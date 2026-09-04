@@ -247,8 +247,8 @@ export function StoryCommentsSection({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-100 pb-5">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#680C07] text-white shadow-md">
-            <MessageSquare className="h-5 w-5 fill-current" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#D4AF37] text-stone-950 shadow-md">
+            <MessageSquare className="h-5 w-5 fill-current text-stone-950" />
           </div>
           <div>
             <h2 className="text-xl font-bold font-serif text-stone-900 tracking-tight">
@@ -261,7 +261,7 @@ export function StoryCommentsSection({
         </div>
 
         <div className="flex items-center gap-3">
-          <Badge className="bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20 text-xs px-3 py-1 font-semibold">
+          <Badge className="bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20 text-xs px-3 py-1 font-semibold">
             {totalCount} Comments
           </Badge>
           <div className="flex items-center gap-1.5 text-xs text-stone-500 font-medium">
@@ -269,7 +269,7 @@ export function StoryCommentsSection({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-stone-50 border border-stone-200 rounded-lg px-2 py-1 text-stone-800 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#680C07]"
+              className="bg-stone-50 border border-stone-200 rounded-lg px-2 py-1 text-stone-800 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
             >
               <option value="top">🔥 Top Upvoted</option>
               <option value="newest">✨ Newest First</option>
@@ -281,7 +281,7 @@ export function StoryCommentsSection({
       {/* New Comment Input Box */}
       <form onSubmit={handlePostComment} className="space-y-3 p-4 bg-stone-50/80 rounded-2xl border border-stone-200">
         <div className="flex items-start gap-3">
-          <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#680C07]/30 flex-shrink-0">
+          <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#D4AF37]/30 flex-shrink-0">
             <Image
               src={
                 MOCK_CURRENT_USER.avatarUrl ||
@@ -298,7 +298,7 @@ export function StoryCommentsSection({
               value={newCommentText}
               onChange={(e) => setNewCommentText(e.target.value)}
               placeholder={`Share your thoughts on ${storyTitle}, moral choices, or cultural connections...`}
-              className="w-full p-3 text-xs sm:text-sm bg-white border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#680C07]/20 focus:border-[#680C07] text-stone-900 placeholder:text-stone-400 resize-none"
+              className="w-full p-3 text-xs sm:text-sm bg-white border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#D4AF37] text-stone-900 placeholder:text-stone-400 resize-none"
             />
 
             {/* Quick Emoji Reaction Shortcuts */}
@@ -315,7 +315,7 @@ export function StoryCommentsSection({
                       onClick={() =>
                         setNewCommentText((prev) => (prev ? `${prev} ${reaction}` : reaction))
                       }
-                      className="px-2.5 py-1 rounded-full bg-white border border-stone-200 text-[11px] font-medium text-stone-600 hover:border-[#680C07] hover:text-[#680C07] transition-all"
+                      className="px-2.5 py-1 rounded-full bg-white border border-stone-200 text-[11px] font-medium text-stone-600 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all"
                     >
                       {reaction}
                     </button>
@@ -326,7 +326,7 @@ export function StoryCommentsSection({
               <Button
                 type="submit"
                 disabled={isSubmitting || !newCommentText.trim()}
-                className="bg-[#680C07] hover:bg-[#520905] text-white font-semibold text-xs px-5 py-2 rounded-xl shadow-md gap-1.5"
+                className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold text-xs px-5 py-2 rounded-xl shadow-md gap-1.5"
               >
                 <Send className="w-3.5 h-3.5" />
                 Post Comment
@@ -368,7 +368,7 @@ export function StoryCommentsSection({
                         {comment.authorName}
                       </span>
                       {comment.authorName.includes("(Author)") && (
-                        <Badge className="bg-[#680C07] text-white text-[10px] py-0 px-2 font-bold">
+                        <Badge className="bg-[#D4AF37] text-stone-950 text-[10px] py-0 px-2 font-bold">
                           Author
                         </Badge>
                       )}
@@ -401,13 +401,13 @@ export function StoryCommentsSection({
                   onClick={() => handleUpvote(comment.id)}
                   className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all ${
                     comment.hasUpvoted
-                      ? "bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20"
+                      ? "bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20"
                       : "bg-stone-50 text-stone-600 hover:bg-stone-100 border border-stone-200"
                   }`}
                 >
                   <ThumbsUp
                     className={`w-3.5 h-3.5 ${
-                      comment.hasUpvoted ? "fill-[#680C07] text-[#680C07]" : ""
+                      comment.hasUpvoted ? "fill-[#D4AF37] text-[#D4AF37]" : ""
                     }`}
                   />
                   <span>{comment.upvotesCount}</span>
@@ -417,7 +417,7 @@ export function StoryCommentsSection({
                   onClick={() =>
                     setReplyingToId(replyingToId === comment.id ? null : comment.id)
                   }
-                  className="flex items-center gap-1 text-stone-500 hover:text-[#680C07] font-semibold text-xs transition-colors"
+                  className="flex items-center gap-1 text-stone-500 hover:text-[#D4AF37] font-semibold text-xs transition-colors"
                 >
                   <CornerDownRight className="w-3.5 h-3.5" />
                   Reply
@@ -426,19 +426,19 @@ export function StoryCommentsSection({
 
               {/* Inline Reply Input Box */}
               {replyingToId === comment.id && (
-                <div className="mt-3 pl-4 border-l-2 border-[#680C07] space-y-2 animate-in fade-in duration-150">
+                <div className="mt-3 pl-4 border-l-2 border-[#D4AF37] space-y-2 animate-in fade-in duration-150">
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
                       value={replyText}
                       onChange={(e) => setReplyText(e.target.value)}
                       placeholder={`Replying to ${comment.authorName}...`}
-                      className="flex-1 px-3 py-2 text-xs bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#680C07]"
+                      className="flex-1 px-3 py-2 text-xs bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
                     />
                     <Button
                       size="sm"
                       onClick={() => handlePostReply(comment.id)}
-                      className="bg-[#680C07] hover:bg-[#520905] text-white text-xs h-8 px-3 rounded-lg"
+                      className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold text-xs h-8 px-3 rounded-lg"
                     >
                       Reply
                     </Button>
@@ -498,10 +498,10 @@ export function StoryCommentsSection({
                         <button
                           onClick={() => handleUpvote(reply.id, true, comment.id)}
                           className={`inline-flex items-center gap-1 text-[11px] font-semibold transition-colors ${
-                            reply.hasUpvoted ? "text-[#680C07]" : "text-stone-500 hover:text-stone-800"
+                            reply.hasUpvoted ? "text-[#D4AF37]" : "text-stone-500 hover:text-stone-800"
                           }`}
                         >
-                          <ThumbsUp className={`w-3 h-3 ${reply.hasUpvoted ? "fill-[#680C07]" : ""}`} />
+                          <ThumbsUp className={`w-3 h-3 ${reply.hasUpvoted ? "fill-[#D4AF37]" : ""}`} />
                           <span>{reply.upvotesCount}</span>
                         </button>
                       </div>

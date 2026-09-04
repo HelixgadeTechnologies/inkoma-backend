@@ -55,33 +55,33 @@ export function SupportAuthorDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-2xl rounded-3xl p-6 sm:p-7 space-y-5 text-stone-900 dark:text-stone-100">
+      <DialogContent className="max-w-md w-full bg-white border border-stone-200 shadow-2xl rounded-3xl p-6 sm:p-7 space-y-5 text-stone-900">
         <DialogHeader className="text-center space-y-2">
-          <div className="mx-auto w-12 h-12 rounded-full bg-[#680C07]/10 dark:bg-red-500/20 border border-[#680C07]/20 dark:border-red-500/30 text-[#680C07] dark:text-red-400 flex items-center justify-center">
-            <Heart className="w-6 h-6 fill-[#680C07] dark:fill-red-500 text-[#680C07] dark:text-red-500" />
+          <div className="mx-auto w-12 h-12 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/30 text-[#B8860B] flex items-center justify-center">
+            <Heart className="w-6 h-6 fill-[#B8860B] text-[#B8860B]" />
           </div>
-          <DialogTitle className="text-2xl font-bold font-serif text-stone-900 dark:text-stone-100">
+          <DialogTitle className="text-2xl font-bold font-serif text-stone-900">
             Support the Author
           </DialogTitle>
-          <DialogDescription className="text-xs text-stone-500 dark:text-stone-400">
+          <DialogDescription className="text-xs text-stone-600">
             Send patron support directly to this traditional author to sustain their lore recording and writing.
           </DialogDescription>
         </DialogHeader>
 
         {/* Author Card */}
-        <div className="flex items-center gap-3.5 p-3.5 bg-stone-50 dark:bg-stone-800 rounded-2xl border border-stone-200 dark:border-stone-700">
-          <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0 border border-[#680C07]/30 dark:border-red-500/30">
+        <div className="flex items-center gap-3.5 p-3.5 bg-stone-50 rounded-2xl border border-stone-200">
+          <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0 border border-[#D4AF37]/40">
             <Image src={avatar} alt={penName} fill className="object-cover" />
           </div>
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-bold text-stone-900 dark:text-stone-100 truncate font-serif">{penName}</h4>
-            <p className="text-xs text-stone-500 dark:text-stone-400 line-clamp-1">{bio}</p>
+            <h4 className="text-sm font-bold text-stone-900 truncate font-serif">{penName}</h4>
+            <p className="text-xs text-stone-500 line-clamp-1">{bio}</p>
           </div>
         </div>
 
         {/* Option 1: Paystack Direct Link */}
         <div className="space-y-2">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-stone-500">
             Option 1 • Instant Card / Mobile Money
           </span>
           <a
@@ -90,7 +90,7 @@ export function SupportAuthorDialog({
             rel="noopener noreferrer"
             className="block"
           >
-            <Button className="w-full bg-[#680C07] hover:bg-[#520905] dark:bg-red-700 dark:hover:bg-red-800 text-white font-bold py-5 shadow-sm rounded-xl">
+            <Button className="w-full bg-[#D4AF37] hover:bg-[#c49f27] text-stone-950 font-bold py-5 shadow-sm rounded-xl">
               <Sparkles className="w-4 h-4 mr-2" />
               Pay with Paystack
               <ExternalLink className="w-4 h-4 ml-2" />
@@ -99,42 +99,42 @@ export function SupportAuthorDialog({
         </div>
 
         {/* Option 2: Direct Bank Transfer Details */}
-        <div className="space-y-2 pt-1 border-t border-stone-100 dark:border-stone-800">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+        <div className="space-y-2 pt-1 border-t border-stone-100">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-stone-500">
             Option 2 • Direct Bank Transfer
           </span>
 
-          <div className="p-4 bg-stone-50 dark:bg-stone-800 rounded-2xl border border-stone-200 dark:border-stone-700 space-y-3 text-xs">
+          <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3 text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
+              <span className="text-stone-500 flex items-center gap-1.5">
                 <Building2 className="w-3.5 h-3.5 text-stone-400" /> Bank Name:
               </span>
-              <span className="font-bold text-stone-900 dark:text-stone-100">{bankName}</span>
+              <span className="font-bold text-stone-900">{bankName}</span>
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
+              <span className="text-stone-500 flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5 text-stone-400" /> Account Name:
               </span>
-              <span className="font-bold text-stone-900 dark:text-stone-100">{accountName}</span>
+              <span className="font-bold text-stone-900">{accountName}</span>
             </div>
 
-            <div className="flex items-center justify-between pt-2 border-t border-stone-200 dark:border-stone-700">
-              <span className="text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
+            <div className="flex items-center justify-between pt-2 border-t border-stone-200">
+              <span className="text-stone-500 flex items-center gap-1.5">
                 <CreditCard className="w-3.5 h-3.5 text-stone-400" /> Account Number:
               </span>
               <div className="flex items-center gap-2">
-                <span className="font-mono font-bold text-[#680C07] dark:text-red-400 text-sm tracking-wider">
+                <span className="font-mono font-bold text-[#B8860B] text-sm tracking-wider">
                   {accountNumber}
                 </span>
                 <button
                   type="button"
                   onClick={() => handleCopy(accountNumber, "acc_num")}
-                  className="p-1.5 rounded-lg bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 transition-colors"
+                  className="p-1.5 rounded-lg bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 transition-colors"
                   title="Copy account number"
                 >
                   {copiedField === "acc_num" ? (
-                    <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 stroke-[3]" />
+                    <Check className="w-3.5 h-3.5 text-emerald-600 stroke-[3]" />
                   ) : (
                     <Copy className="w-3.5 h-3.5" />
                   )}
@@ -144,8 +144,8 @@ export function SupportAuthorDialog({
           </div>
         </div>
 
-        <div className="flex items-center justify-center gap-1.5 text-[11px] text-stone-400 dark:text-stone-500 pt-1">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> 100% of contributions go directly to the storyteller
+        <div className="flex items-center justify-center gap-1.5 text-[11px] text-stone-500 pt-1">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> 100% of contributions go directly to the storyteller
         </div>
       </DialogContent>
     </Dialog>

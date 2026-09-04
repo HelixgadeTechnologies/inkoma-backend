@@ -33,7 +33,7 @@ export function AudioPlayer({
     <div className="flex items-center gap-2 rounded-2xl border border-stone-200 bg-white/95 px-4 py-2.5 backdrop-blur-md shadow-md text-stone-900">
       {/* Oral Voice Indicator */}
       <div className="flex items-center gap-2.5 min-w-0">
-        <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-[#680C07] text-white shadow-xs shrink-0">
+        <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-[#D4AF37] text-stone-950 shadow-xs shrink-0">
           <Volume2 className="h-4 w-4" />
         </div>
         <div className="min-w-0">
@@ -51,17 +51,17 @@ export function AudioPlayer({
         type="button"
         size="sm"
         onClick={toggleNarration}
-        className="bg-[#680C07] hover:bg-[#520905] text-white rounded-xl gap-1.5 text-xs font-semibold shadow-xs shrink-0 px-3 py-1.5"
+        className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold rounded-xl gap-1.5 text-xs shadow-xs shrink-0 px-3 py-1.5"
         disabled={!isSupported}
       >
         {isSpeaking ? (
           <>
-            <Pause className="w-3.5 h-3.5 fill-white" />
+            <Pause className="w-3.5 h-3.5 fill-stone-950" />
             <span>Pause Narration</span>
           </>
         ) : (
           <>
-            <Play className="w-3.5 h-3.5 fill-white" />
+            <Play className="w-3.5 h-3.5 fill-stone-950" />
             <span>Listen</span>
           </>
         )}
@@ -83,11 +83,11 @@ export function AudioPlayer({
         size="sm"
         onClick={() => setAmbientAudio(!ambientAudio)}
         className={`h-8 px-2 rounded-lg text-xs ${
-          ambientAudio ? "text-[#680C07] bg-[#680C07]/10 border border-[#680C07]/20" : "text-stone-500 hover:text-stone-900"
+          ambientAudio ? "text-[#D4AF37] bg-[#D4AF37]/10 border border-[#D4AF37]/20" : "text-stone-500 hover:text-stone-900"
         }`}
         title="Night Fireplace Ambiance"
       >
-        <Sparkles className="h-3.5 w-3.5 mr-1 text-[#680C07]" />
+        <Sparkles className="h-3.5 w-3.5 mr-1 text-[#D4AF37]" />
         <span className="text-[10px] hidden md:inline">
           {ambientAudio ? "Hearth Fire ON" : "Hearth FX"}
         </span>

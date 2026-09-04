@@ -55,7 +55,7 @@ export default function LoginPage() {
             </label>
             <Link
               href="/forgot-password"
-              className="text-xs text-[#680C07] hover:underline font-medium transition-colors"
+              className="text-xs text-[#D4AF37] hover:underline font-medium transition-colors"
             >
               Forgot password?
             </Link>
@@ -74,7 +74,7 @@ export default function LoginPage() {
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              className="rounded border-stone-300 text-[#680C07] focus:ring-[#680C07] w-4 h-4"
+              className="rounded border-stone-300 text-[#D4AF37] focus:ring-[#D4AF37] w-4 h-4"
             />
             Stay logged in
           </label>
@@ -83,7 +83,7 @@ export default function LoginPage() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-[#680C07] hover:bg-[#520905] text-white font-semibold shadow-md py-5"
+          className="w-full bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold shadow-md py-5"
         >
           {isLoading ? (
             <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -111,7 +111,7 @@ export default function LoginPage() {
         Don&apos;t have an account?{" "}
         <Link
           href="/signup"
-          className="text-[#680C07] hover:underline font-semibold underline-offset-4"
+          className="text-[#D4AF37] hover:underline font-semibold underline-offset-4"
         >
           Sign up for free
         </Link>

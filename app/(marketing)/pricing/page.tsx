@@ -43,18 +43,18 @@ export default function PricingPage() {
         </div>
 
         {/* Storyteller Creator */}
-        <div className="relative rounded-3xl border-2 border-[#680C07] bg-white p-8 flex flex-col justify-between shadow-lg">
+        <div className="relative rounded-3xl border-2 border-[#D4AF37] bg-white p-8 flex flex-col justify-between shadow-lg">
           <div className="absolute -top-3.5 right-6">
             <Badge variant="gold" className="px-3 py-1 font-bold">Most Popular</Badge>
           </div>
 
           <div className="space-y-4">
-            <div className="flex items-center gap-2 text-[#680C07] font-bold text-xs uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-[#D4AF37] font-bold text-xs uppercase tracking-wider">
               <Feather className="h-4 w-4" /> Storyteller Creator
             </div>
             <h3 className="font-serif text-xl font-bold text-stone-900">Author & Weaver</h3>
             <p className="text-xs text-stone-600">For storytellers crafting multi-branch folklore.</p>
-            <div className="text-3xl font-extrabold text-[#680C07] font-serif">$9 <span className="text-xs text-stone-600 font-sans">/ month</span></div>
+            <div className="text-3xl font-extrabold text-[#D4AF37] font-serif">$9 <span className="text-xs text-stone-600 font-sans">/ month</span></div>
 
             <ul className="space-y-2.5 text-xs text-stone-700 pt-4 border-t border-stone-200">
               <li className="flex items-center gap-2">
@@ -80,7 +80,7 @@ export default function PricingPage() {
         {/* Elder Patron */}
         <div className="rounded-3xl border border-stone-200 bg-white p-8 flex flex-col justify-between shadow-sm">
           <div className="space-y-4">
-            <div className="flex items-center gap-2 text-[#680C07] font-bold text-xs uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-[#D4AF37] font-bold text-xs uppercase tracking-wider">
               <Crown className="h-4 w-4" /> Elder Patron
             </div>
             <h3 className="font-serif text-xl font-bold text-stone-900">Cultural Heritage Guild</h3>
@@ -89,13 +89,13 @@ export default function PricingPage() {
 
             <ul className="space-y-2.5 text-xs text-stone-700 pt-4 border-t border-stone-100">
               <li className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-[#680C07] font-bold" /> High-fidelity audio narration hosting
+                <Check className="h-4 w-4 text-[#D4AF37] font-bold" /> High-fidelity audio narration hosting
               </li>
               <li className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-[#680C07] font-bold" /> Custom folklore badge issuance
+                <Check className="h-4 w-4 text-[#D4AF37] font-bold" /> Custom folklore badge issuance
               </li>
               <li className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-[#680C07] font-bold" /> Priority Paystack tip placement
+                <Check className="h-4 w-4 text-[#D4AF37] font-bold" /> Priority Paystack tip placement
               </li>
             </ul>
           </div>

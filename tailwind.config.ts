@@ -53,11 +53,11 @@ const config: Config = {
         },
         // Folklore Palette Accents
         folklore: {
-          crimson: "#680C07",
-          gold: "#680C07",
-          amber: "#680C07",
-          terracotta: "#680C07",
-          clay: "#520905",
+          crimson: "#D4AF37",
+          gold: "#D4AF37",
+          amber: "#D4AF37",
+          terracotta: "#D4AF37",
+          clay: "#c49f27",
           night: "#1C1917",
           obsidian: "#28231F",
           sandstone: "#FAF8F5",

@@ -115,7 +115,7 @@ export function ChapterListBuilder({
         <Button
           type="button"
           onClick={handleAddChapter}
-          className="bg-[#680C07] hover:bg-[#520905] text-white text-xs font-bold rounded-xl gap-1.5 px-4"
+          className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold rounded-xl gap-1.5 px-4"
         >
           <Plus className="w-3.5 h-3.5" />
           Add Book Chapter
@@ -133,7 +133,7 @@ export function ChapterListBuilder({
               <div
                 className={`rounded-2xl border transition-all ${
                   isEditing
-                    ? "border-[#680C07] bg-stone-50/70 p-4 space-y-4 shadow-sm"
+                    ? "border-[#D4AF37] bg-stone-50/70 p-4 space-y-4 shadow-sm"
                     : "border-stone-200 bg-white p-4 hover:border-stone-300 shadow-xs"
                 }`}
               >
@@ -159,7 +159,7 @@ export function ChapterListBuilder({
                         </button>
                       </div>
 
-                      <div className="w-8 h-8 rounded-xl bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] font-bold text-xs flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#D4AF37] font-bold text-xs flex items-center justify-center shrink-0">
                         Ch.{chap.chapterNumber}
                       </div>
 
@@ -169,11 +169,11 @@ export function ChapterListBuilder({
                         </h4>
                         <div className="flex items-center gap-3 text-[11px] text-stone-500">
                           <span className="flex items-center gap-1 font-medium text-stone-700">
-                            <Clock className="w-3 h-3 text-[#680C07]" /> ~{calculatedMinutes} min read ({wordCount} words)
+                            <Clock className="w-3 h-3 text-[#D4AF37]" /> ~{calculatedMinutes} min read ({wordCount} words)
                           </span>
                           {chap.hasAudioNarration && (
-                            <span className="flex items-center gap-1 text-[#680C07] font-semibold">
-                              <Volume2 className="w-3 h-3 text-[#680C07]" /> Audio Attached
+                            <span className="flex items-center gap-1 text-[#D4AF37] font-semibold">
+                              <Volume2 className="w-3 h-3 text-[#D4AF37]" /> Audio Attached
                             </span>
                           )}
                         </div>
@@ -189,7 +189,7 @@ export function ChapterListBuilder({
                           onClick={() => onSelectChapterToEdit(chap)}
                           className="text-xs rounded-xl border-stone-300 text-stone-700 hover:bg-stone-100"
                         >
-                          <FileText className="w-3.5 h-3.5 mr-1 text-[#680C07]" /> Edit Prose
+                          <FileText className="w-3.5 h-3.5 mr-1 text-[#D4AF37]" /> Edit Prose
                         </Button>
                       )}
 
@@ -207,7 +207,7 @@ export function ChapterListBuilder({
                         <button
                           type="button"
                           onClick={() => handleDeleteChapter(chap.id)}
-                          className="p-2 rounded-xl text-stone-400 hover:text-[#680C07] hover:bg-[#680C07]/10 transition-colors"
+                          className="p-2 rounded-xl text-stone-400 hover:text-[#D4AF37] hover:bg-[#D4AF37]/10 transition-colors"
                           title="Remove Chapter"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -219,14 +219,14 @@ export function ChapterListBuilder({
                   /* Inline Editor Form */
                   <div className="space-y-4 animate-in fade-in duration-150">
                     <div className="flex items-center justify-between border-b border-stone-200 pb-2">
-                      <span className="text-xs font-bold text-[#680C07] uppercase tracking-wider">
+                      <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
                         Editing Chapter {chap.chapterNumber} Details
                       </span>
                       <Button
                         type="button"
                         size="sm"
                         onClick={() => handleSaveEdit(chap.id)}
-                        className="bg-[#680C07] hover:bg-[#520905] text-white text-xs font-bold rounded-xl gap-1 px-3"
+                        className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold rounded-xl gap-1 px-3"
                       >
                         <Check className="w-3.5 h-3.5" /> Save Changes
                       </Button>
@@ -249,13 +249,13 @@ export function ChapterListBuilder({
                         value={editingSummary}
                         onChange={(e) => setEditingSummary(e.target.value)}
                         placeholder="Brief teaser for readers navigating the chapter list..."
-                        className="w-full bg-white border border-stone-300 rounded-xl p-2.5 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#680C07]"
+                        className="w-full bg-white border border-stone-300 rounded-xl p-2.5 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
                       />
                     </div>
 
                     <div className="space-y-1">
                       <label className="text-xs font-semibold text-stone-700 flex items-center gap-1">
-                        <Volume2 className="w-3.5 h-3.5 text-[#680C07]" /> Oral Narration Audio URL (Optional)
+                        <Volume2 className="w-3.5 h-3.5 text-[#D4AF37]" /> Oral Narration Audio URL (Optional)
                       </label>
                       <Input
                         type="url"
@@ -274,7 +274,7 @@ export function ChapterListBuilder({
                 <button
                   type="button"
                   onClick={handleAddChapter}
-                  className="flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-xl border border-dashed border-[#680C07]/30 bg-[#680C07]/5 hover:bg-[#680C07]/10 text-[#680C07] text-xs font-bold transition-all shadow-2xs"
+                  className="flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-xl border border-dashed border-[#D4AF37]/30 bg-[#D4AF37]/5 hover:bg-[#D4AF37]/10 text-[#D4AF37] text-xs font-bold transition-all shadow-2xs"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Chapter {idx + 2} to Book</span>

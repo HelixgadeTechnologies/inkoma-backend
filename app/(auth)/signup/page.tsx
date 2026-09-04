@@ -112,7 +112,7 @@ export default function SignupPage() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-[#680C07] hover:bg-[#520905] text-white font-semibold shadow-md py-5"
+          className="w-full bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold shadow-md py-5"
         >
           {isLoading ? (
             <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -140,7 +140,7 @@ export default function SignupPage() {
         Already have an account?{" "}
         <Link
           href="/login"
-          className="text-[#680C07] hover:underline font-semibold underline-offset-4"
+          className="text-[#D4AF37] hover:underline font-semibold underline-offset-4"
         >
           Sign in
         </Link>

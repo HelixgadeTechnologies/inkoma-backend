@@ -182,7 +182,7 @@ export default function UserNetworkPage() {
       <div className="flex items-center justify-between border-b border-stone-200 dark:border-stone-800 pb-4">
         <Link
           href={`/profile/${username}`}
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 dark:text-stone-400 hover:text-[#680C07] dark:hover:text-red-400 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 dark:text-stone-400 hover:text-[#D4AF37] dark:hover:text-[#D4AF37] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to @{username}&apos;s Profile</span>
@@ -191,7 +191,7 @@ export default function UserNetworkPage() {
 
       {/* Page Title */}
       <div className="space-y-1">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#680C07] dark:text-red-400 flex items-center gap-1.5">
+        <span className="text-xs font-bold uppercase tracking-wider text-[#D4AF37] dark:text-[#D4AF37] flex items-center gap-1.5">
           <Users className="w-4 h-4" /> Community Network
         </span>
         <h1 className="text-3xl font-extrabold text-stone-900 dark:text-stone-100 font-serif tracking-tight">
@@ -211,7 +211,7 @@ export default function UserNetworkPage() {
             onClick={() => setActiveTab("followers")}
             className={`flex items-center justify-center gap-2 py-2 px-5 rounded-xl text-xs font-bold transition-all ${
               activeTab === "followers"
-                ? "bg-[#680C07] dark:bg-red-700 text-white shadow-sm"
+                ? "bg-[#D4AF37] dark:bg-[#D4AF37] text-stone-950 font-bold shadow-sm"
                 : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100"
             }`}
           >
@@ -226,7 +226,7 @@ export default function UserNetworkPage() {
             onClick={() => setActiveTab("following")}
             className={`flex items-center justify-center gap-2 py-2 px-5 rounded-xl text-xs font-bold transition-all ${
               activeTab === "following"
-                ? "bg-[#680C07] dark:bg-red-700 text-white shadow-sm"
+                ? "bg-[#D4AF37] dark:bg-[#D4AF37] text-stone-950 font-bold shadow-sm"
                 : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100"
             }`}
           >
@@ -283,7 +283,7 @@ export default function UserNetworkPage() {
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <Link
                       href={`/profile/${user.username}`}
-                      className="font-bold text-stone-900 dark:text-stone-100 hover:text-[#680C07] dark:hover:text-red-400 text-sm font-serif truncate"
+                      className="font-bold text-stone-900 dark:text-stone-100 hover:text-[#D4AF37] dark:hover:text-[#D4AF37] text-sm font-serif truncate"
                     >
                       {user.penName || user.displayName}
                     </Link>
@@ -309,7 +309,7 @@ export default function UserNetworkPage() {
               {/* Bottom Meta & Follow Toggle */}
               <div className="flex items-center justify-between pt-3 border-t border-stone-100 dark:border-stone-800 text-xs">
                 {user.specialty ? (
-                  <span className="text-[11px] font-semibold text-[#680C07] dark:text-red-400 bg-[#680C07]/10 dark:bg-red-500/20 px-2.5 py-0.5 rounded-full border border-[#680C07]/20 dark:border-red-500/30">
+                  <span className="text-[11px] font-semibold text-[#D4AF37] dark:text-[#D4AF37] bg-[#D4AF37]/10 dark:bg-[#D4AF37]/20 px-2.5 py-0.5 rounded-full border border-[#D4AF37]/20 dark:border-[#D4AF37]/30">
                     {user.specialty}
                   </span>
                 ) : (
@@ -335,7 +335,7 @@ export default function UserNetworkPage() {
                     className={`text-xs font-bold rounded-xl gap-1.5 px-3.5 ${
                       user.isFollowing
                         ? "bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border border-stone-300 dark:border-stone-700 hover:bg-stone-200"
-                        : "bg-[#680C07] hover:bg-[#520905] dark:bg-red-700 dark:hover:bg-red-800 text-white"
+                        : "bg-[#D4AF37] hover:bg-[#B89628] dark:bg-[#D4AF37] dark:hover:bg-[#B89628] text-stone-950 font-bold"
                     }`}
                   >
                     {user.isFollowing ? (

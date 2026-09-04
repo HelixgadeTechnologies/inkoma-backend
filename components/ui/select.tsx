@@ -64,8 +64,8 @@ export function Select({
         disabled={disabled}
         onClick={() => setIsOpen((prev) => !prev)}
         className={cn(
-          "flex items-center justify-between w-full px-3.5 py-2.5 text-xs font-semibold rounded-xl border border-stone-200 bg-white text-stone-900 shadow-xs transition-all hover:border-stone-300 focus:outline-none focus:ring-2 focus:ring-[#680C07] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
-          isOpen && "border-[#680C07] ring-2 ring-[#680C07]/20 shadow-sm",
+          "flex items-center justify-between w-full px-3.5 py-2.5 text-xs font-semibold rounded-xl border border-stone-200 bg-white text-stone-900 shadow-xs transition-all hover:border-stone-300 focus:outline-none focus:ring-2 focus:ring-[#D4AF37] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
+          isOpen && "border-[#D4AF37] ring-2 ring-[#D4AF37]/20 shadow-sm",
           triggerClassName
         )}
       >
@@ -82,7 +82,7 @@ export function Select({
         <ChevronDown
           className={cn(
             "w-3.5 h-3.5 text-stone-400 shrink-0 ml-2 transition-transform duration-200",
-            isOpen && "rotate-180 text-[#680C07]"
+            isOpen && "rotate-180 text-[#D4AF37]"
           )}
         />
       </button>
@@ -111,7 +111,7 @@ export function Select({
                   className={cn(
                     "flex items-center justify-between w-full px-3 py-2 text-xs font-semibold rounded-xl text-left transition-colors cursor-pointer",
                     isSelected
-                      ? "bg-[#680C07]/10 text-[#680C07]"
+                      ? "bg-[#D4AF37]/10 text-[#D4AF37]"
                       : "text-stone-700 hover:bg-stone-100 hover:text-stone-900"
                   )}
                 >
@@ -119,7 +119,7 @@ export function Select({
                     {option.icon}
                     <span>{option.label}</span>
                   </span>
-                  {isSelected && <Check className="w-3.5 h-3.5 text-[#680C07] shrink-0 stroke-[3]" />}
+                  {isSelected && <Check className="w-3.5 h-3.5 text-[#D4AF37] shrink-0 stroke-[3]" />}
                 </button>
               );
             })

@@ -6,7 +6,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#FAF8F5",
-  "theme_color": "#680C07",
+  "theme_color": "#D4AF37",
   "icons": [
     {
       "src": "/images/inkoma-logo.png",

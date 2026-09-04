@@ -25,7 +25,7 @@ export function AuthCard({
       <div className="relative border border-stone-200/80 bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-3xl shadow-2xl space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-white p-2 border border-stone-200 shadow-lg shadow-[#680C07]/10 overflow-hidden">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-white p-2 border border-stone-200 shadow-lg shadow-[#D4AF37]/10 overflow-hidden">
             <Image
               src="/images/inkoma-logo.png"
               alt="Inkoma Logo"
@@ -52,7 +52,7 @@ export function AuthCard({
             <span>{footerText}</span>{" "}
             <Link
               href={footerLinkHref}
-              className="font-bold text-[#680C07] hover:underline underline-offset-4"
+              className="font-bold text-[#D4AF37] hover:underline underline-offset-4"
             >
               {footerLinkText}
             </Link>

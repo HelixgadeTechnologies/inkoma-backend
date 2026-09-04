@@ -99,7 +99,7 @@ export function StoryCoverPicker({ value, onChange }: StoryCoverPickerProps) {
     <div className="space-y-4 bg-white rounded-3xl border border-stone-200 p-5 sm:p-6 shadow-xs">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#D4AF37] flex items-center justify-center">
             <ImageIcon className="w-4 h-4" />
           </div>
           <div>
@@ -120,9 +120,9 @@ export function StoryCoverPicker({ value, onChange }: StoryCoverPickerProps) {
               <span className="text-xs font-semibold">No Cover Selected</span>
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-stone-950/40 pointer-events-none" />
           <div className="relative z-10 text-white space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-red-200">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#D4AF37]">
               Live Preview
             </span>
             <p className="text-xs font-bold font-serif line-clamp-1">Cover Thumbnail</p>
@@ -146,8 +146,8 @@ export function StoryCoverPicker({ value, onChange }: StoryCoverPickerProps) {
               onClick={() => fileInputRef.current?.click()}
               className={`relative border-2 border-dashed rounded-2xl p-4 text-center cursor-pointer transition-all ${
                 isDragging
-                  ? "border-[#680C07] bg-[#680C07]/10"
-                  : "border-stone-300 hover:border-[#680C07] bg-stone-50/70 hover:bg-stone-50"
+                  ? "border-[#D4AF37] bg-[#D4AF37]/10"
+                  : "border-stone-300 hover:border-[#D4AF37] bg-stone-50/70 hover:bg-stone-50"
               }`}
             >
               <input
@@ -158,7 +158,7 @@ export function StoryCoverPicker({ value, onChange }: StoryCoverPickerProps) {
                 className="hidden"
               />
               <div className="flex flex-col items-center justify-center space-y-1.5">
-                <div className="w-10 h-10 rounded-xl bg-[#680C07]/10 border border-[#680C07]/20 flex items-center justify-center text-[#680C07]">
+                <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center text-[#D4AF37]">
                   <Upload className="w-5 h-5" />
                 </div>
                 <div>
@@ -199,7 +199,7 @@ export function StoryCoverPicker({ value, onChange }: StoryCoverPickerProps) {
                     }}
                     className={`relative h-24 rounded-xl overflow-hidden border text-left transition-all group ${
                       isSelected
-                        ? "border-[#680C07] ring-2 ring-[#680C07] shadow-sm"
+                        ? "border-[#D4AF37] ring-2 ring-[#D4AF37] shadow-sm"
                         : "border-stone-200 hover:border-stone-400"
                     }`}
                   >
@@ -212,7 +212,7 @@ export function StoryCoverPicker({ value, onChange }: StoryCoverPickerProps) {
                     <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors" />
 
                     {isSelected && (
-                      <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[#680C07] text-white flex items-center justify-center">
+                      <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[#D4AF37] text-stone-950 flex items-center justify-center">
                         <Check className="w-3 h-3 stroke-[3]" />
                       </div>
                     )}

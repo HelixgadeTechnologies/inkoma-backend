@@ -24,8 +24,8 @@ export default function ForgotPasswordPage() {
       footerLinkHref="/login"
     >
       {submitted ? (
-        <div className="rounded-xl border border-[#680C07]/30 bg-[#680C07]/10 p-4 text-center space-y-2">
-          <p className="text-sm font-bold text-[#680C07]">Recovery Link Dispatched!</p>
+        <div className="rounded-xl border border-[#D4AF37]/30 bg-[#D4AF37]/10 p-4 text-center space-y-2">
+          <p className="text-sm font-bold text-[#D4AF37]">Recovery Link Dispatched!</p>
           <p className="text-xs text-stone-700 font-medium">
             Check your inbox for instructions to reset your account key.
           </p>

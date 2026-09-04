@@ -50,8 +50,8 @@ export default function LibraryPage() {
     <div className="space-y-8 pb-16">
       {/* Header */}
       <div className="space-y-1.5">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#680C07]/10 dark:bg-red-500/20 border border-[#680C07]/20 dark:border-red-500/30 text-[#680C07] dark:text-red-400 text-xs font-semibold uppercase tracking-wider">
-          <BookOpen className="w-3.5 h-3.5 text-[#680C07] dark:text-red-400" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37]/10 dark:bg-[#D4AF37]/20 border border-[#D4AF37]/20 dark:border-[#D4AF37]/30 text-[#D4AF37] dark:text-[#D4AF37] text-xs font-semibold uppercase tracking-wider">
+          <BookOpen className="w-3.5 h-3.5 text-[#D4AF37] dark:text-[#D4AF37]" />
           Personal Reading Desk
         </div>
         <h1 className="text-3xl font-extrabold text-stone-900 dark:text-stone-100 font-serif tracking-tight">
@@ -69,7 +69,7 @@ export default function LibraryPage() {
           onClick={() => setActiveTab("recently_read")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "recently_read"
-              ? "bg-[#680C07] dark:bg-red-700 text-white shadow-sm"
+              ? "bg-[#D4AF37] dark:bg-[#D4AF37] text-stone-950 shadow-sm font-bold"
               : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800"
           }`}
         >
@@ -82,7 +82,7 @@ export default function LibraryPage() {
           onClick={() => setActiveTab("bookmarks")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "bookmarks"
-              ? "bg-[#680C07] dark:bg-red-700 text-white shadow-sm"
+              ? "bg-[#D4AF37] dark:bg-[#D4AF37] text-stone-950 shadow-sm font-bold"
               : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800"
           }`}
         >
@@ -95,7 +95,7 @@ export default function LibraryPage() {
           onClick={() => setActiveTab("favorites")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "favorites"
-              ? "bg-[#680C07] dark:bg-red-700 text-white shadow-sm"
+              ? "bg-[#D4AF37] dark:bg-[#D4AF37] text-stone-950 shadow-sm font-bold"
               : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800"
           }`}
         >
@@ -108,7 +108,7 @@ export default function LibraryPage() {
           onClick={() => setActiveTab("quotes")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "quotes"
-              ? "bg-[#680C07] dark:bg-red-700 text-white shadow-sm"
+              ? "bg-[#D4AF37] dark:bg-[#D4AF37] text-stone-950 shadow-sm font-bold"
               : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800"
           }`}
         >
@@ -128,7 +128,7 @@ export default function LibraryPage() {
                 Explore our catalog to start reading your first book.
               </p>
               <Link href="/explore">
-                <Button className="bg-[#680C07] hover:bg-[#520905] dark:bg-red-700 dark:hover:bg-red-800 text-white text-xs font-bold">
+                <Button className="bg-[#D4AF37] hover:bg-[#B89628] dark:bg-[#D4AF37] dark:hover:bg-[#B89628] text-stone-950 font-bold text-xs">
                   Explore Stories
                 </Button>
               </Link>
@@ -136,9 +136,10 @@ export default function LibraryPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {continueReading.map((item) => (
-                <div
+                <Link
                   key={item.storyId}
-                  className="flex items-center gap-4 p-4 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-xs hover:shadow-md transition-all group"
+                  href={`/story/${item.storyId}`}
+                  className="flex items-center gap-4 p-4 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-xs hover:shadow-md hover:border-[#D4AF37]/40 transition-all group"
                 >
                   <div className="relative w-20 h-24 rounded-xl overflow-hidden shrink-0 border border-stone-200 dark:border-stone-800 bg-stone-100 dark:bg-stone-800">
                     <Image
@@ -151,10 +152,10 @@ export default function LibraryPage() {
 
                   <div className="flex-1 min-w-0 space-y-2">
                     <div>
-                      <span className="text-[10px] font-bold text-[#680C07] dark:text-red-400 uppercase tracking-wider">
+                      <span className="text-[10px] font-bold text-[#D4AF37] dark:text-[#D4AF37] uppercase tracking-wider">
                         Chapter {item.lastChapterNumber}
                       </span>
-                      <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100 truncate font-serif">
+                      <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100 truncate font-serif group-hover:text-[#B8860B] transition-colors">
                         {item.storyTitle}
                       </h3>
                       <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
@@ -174,23 +175,26 @@ export default function LibraryPage() {
                       </div>
                       <div className="w-full h-1.5 bg-stone-100 dark:bg-stone-800 rounded-full overflow-hidden border border-stone-200 dark:border-stone-700">
                         <div
-                          className="h-full bg-[#680C07] dark:bg-red-600 rounded-full"
+                          className="h-full bg-[#D4AF37] dark:bg-[#D4AF37] rounded-full"
                           style={{ width: `${item.progressPercentage}%` }}
                         />
                       </div>
                     </div>
                   </div>
 
-                  <Link href={`/story/${item.storyId}/read`}>
+                  <Link
+                    href={`/story/${item.storyId}/read`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <Button
                       size="sm"
-                      className="bg-[#680C07] hover:bg-[#520905] dark:bg-red-700 dark:hover:bg-red-800 text-white rounded-xl shadow-xs shrink-0 font-bold text-xs"
+                      className="bg-[#D4AF37] hover:bg-[#B89628] dark:bg-[#D4AF37] dark:hover:bg-[#B89628] text-stone-950 font-bold rounded-xl shadow-xs shrink-0 text-xs"
                     >
-                      <Play className="w-3.5 h-3.5 fill-white mr-1" />
+                      <Play className="w-3.5 h-3.5 fill-stone-950 mr-1" />
                       Read
                     </Button>
                   </Link>
-                </div>
+                </Link>
               ))}
             </div>
           )}
@@ -211,23 +215,22 @@ export default function LibraryPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {bookmarkedStories.map((story) => (
-                <div
+                <Link
                   key={story.id}
-                  className="flex flex-col bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 p-4 justify-between space-y-3 shadow-xs hover:shadow-md transition-all"
+                  href={`/story/${story.id}`}
+                  className="flex flex-col bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 p-4 justify-between space-y-3 shadow-xs hover:shadow-md hover:border-[#D4AF37]/40 transition-all group"
                 >
                   <div className="flex gap-3">
-                    <div className="relative w-16 h-20 rounded-xl overflow-hidden shrink-0 border border-stone-200 dark:border-stone-800">
-                      <Image src={story.coverImage} alt={story.title} fill className="object-cover" />
+                    <div className="relative w-16 h-20 rounded-xl overflow-hidden shrink-0 border border-stone-200 dark:border-stone-800 group-hover:border-[#D4AF37]/40 transition-colors">
+                      <Image src={story.coverImage} alt={story.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
                     </div>
                     <div className="min-w-0 space-y-1">
-                      <Badge className="bg-[#680C07]/10 dark:bg-red-500/20 text-[#680C07] dark:text-red-400 border border-[#680C07]/20 dark:border-red-500/30 text-[10px]">
+                      <Badge className="bg-[#D4AF37]/10 dark:bg-[#D4AF37]/20 text-[#D4AF37] dark:text-[#D4AF37] border border-[#D4AF37]/20 dark:border-[#D4AF37]/30 text-[10px]">
                         {story.mainGenre}
                       </Badge>
-                      <Link href={`/story/${story.id}`}>
-                        <h4 className="text-sm font-bold text-stone-900 dark:text-stone-100 truncate font-serif hover:text-[#680C07] dark:hover:text-red-400">
-                          {story.title}
-                        </h4>
-                      </Link>
+                      <h4 className="text-sm font-bold text-stone-900 dark:text-stone-100 truncate font-serif group-hover:text-[#B8860B] transition-colors">
+                        {story.title}
+                      </h4>
                       <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
                         by {story.authorPenName || story.authorName}
                       </p>
@@ -237,18 +240,16 @@ export default function LibraryPage() {
                   <div className="flex items-center justify-between pt-2 border-t border-stone-100 dark:border-stone-800">
                     <button
                       type="button"
-                      onClick={() => toggleBookmark(story.id)}
+                      onClick={(e) => { e.preventDefault(); toggleBookmark(story.id); }}
                       className="text-xs text-stone-400 hover:text-red-600 flex items-center gap-1 font-medium"
                     >
                       <Trash2 className="w-3.5 h-3.5" /> Remove
                     </button>
-                    <Link href={`/story/${story.id}`}>
-                      <Button size="sm" variant="outline" className="text-xs rounded-xl border-stone-300 dark:border-stone-700">
-                        View Details <ArrowRight className="w-3 h-3 ml-1" />
-                      </Button>
-                    </Link>
+                    <span className="text-xs font-bold text-[#D4AF37] flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                      View Details <ArrowRight className="w-3 h-3" />
+                    </span>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}
@@ -269,23 +270,22 @@ export default function LibraryPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {favoriteStories.map((story) => (
-                <div
+                <Link
                   key={story.id}
-                  className="flex flex-col bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 p-4 justify-between space-y-3 shadow-xs hover:shadow-md transition-all"
+                  href={`/story/${story.id}`}
+                  className="flex flex-col bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 p-4 justify-between space-y-3 shadow-xs hover:shadow-md hover:border-[#D4AF37]/40 transition-all group"
                 >
                   <div className="flex gap-3">
-                    <div className="relative w-16 h-20 rounded-xl overflow-hidden shrink-0 border border-stone-200 dark:border-stone-800">
-                      <Image src={story.coverImage} alt={story.title} fill className="object-cover" />
+                    <div className="relative w-16 h-20 rounded-xl overflow-hidden shrink-0 border border-stone-200 dark:border-stone-800 group-hover:border-[#D4AF37]/40 transition-colors">
+                      <Image src={story.coverImage} alt={story.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
                     </div>
                     <div className="min-w-0 space-y-1">
-                      <Badge className="bg-[#680C07]/10 dark:bg-red-500/20 text-[#680C07] dark:text-red-400 border border-[#680C07]/20 dark:border-red-500/30 text-[10px]">
+                      <Badge className="bg-[#D4AF37]/10 dark:bg-[#D4AF37]/20 text-[#D4AF37] dark:text-[#D4AF37] border border-[#D4AF37]/20 dark:border-[#D4AF37]/30 text-[10px]">
                         {story.mainGenre}
                       </Badge>
-                      <Link href={`/story/${story.id}`}>
-                        <h4 className="text-sm font-bold text-stone-900 dark:text-stone-100 truncate font-serif hover:text-[#680C07] dark:hover:text-red-400">
-                          {story.title}
-                        </h4>
-                      </Link>
+                      <h4 className="text-sm font-bold text-stone-900 dark:text-stone-100 truncate font-serif group-hover:text-[#B8860B] transition-colors">
+                        {story.title}
+                      </h4>
                       <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
                         by {story.authorPenName || story.authorName}
                       </p>
@@ -295,18 +295,21 @@ export default function LibraryPage() {
                   <div className="flex items-center justify-between pt-2 border-t border-stone-100 dark:border-stone-800">
                     <button
                       type="button"
-                      onClick={() => toggleFavorite(story.id)}
+                      onClick={(e) => { e.preventDefault(); toggleFavorite(story.id); }}
                       className="text-xs text-stone-400 hover:text-red-600 flex items-center gap-1 font-medium"
                     >
                       <Trash2 className="w-3.5 h-3.5" /> Remove
                     </button>
-                    <Link href={`/story/${story.id}/read`}>
-                      <Button size="sm" className="bg-[#680C07] hover:bg-[#520905] dark:bg-red-700 dark:hover:bg-red-800 text-white text-xs font-bold rounded-xl">
+                    <Link
+                      href={`/story/${story.id}/read`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Button size="sm" className="bg-[#D4AF37] hover:bg-[#B89628] dark:bg-[#D4AF37] dark:hover:bg-[#B89628] text-stone-950 font-bold text-xs rounded-xl">
                         Read Story
                       </Button>
                     </Link>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}
@@ -333,7 +336,7 @@ export default function LibraryPage() {
                 >
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs text-stone-400">
-                      <span className="font-semibold text-[#680C07] dark:text-red-400">
+                      <span className="font-semibold text-[#D4AF37] dark:text-[#D4AF37]">
                         {q.storyTitle} • Ch. {q.chapterNumber}
                       </span>
                       <span>{q.savedAt}</span>
@@ -349,7 +352,7 @@ export default function LibraryPage() {
                     <button
                       type="button"
                       onClick={() => handleCopyQuote(q.quoteText, q.id)}
-                      className="text-stone-600 dark:text-stone-400 hover:text-[#680C07] dark:hover:text-red-400 flex items-center gap-1 font-medium"
+                      className="text-stone-600 dark:text-stone-400 hover:text-[#D4AF37] dark:hover:text-[#D4AF37] flex items-center gap-1 font-medium"
                     >
                       {copiedQuoteId === q.id ? (
                         <>

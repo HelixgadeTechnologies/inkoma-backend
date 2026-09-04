@@ -36,7 +36,7 @@ const RECOMMENDED_CATEGORIES_DATA = [
     lineage: "Ashanti & Akan Traditions",
     count: "24 Manuscripts",
     genreParam: "Trickster Lore",
-    bgGradient: "from-amber-900/90 via-[#680C07]/80 to-stone-900",
+    bgGradient: "from-amber-900/90 via-[#D4AF37]/80 to-stone-900",
     image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop",
     icon: Sparkles,
   },
@@ -58,7 +58,7 @@ const RECOMMENDED_CATEGORIES_DATA = [
     lineage: "Mali & Zulu Royal Epics",
     count: "32 Manuscripts",
     genreParam: "Historical Epics",
-    bgGradient: "from-[#680C07]/90 via-amber-950/80 to-stone-900",
+    bgGradient: "from-[#D4AF37]/90 via-amber-950/80 to-stone-900",
     image: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=800&auto=format&fit=crop",
     icon: Shield,
   },
@@ -112,8 +112,8 @@ export function RecommendedCategoriesSection({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-100 pb-5">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Compass className="w-5 h-5 text-[#680C07]" />
-              <span className="text-xs font-bold text-[#680C07] uppercase tracking-wider">
+              <Compass className="w-5 h-5 text-[#D4AF37]" />
+              <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
                 Explore The Archive
               </span>
             </div>
@@ -129,7 +129,7 @@ export function RecommendedCategoriesSection({
             <Button
               variant="outline"
               size="sm"
-              className="border-stone-300 text-stone-700 hover:text-[#680C07] text-xs rounded-xl font-semibold gap-1.5"
+              className="border-stone-300 text-stone-700 hover:text-[#D4AF37] text-xs rounded-xl font-semibold gap-1.5"
             >
               Browse All Categories <ArrowRight className="w-3.5 h-3.5" />
             </Button>
@@ -149,7 +149,7 @@ export function RecommendedCategoriesSection({
                 href={`/browse?genre=${encodeURIComponent(cat.genreParam)}`}
                 className={`group relative rounded-2xl overflow-hidden border transition-all duration-300 hover:shadow-md ${
                   isCurrentMatched
-                    ? "border-[#680C07] ring-2 ring-[#680C07]/30"
+                    ? "border-[#D4AF37] ring-2 ring-[#D4AF37]/30"
                     : "border-stone-200 hover:border-stone-400"
                 }`}
               >
@@ -162,7 +162,7 @@ export function RecommendedCategoriesSection({
                     className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-60"
                   />
                   <div
-                    className={`absolute inset-0 bg-gradient-to-t ${cat.bgGradient} opacity-85 group-hover:opacity-75 transition-opacity`}
+                    className="absolute inset-0 bg-stone-950/60 transition-opacity"
                   />
 
                   {/* Top Badges */}
@@ -170,7 +170,7 @@ export function RecommendedCategoriesSection({
                     <Badge className="bg-black/50 text-white backdrop-blur-md border border-white/20 text-[10px]">
                       {cat.lineage}
                     </Badge>
-                    <span className="text-[10px] font-bold text-amber-200 bg-[#680C07]/70 backdrop-blur-md px-2 py-0.5 rounded-full border border-amber-300/30">
+                    <span className="text-[10px] font-bold text-amber-200 bg-[#D4AF37]/70 backdrop-blur-md px-2 py-0.5 rounded-full border border-amber-300/30 text-stone-950 font-extrabold">
                       {cat.count}
                     </span>
                   </div>
@@ -190,12 +190,12 @@ export function RecommendedCategoriesSection({
                 </div>
 
                 {/* Footer Bar */}
-                <div className="bg-white p-3 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-stone-700 group-hover:text-[#680C07] transition-colors">
+                <div className="bg-white p-3 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-stone-700 group-hover:text-[#D4AF37] transition-colors">
                   <span className="flex items-center gap-1">
-                    <BookOpen className="w-3.5 h-3.5 text-stone-400 group-hover:text-[#680C07]" />
+                    <BookOpen className="w-3.5 h-3.5 text-stone-400 group-hover:text-[#D4AF37]" />
                     Explore Manuscripts
                   </span>
-                  <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-[#680C07] group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-[#D4AF37] group-hover:translate-x-1 transition-transform" />
                 </div>
               </Link>
             );
@@ -208,7 +208,7 @@ export function RecommendedCategoriesSection({
         <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm space-y-6">
           <div className="flex items-center justify-between border-b border-stone-100 pb-4">
             <div>
-              <span className="text-xs font-bold text-[#680C07] uppercase tracking-wider block">
+              <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider block">
                 Recommended Manuscripts
               </span>
               <h2 className="text-xl font-bold font-serif text-stone-900">
@@ -216,7 +216,7 @@ export function RecommendedCategoriesSection({
               </h2>
             </div>
             <Link href="/browse">
-              <Button size="sm" variant="ghost" className="text-xs text-[#680C07] font-bold">
+              <Button size="sm" variant="ghost" className="text-xs text-[#D4AF37] font-bold">
                 View All Manuscripts →
               </Button>
             </Link>
@@ -227,7 +227,7 @@ export function RecommendedCategoriesSection({
               <Link
                 key={story.id}
                 href={`/story/${story.id}`}
-                className="group flex flex-col bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-all hover:border-[#680C07]/40"
+                className="group flex flex-col bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-all hover:border-[#D4AF37]/40"
               >
                 <div className="relative aspect-[16/10] w-full bg-stone-100 overflow-hidden">
                   <Image
@@ -236,7 +236,7 @@ export function RecommendedCategoriesSection({
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent opacity-80" />
+                  <div className="absolute inset-0 bg-stone-950/50" />
 
                   <div className="absolute top-3 left-3">
                     <Badge className="bg-stone-900/80 text-white text-[10px] backdrop-blur-xs">
@@ -246,20 +246,20 @@ export function RecommendedCategoriesSection({
 
                   <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-white text-[11px] font-medium">
                     <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-red-200" /> {story.estimatedReadTime} min read
+                      <Clock className="w-3 h-3 text-amber-200" /> {story.estimatedReadTime} min read
                     </span>
                     <span className="flex items-center gap-1">
-                      <Heart className="w-3 h-3 text-red-400 fill-current" /> {story.likesCount}
+                      <Heart className="w-3 h-3 text-[#D4AF37] fill-current" /> {story.likesCount}
                     </span>
                   </div>
                 </div>
 
                 <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
                   <div className="space-y-1">
-                    <span className="text-[10px] font-bold text-[#680C07] uppercase tracking-wider block">
+                    <span className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-wider block">
                       {story.mainGenre}
                     </span>
-                    <h3 className="text-sm font-bold text-stone-900 font-serif group-hover:text-[#680C07] transition-colors line-clamp-1">
+                    <h3 className="text-sm font-bold text-stone-900 font-serif group-hover:text-[#D4AF37] transition-colors line-clamp-1">
                       {story.title}
                     </h3>
                     <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
@@ -269,7 +269,7 @@ export function RecommendedCategoriesSection({
 
                   <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500 font-medium">
                     <span>By {story.authorPenName || story.authorName}</span>
-                    <span className="text-[#680C07] font-bold group-hover:translate-x-1 transition-transform">
+                    <span className="text-[#D4AF37] font-bold group-hover:translate-x-1 transition-transform">
                       Read Story →
                     </span>
                   </div>

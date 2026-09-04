@@ -21,7 +21,7 @@ export default function AuthLayout({
       />
 
       {/* Lightweight Atmospheric Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-black/40 pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-black/50 pointer-events-none z-0" />
 
       {/* Return home link */}
       <Link
@@ -33,7 +33,7 @@ export default function AuthLayout({
       </Link>
 
       {/* Ambient Glows */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#680C07]/25 blur-[150px] rounded-full pointer-events-none z-0" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#D4AF37]/25 blur-[150px] rounded-full pointer-events-none z-0" />
 
       {/* Main Content Container */}
       <div className="relative z-10 w-full flex justify-center py-6">

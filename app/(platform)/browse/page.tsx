@@ -95,8 +95,8 @@ export default function BrowsePage() {
       {/* Page Header */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 border-b border-stone-200/80 pb-6">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] text-xs font-semibold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5 text-[#680C07]" />
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#D4AF37] text-xs font-semibold uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
             Folklore Search Engine
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-stone-900 font-serif tracking-tight">
@@ -115,7 +115,7 @@ export default function BrowsePage() {
               onClick={() => setViewMode("grid")}
               className={`p-1.5 rounded-lg transition-colors ${
                 viewMode === "grid"
-                  ? "bg-[#680C07] text-white shadow-xs"
+                  ? "bg-[#D4AF37] text-stone-950 shadow-xs font-bold"
                   : "text-stone-500 hover:text-stone-900"
               }`}
               title="Grid View"
@@ -126,7 +126,7 @@ export default function BrowsePage() {
               onClick={() => setViewMode("list")}
               className={`p-1.5 rounded-lg transition-colors ${
                 viewMode === "list"
-                  ? "bg-[#680C07] text-white shadow-xs"
+                  ? "bg-[#D4AF37] text-stone-950 shadow-xs font-bold"
                   : "text-stone-500 hover:text-stone-900"
               }`}
               title="List View"
@@ -159,7 +159,7 @@ export default function BrowsePage() {
         {/* Search Scope Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           <span className="text-xs font-bold uppercase tracking-wider text-stone-500 mr-1 flex items-center gap-1">
-            <Search className="w-3.5 h-3.5 text-[#680C07]" /> Scope:
+            <Search className="w-3.5 h-3.5 text-[#D4AF37]" /> Scope:
           </span>
           {[
             { id: "all", label: "All Fields", icon: Search },
@@ -180,7 +180,7 @@ export default function BrowsePage() {
                 }
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
                   isSelected
-                    ? "bg-[#680C07] text-white shadow-xs"
+                    ? "bg-[#D4AF37] text-stone-950 shadow-xs font-bold"
                     : "bg-white border border-stone-200 text-stone-600 hover:border-stone-300 hover:bg-stone-50"
                 }`}
               >
@@ -208,7 +208,7 @@ export default function BrowsePage() {
               }
               value={filters.searchQuery || ""}
               onChange={(e) => setFilters((prev) => ({ ...prev, searchQuery: e.target.value }))}
-              className="pl-11 py-6 bg-white border-stone-300 rounded-2xl shadow-xs text-sm focus:ring-[#680C07] focus:border-[#680C07]"
+              className="pl-11 py-6 bg-white border-stone-300 rounded-2xl shadow-xs text-sm focus:ring-[#D4AF37] focus:border-[#D4AF37]"
             />
             {filters.searchQuery && (
               <button
@@ -227,14 +227,14 @@ export default function BrowsePage() {
             onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
             className={`border-stone-300 rounded-2xl py-6 px-5 gap-2 transition-all shrink-0 ${
               showAdvancedFilters || activeFiltersCount > 0
-                ? "bg-[#680C07]/10 border-[#680C07] text-[#680C07] font-bold"
+                ? "bg-[#D4AF37]/10 border-[#D4AF37] text-[#D4AF37] font-bold"
                 : "bg-white text-stone-700 hover:bg-stone-50"
             }`}
           >
-            <SlidersHorizontal className="w-4 h-4 text-[#680C07]" />
+            <SlidersHorizontal className="w-4 h-4 text-[#D4AF37]" />
             <span>Advanced Filters</span>
             {activeFiltersCount > 0 && (
-              <span className="w-5 h-5 rounded-full bg-[#680C07] text-white text-[10px] flex items-center justify-center font-bold">
+              <span className="w-5 h-5 rounded-full bg-[#D4AF37] text-stone-950 text-[10px] flex items-center justify-center font-bold">
                 {activeFiltersCount}
               </span>
             )}
@@ -246,7 +246,7 @@ export default function BrowsePage() {
           <div className="p-6 bg-white rounded-3xl border border-stone-200 shadow-md space-y-6 animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex items-center justify-between border-b border-stone-100 pb-4">
               <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-[#680C07]" />
+                <Filter className="w-4 h-4 text-[#D4AF37]" />
                 <h3 className="text-sm font-bold text-stone-900 uppercase tracking-wider">
                   Targeted Search & Feature Filters
                 </h3>
@@ -254,7 +254,7 @@ export default function BrowsePage() {
               <button
                 type="button"
                 onClick={resetAllFilters}
-                className="text-xs text-stone-500 hover:text-[#680C07] flex items-center gap-1 font-semibold transition-colors"
+                className="text-xs text-stone-500 hover:text-[#D4AF37] flex items-center gap-1 font-semibold transition-colors"
               >
                 <RotateCcw className="w-3.5 h-3.5" /> Reset All Filters
               </button>
@@ -264,7 +264,7 @@ export default function BrowsePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-stone-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <BookOpen className="w-3.5 h-3.5 text-[#680C07]" />
+                  <BookOpen className="w-3.5 h-3.5 text-[#D4AF37]" />
                   Search by Specific Title
                 </label>
                 <Input
@@ -278,7 +278,7 @@ export default function BrowsePage() {
 
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-stone-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <User className="w-3.5 h-3.5 text-[#680C07]" />
+                  <User className="w-3.5 h-3.5 text-[#D4AF37]" />
                   Search by Author Name
                 </label>
                 <Input
@@ -292,7 +292,7 @@ export default function BrowsePage() {
 
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-stone-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <Tag className="w-3.5 h-3.5 text-[#680C07]" />
+                  <Tag className="w-3.5 h-3.5 text-[#D4AF37]" />
                   Search by Specific Genre
                 </label>
                 <Input
@@ -357,9 +357,9 @@ export default function BrowsePage() {
                       onChange={(e) =>
                         setFilters((prev) => ({ ...prev, interactiveOnly: e.target.checked }))
                       }
-                      className="rounded border-stone-300 text-[#680C07] focus:ring-[#680C07]"
+                      className="rounded border-stone-300 text-[#D4AF37] focus:ring-[#D4AF37]"
                     />
-                    <GitFork className="w-3.5 h-3.5 text-[#680C07]" />
+                    <GitFork className="w-3.5 h-3.5 text-[#D4AF37]" />
                     <span>Interactive Branching Paths</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-stone-700">
@@ -369,9 +369,9 @@ export default function BrowsePage() {
                       onChange={(e) =>
                         setFilters((prev) => ({ ...prev, audioOnly: e.target.checked }))
                       }
-                      className="rounded border-stone-300 text-[#680C07] focus:ring-[#680C07]"
+                      className="rounded border-stone-300 text-[#D4AF37] focus:ring-[#D4AF37]"
                     />
-                    <Volume2 className="w-3.5 h-3.5 text-[#680C07]" />
+                    <Volume2 className="w-3.5 h-3.5 text-[#D4AF37]" />
                     <span>Oral Audio Narration</span>
                   </label>
                 </div>
@@ -402,7 +402,7 @@ export default function BrowsePage() {
                 }
                 className={`flex flex-col items-center justify-center p-3 rounded-2xl border text-center transition-all ${
                   isSelected
-                    ? "bg-[#680C07] text-white border-[#680C07] shadow-sm font-semibold"
+                    ? "bg-[#D4AF37] text-stone-950 border-[#D4AF37] shadow-sm font-bold"
                     : "bg-white border-stone-200/90 text-stone-700 hover:border-stone-300 hover:bg-stone-50"
                 }`}
               >
@@ -451,7 +451,7 @@ export default function BrowsePage() {
         {activeFiltersCount > 0 && (
           <button
             onClick={resetAllFilters}
-            className="text-[#680C07] font-bold hover:underline"
+            className="text-[#D4AF37] font-bold hover:underline"
           >
             Clear all filters ({activeFiltersCount})
           </button>
@@ -461,7 +461,7 @@ export default function BrowsePage() {
       {/* Results Grid / List */}
       {filteredStories.length === 0 ? (
         <div className="bg-white rounded-3xl border border-stone-200 p-12 text-center space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] flex items-center justify-center mx-auto">
+          <div className="w-14 h-14 rounded-2xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#D4AF37] flex items-center justify-center mx-auto">
             <Search className="w-7 h-7" />
           </div>
           <div className="space-y-1">
@@ -493,10 +493,10 @@ export default function BrowsePage() {
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-stone-950/50" />
 
                   <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
-                    <Badge className="bg-[#680C07] text-white backdrop-blur-xs text-[10px] font-medium border-0 shadow-xs">
+                    <Badge className="bg-[#D4AF37] text-stone-950 backdrop-blur-xs text-[10px] font-bold border-0 shadow-xs">
                       {story.tradition}
                     </Badge>
                     <button
@@ -508,26 +508,26 @@ export default function BrowsePage() {
                       }}
                       className={`p-1.5 rounded-full backdrop-blur-md transition-all ${
                         bookmarked
-                          ? "bg-[#680C07] text-white shadow-xs"
+                          ? "bg-[#D4AF37] text-stone-950 shadow-xs font-bold"
                           : "bg-stone-900/60 text-stone-200 hover:bg-stone-900/90 hover:text-white"
                       }`}
                     >
-                      <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? "fill-white" : ""}`} />
+                      <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? "fill-stone-950 text-stone-950" : ""}`} />
                     </button>
                   </div>
 
                   <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-white text-[11px] font-medium">
                     <span className="flex items-center gap-1 drop-shadow-xs">
-                      <Clock className="w-3 h-3 text-red-200" /> {story.estimatedReadTime} min
+                      <Clock className="w-3 h-3 text-amber-200" /> {story.estimatedReadTime} min
                     </span>
                     <div className="flex items-center gap-2">
                       {story.hasAudioNarration && (
-                        <span className="flex items-center gap-1 bg-black/40 px-1.5 py-0.5 rounded-md text-[10px] text-red-200">
+                        <span className="flex items-center gap-1 bg-black/40 px-1.5 py-0.5 rounded-md text-[10px] text-amber-200">
                           <Volume2 className="w-2.5 h-2.5" /> Audio
                         </span>
                       )}
                       {story.isInteractive && (
-                        <span className="flex items-center gap-1 bg-black/40 px-1.5 py-0.5 rounded-md text-[10px] text-red-200">
+                        <span className="flex items-center gap-1 bg-black/40 px-1.5 py-0.5 rounded-md text-[10px] text-amber-200">
                           <GitFork className="w-2.5 h-2.5" /> {story.totalBranches} paths
                         </span>
                       )}
@@ -539,14 +539,14 @@ export default function BrowsePage() {
                 <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold text-[#680C07] uppercase tracking-wider">
+                      <span className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-wider">
                         {story.mainGenre}
                       </span>
                       <span
                         className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
                           story.status === "completed"
                             ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                            : "bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20"
+                            : "bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20"
                         }`}
                       >
                         {story.status === "completed" ? "Completed" : "Ongoing"}
@@ -554,7 +554,7 @@ export default function BrowsePage() {
                     </div>
 
                     <Link href={`/story/${story.id}`}>
-                      <h3 className="text-base font-bold text-stone-900 line-clamp-1 group-hover:text-[#680C07] transition-colors font-serif">
+                      <h3 className="text-base font-bold text-stone-900 line-clamp-1 group-hover:text-[#D4AF37] transition-colors font-serif">
                         {story.title}
                       </h3>
                     </Link>
@@ -581,7 +581,7 @@ export default function BrowsePage() {
                           : story.readsCount}
                       </span>
                       <span className="flex items-center gap-1">
-                        <Heart className="w-3.5 h-3.5 text-[#680C07]" />
+                        <Heart className="w-3.5 h-3.5 text-[#D4AF37]" />
                         {story.likesCount}
                       </span>
                     </div>
@@ -614,7 +614,7 @@ export default function BrowsePage() {
               <div className="flex-1 flex flex-col justify-between py-1 space-y-2">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <Badge className="bg-[#680C07] text-white text-[10px] font-medium border-0">
+                    <Badge className="bg-[#D4AF37] text-stone-950 font-bold text-[10px] border-0">
                       {story.tradition}
                     </Badge>
                     <span className="text-[11px] font-bold text-stone-500 uppercase">
@@ -623,7 +623,7 @@ export default function BrowsePage() {
                   </div>
 
                   <Link href={`/story/${story.id}`}>
-                    <h3 className="text-lg font-bold font-serif text-stone-900 hover:text-[#680C07] transition-colors">
+                    <h3 className="text-lg font-bold font-serif text-stone-900 hover:text-[#D4AF37] transition-colors">
                       {story.title}
                     </h3>
                   </Link>
@@ -646,7 +646,7 @@ export default function BrowsePage() {
                       <Eye className="w-3.5 h-3.5 text-stone-400" /> {story.readsCount} reads
                     </span>
                     <span className="flex items-center gap-1">
-                      <Heart className="w-3.5 h-3.5 text-[#680C07]" /> {story.likesCount} likes
+                      <Heart className="w-3.5 h-3.5 text-[#D4AF37]" /> {story.likesCount} likes
                     </span>
                   </div>
 

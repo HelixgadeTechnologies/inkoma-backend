@@ -48,7 +48,7 @@ export default function RootLayout({
     <html lang="en" className="light scroll-smooth">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#680C07" />
+        <meta name="theme-color" content="#D4AF37" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Inkoma" />
@@ -56,11 +56,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-background text-foreground antialiased selection:bg-folklore-amber selection:text-white">
+      <body className="min-h-screen bg-[#FAF8F5] text-stone-900 font-sans antialiased selection:bg-[#D4AF37] selection:text-stone-950">
         {children}
       </body>
     </html>

@@ -67,8 +67,8 @@ export default function SupportPage() {
     <div className="space-y-12 pb-16">
       {/* Header */}
       <div className="text-center space-y-2 max-w-2xl mx-auto">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] text-xs font-semibold uppercase tracking-wider">
-          <HelpCircle className="w-3.5 h-3.5 text-[#680C07]" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#D4AF37] text-xs font-semibold uppercase tracking-wider">
+          <HelpCircle className="w-3.5 h-3.5 text-[#D4AF37]" />
           Hearth Fire Support
         </div>
         <h1 className="text-3xl sm:text-4xl font-extrabold text-stone-900 font-serif tracking-tight">
@@ -84,7 +84,7 @@ export default function SupportPage() {
         {/* Left: FAQs Accordion */}
         <div className="lg:col-span-7 space-y-4">
           <h2 className="text-lg font-bold text-stone-900 font-serif flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#680C07]" /> Frequently Asked Questions
+            <Sparkles className="w-4 h-4 text-[#D4AF37]" /> Frequently Asked Questions
           </h2>
 
           <div className="space-y-3">
@@ -103,14 +103,14 @@ export default function SupportPage() {
                     <span className="font-serif">{faq.question}</span>
                     <ChevronDown
                       className={`w-4 h-4 text-stone-400 shrink-0 transition-transform ${
-                        isOpen ? "rotate-180 text-[#680C07]" : ""
+                        isOpen ? "rotate-180 text-[#D4AF37]" : ""
                       }`}
                     />
                   </button>
 
                   {isOpen && (
                     <div className="px-4 pb-4 pt-1 text-xs text-stone-600 leading-relaxed border-t border-stone-100 animate-in fade-in duration-200">
-                      <span className="text-[10px] uppercase font-bold text-[#680C07] block mb-1">
+                      <span className="text-[10px] uppercase font-bold text-[#D4AF37] block mb-1">
                         {faq.category}
                       </span>
                       {faq.answer}
@@ -128,11 +128,11 @@ export default function SupportPage() {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-stone-600">
               <div className="flex items-center gap-2.5 p-3 bg-white rounded-xl border border-stone-200">
-                <Mail className="w-4 h-4 text-[#680C07]" />
+                <Mail className="w-4 h-4 text-[#D4AF37]" />
                 <span>support@inkoma.org</span>
               </div>
               <div className="flex items-center gap-2.5 p-3 bg-white rounded-xl border border-stone-200">
-                <MessageSquare className="w-4 h-4 text-[#680C07]" />
+                <MessageSquare className="w-4 h-4 text-[#D4AF37]" />
                 <span>Discord Storyteller Circle</span>
               </div>
             </div>
@@ -143,7 +143,7 @@ export default function SupportPage() {
         <div className="lg:col-span-5 bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm space-y-5">
           <div className="space-y-1">
             <h2 className="text-xl font-bold text-stone-900 font-serif flex items-center gap-2">
-              <Mail className="w-5 h-5 text-[#680C07]" /> Send an Inquiry
+              <Mail className="w-5 h-5 text-[#D4AF37]" /> Send an Inquiry
             </h2>
             <p className="text-xs text-stone-500">
               Our archivist team typically responds within 24 hours.
@@ -216,13 +216,13 @@ export default function SupportPage() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   required
-                  className="w-full bg-stone-50 border border-stone-300 rounded-xl p-3 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#680C07]"
+                  className="w-full bg-stone-50 border border-stone-300 rounded-xl p-3 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-full bg-[#680C07] hover:bg-[#520905] text-white font-bold py-5 text-xs rounded-xl shadow-xs"
+                className="w-full bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold py-5 text-xs rounded-xl shadow-xs"
               >
                 <Send className="w-3.5 h-3.5 mr-2" /> Send Message
               </Button>

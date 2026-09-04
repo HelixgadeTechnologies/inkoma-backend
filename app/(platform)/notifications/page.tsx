@@ -163,7 +163,7 @@ export default function NotificationsPage() {
       case "like":
         return <Heart className="w-4 h-4 text-rose-500 fill-current" />;
       case "chapter":
-        return <BookOpen className="w-4 h-4 text-[#680C07]" />;
+        return <BookOpen className="w-4 h-4 text-[#D4AF37]" />;
       case "tip":
         return <Coins className="w-4 h-4 text-amber-600" />;
       case "follow":
@@ -185,7 +185,7 @@ export default function NotificationsPage() {
               Circle Notifications
             </h1>
             {unreadCount > 0 && (
-              <Badge className="bg-[#680C07] hover:bg-[#520905] text-white px-2.5 py-0.5 rounded-full text-xs font-semibold">
+              <Badge className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold px-2.5 py-0.5 rounded-full text-xs">
                 {unreadCount} New
               </Badge>
             )}
@@ -203,7 +203,7 @@ export default function NotificationsPage() {
               onClick={markAllAsRead}
               className="text-xs border-stone-300 text-stone-700 hover:bg-stone-100 gap-1.5"
             >
-              <CheckCheck className="w-3.5 h-3.5 text-[#680C07]" />
+              <CheckCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
               Mark all read
             </Button>
           )}
@@ -226,7 +226,7 @@ export default function NotificationsPage() {
           onClick={() => setActiveFilter("all")}
           className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
             activeFilter === "all"
-              ? "bg-[#680C07] text-white shadow-xs"
+              ? "bg-[#D4AF37] text-stone-950 font-bold shadow-xs"
               : "bg-stone-100 text-stone-600 hover:bg-stone-200/70"
           }`}
         >
@@ -237,7 +237,7 @@ export default function NotificationsPage() {
           onClick={() => setActiveFilter("unread")}
           className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
             activeFilter === "unread"
-              ? "bg-[#680C07] text-white shadow-xs"
+              ? "bg-[#D4AF37] text-stone-950 font-bold shadow-xs"
               : "bg-stone-100 text-stone-600 hover:bg-stone-200/70"
           }`}
         >
@@ -248,7 +248,7 @@ export default function NotificationsPage() {
           onClick={() => setActiveFilter("comments")}
           className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
             activeFilter === "comments"
-              ? "bg-[#680C07] text-white shadow-xs"
+              ? "bg-[#D4AF37] text-stone-950 font-bold shadow-xs"
               : "bg-stone-100 text-stone-600 hover:bg-stone-200/70"
           }`}
         >
@@ -259,7 +259,7 @@ export default function NotificationsPage() {
           onClick={() => setActiveFilter("chapters")}
           className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
             activeFilter === "chapters"
-              ? "bg-[#680C07] text-white shadow-xs"
+              ? "bg-[#D4AF37] text-stone-950 font-bold shadow-xs"
               : "bg-stone-100 text-stone-600 hover:bg-stone-200/70"
           }`}
         >
@@ -270,7 +270,7 @@ export default function NotificationsPage() {
           onClick={() => setActiveFilter("tips")}
           className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
             activeFilter === "tips"
-              ? "bg-[#680C07] text-white shadow-xs"
+              ? "bg-[#D4AF37] text-stone-950 font-bold shadow-xs"
               : "bg-stone-100 text-stone-600 hover:bg-stone-200/70"
           }`}
         >
@@ -299,12 +299,12 @@ export default function NotificationsPage() {
               className={`group relative flex items-start gap-4 p-4 sm:p-5 rounded-2xl border transition-all ${
                 notif.read
                   ? "bg-white border-stone-200/80 hover:border-stone-300"
-                  : "bg-[#680C07]/[0.03] border-[#680C07]/30 shadow-xs ring-1 ring-[#680C07]/10"
+                  : "bg-[#D4AF37]/[0.03] border-[#D4AF37]/30 shadow-xs ring-1 ring-[#D4AF37]/10"
               }`}
             >
               {/* Unread Indicator Dot */}
               {!notif.read && (
-                <div className="absolute top-5 left-2 w-2 h-2 rounded-full bg-[#680C07]" />
+                <div className="absolute top-5 left-2 w-2 h-2 rounded-full bg-[#D4AF37]" />
               )}
 
               {/* Avatar / Icon Badge */}
@@ -323,7 +323,7 @@ export default function NotificationsPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="w-11 h-11 rounded-full bg-[#680C07]/10 border border-[#680C07]/20 flex items-center justify-center text-[#680C07]">
+                  <div className="w-11 h-11 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center text-[#D4AF37]">
                     {getNotificationIcon(notif.type)}
                   </div>
                 )}
@@ -354,7 +354,7 @@ export default function NotificationsPage() {
                   {notif.link && (
                     <Link
                       href={notif.link}
-                      className="text-[#680C07] font-semibold hover:underline flex items-center gap-0.5"
+                      className="text-[#D4AF37] font-semibold hover:underline flex items-center gap-0.5"
                     >
                       View Details
                       <ArrowRight className="w-3 h-3" />
@@ -369,7 +369,7 @@ export default function NotificationsPage() {
                   <button
                     onClick={() => markAsRead(notif.id)}
                     title="Mark as read"
-                    className="p-1.5 rounded-lg text-stone-400 hover:text-[#680C07] hover:bg-stone-100 transition-colors"
+                    className="p-1.5 rounded-lg text-stone-400 hover:text-[#D4AF37] hover:bg-stone-100 transition-colors"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                   </button>

@@ -10,11 +10,11 @@ export function SupportInkomaBanner() {
   if (!isVisible) return null;
 
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-[#680C07] text-white p-6 sm:p-8 shadow-lg border border-red-900/40">
+    <div className="relative overflow-hidden rounded-3xl bg-[#D4AF37] text-stone-950 p-6 sm:p-8 shadow-lg border border-[#B89628]/40">
       <button
         type="button"
         onClick={() => setIsVisible(false)}
-        className="absolute top-4 right-4 text-stone-300 hover:text-white transition-colors p-1"
+        className="absolute top-4 right-4 text-stone-800 hover:text-stone-950 transition-colors p-1"
         aria-label="Dismiss banner"
       >
         <X className="w-4 h-4" />
@@ -22,19 +22,19 @@ export function SupportInkomaBanner() {
 
       <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="space-y-2 max-w-2xl">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-xs font-semibold uppercase tracking-wider">
-            <Heart className="w-3.5 h-3.5 fill-white text-white" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-950/10 border border-stone-950/20 text-stone-950 text-xs font-semibold uppercase tracking-wider">
+            <Heart className="w-3.5 h-3.5 fill-stone-950 text-stone-950" />
             Support Living African Lore
           </div>
-          <h3 className="text-xl sm:text-2xl font-bold font-serif tracking-tight text-white">
+          <h3 className="text-xl sm:text-2xl font-bold font-serif tracking-tight text-stone-950">
             Empower Independent African Storytellers
           </h3>
-          <p className="text-stone-200 text-xs sm:text-sm leading-relaxed">
+          <p className="text-stone-900 text-xs sm:text-sm leading-relaxed font-medium">
             Inkoma is 100% committed to digitizing oral traditions, indigenous dialects, and structured folklore book chapters. Your patron support directly funds creator stipends, elder audio recording sessions, and open folklore archives.
           </p>
-          <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-stone-200/90 pt-1">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-stone-900/90 font-semibold pt-1">
             <span className="flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Secure Paystack Patron
+              <ShieldCheck className="w-3.5 h-3.5 text-stone-950" /> Secure Paystack Patron
             </span>
             <span>• Direct Creator Royalties</span>
             <span>• Zero Subscription Paywalls</span>
@@ -48,10 +48,10 @@ export function SupportInkomaBanner() {
             rel="noopener noreferrer"
             className="w-full sm:w-auto"
           >
-            <Button className="w-full sm:w-auto bg-white hover:bg-stone-100 text-[#680C07] font-bold px-6 py-5 shadow-md">
-              <Sparkles className="w-4 h-4 mr-2 text-[#680C07]" />
+            <Button className="w-full sm:w-auto bg-stone-950 hover:bg-stone-900 text-white font-bold px-6 py-5 shadow-md">
+              <Sparkles className="w-4 h-4 mr-2 text-[#D4AF37]" />
               Support INKOMA
-              <ArrowRight className="w-4 h-4 ml-2 text-[#680C07]" />
+              <ArrowRight className="w-4 h-4 ml-2 text-white" />
             </Button>
           </a>
         </div>

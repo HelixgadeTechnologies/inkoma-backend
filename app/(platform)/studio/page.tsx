@@ -3,598 +3,422 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Story, StoryChapter, StoryStatus, Tradition } from "@/types";
+import { Story } from "@/types";
 import { MOCK_STORIES, MOCK_CURRENT_USER } from "@/config/mock-data";
 import {
-  Flame,
   Plus,
-  BookOpen,
   Eye,
   Heart,
-  MessageSquare,
-  DollarSign,
-  Edit3,
-  Trash2,
+  ChevronRight,
+  ChevronDown,
+  MoreHorizontal,
+  List,
+  StickyNote,
+  Users,
+  Globe,
   FileText,
-  TrendingUp,
-  Lock,
-  CheckCircle2,
+  HelpCircle,
+  GraduationCap,
+  PenLine,
+  BookOpen,
+  Pencil,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
-import { ConfirmModal } from "@/components/ui/confirm-modal";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+
+// ─── helpers ──────────────────────────────────────────────────────────────────
+
+function formatCount(n: number): string {
+  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+  return String(n);
+}
+
+function formatWords(n: number): string {
+  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+  return String(n);
+}
+
+// Progress bar for each story — derived from status
+function storyProgress(story: Story): number {
+  if (story.status === "completed") return 100;
+  if (story.status === "ongoing") {
+    // use chapters as rough proxy capped at 90%
+    const total = story.totalChapters || 1;
+    return Math.min(90, Math.round((total / (total + 2)) * 100));
+  }
+  return 35; // draft
+}
+
+const STATUS_CONFIG: Record<
+  string,
+  { label: string; className: string }
+> = {
+  ongoing: {
+    label: "ONGOING",
+    className:
+      "bg-[#D4AF37]/15 text-[#B8860B] border border-[#D4AF37]/40 font-bold",
+  },
+  completed: {
+    label: "PUBLISHED",
+    className:
+      "bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold",
+  },
+  draft: {
+    label: "DRAFT",
+    className:
+      "bg-stone-100 text-stone-600 border border-stone-300 font-bold",
+  },
+};
+
+// ─── Writer Tools ──────────────────────────────────────────────────────────────
+
+const WRITER_TOOLS = [
+  { icon: List, label: "Outline" },
+  { icon: StickyNote, label: "Notes" },
+  { icon: Users, label: "Characters" },
+  { icon: Globe, label: "Worldbuilding" },
+  { icon: FileText, label: "Templates" },
+];
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function StudioPage() {
-  const [stories, setStories] = useState<Story[]>(MOCK_STORIES);
-  const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "published">("all");
-  const [showCreateStoryModal, setShowCreateStoryModal] = useState(false);
-  const [showCreateChapterModal, setShowCreateChapterModal] = useState(false);
-  const [selectedStoryForChapter, setSelectedStoryForChapter] = useState<Story | null>(null);
-  const [storyToDeleteId, setStoryToDeleteId] = useState<string | null>(null);
+  const [overviewPeriod, setOverviewPeriod] = useState("This Month");
+  const [showPeriodMenu, setShowPeriodMenu] = useState(false);
 
-  // New Story Form State
-  const [newTitle, setNewTitle] = useState("");
-  const [newSubtitle, setNewSubtitle] = useState("");
-  const [newGenre, setNewGenre] = useState("Trickster Lore");
-  const [newTradition, setNewTradition] = useState<Tradition>("Ashanti/Akan");
-  const [newSynopsis, setNewSynopsis] = useState("");
-  const [newCoverUrl, setNewCoverUrl] = useState(
-    "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=800&auto=format&fit=crop"
-  );
-  const [newStatus, setNewStatus] = useState<StoryStatus>("draft");
+  const stories = MOCK_STORIES.slice(0, 3); // show first 3 as "my stories"
+  const user = MOCK_CURRENT_USER;
 
-  // New Chapter Form State
-  const [newChapterTitle, setNewChapterTitle] = useState("");
-  const [newChapterSummary, setNewChapterSummary] = useState("");
-
-  // Calculate Metrics
-  const draftStoriesCount = stories.filter((s) => s.status === "draft").length;
-  const publishedStoriesCount = stories.filter((s) => s.status !== "draft").length;
-  const totalStories = stories.length;
-  const totalChapters = stories.reduce((acc, s) => acc + (s.totalChapters || 1), 0);
-  const totalReads = stories.reduce((acc, s) => acc + s.readsCount, 0);
-  const totalLikes = stories.reduce((acc, s) => acc + s.likesCount, 0);
-  const totalComments = stories.reduce((acc, s) => acc + s.commentsCount, 0);
-  const totalTips = MOCK_CURRENT_USER.supportDetails?.totalTipsReceived || 1250;
-
-  const filteredStories = stories.filter((s) => {
-    if (statusFilter === "draft") return s.status === "draft";
-    if (statusFilter === "published") return s.status === "ongoing" || s.status === "completed";
-    return true;
-  });
-
-  const handleCreateStory = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTitle.trim()) return;
-
-    const newStory: Story = {
-      id: `story-${Date.now()}`,
-      slug: newTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      title: newTitle,
-      subtitle: newSubtitle,
-      synopsis: newSynopsis || "A brand new oral account preserved in the circle.",
-      authorId: MOCK_CURRENT_USER.id,
-      authorName: MOCK_CURRENT_USER.displayName,
-      authorPenName: MOCK_CURRENT_USER.penName || MOCK_CURRENT_USER.displayName,
-      authorAvatar: MOCK_CURRENT_USER.avatarUrl,
-      authorBio: MOCK_CURRENT_USER.bio,
-      coverImage: newCoverUrl,
-      tradition: newTradition,
-      mainGenre: newGenre,
-      subGenres: ["Folklore", "Mythology"],
-      tags: ["oral-tradition", "living-lore"],
-      difficulty: "Beginner",
-      status: newStatus,
-      readsCount: 0,
-      likesCount: 0,
-      bookmarksCount: 0,
-      commentsCount: 0,
-      totalChapters: 1,
-      totalBranches: 0,
-      estimatedReadTime: 6,
-      hasAudioNarration: false,
-      isInteractive: false,
-      publishedAt: new Date().toISOString().split("T")[0],
-      createdAt: new Date().toISOString().split("T")[0],
-      updatedAt: new Date().toISOString().split("T")[0],
-      chapters: [
-        {
-          id: `chap-${Date.now()}-1`,
-          number: 1,
-          title: "Chapter 1: The Gathering",
-          summary: newSynopsis,
-          readTimeMinutes: 5,
-          status: "draft",
-          likesCount: 0,
-          commentsCount: 0,
-          updatedAt: new Date().toISOString().split("T")[0],
-        },
-      ],
-    };
-
-    setStories([newStory, ...stories]);
-    setShowCreateStoryModal(false);
-    setNewTitle("");
-    setNewSubtitle("");
-    setNewSynopsis("");
-  };
-
-  const handleAddChapter = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedStoryForChapter || !newChapterTitle.trim()) return;
-
-    const nextChapNum = (selectedStoryForChapter.chapters?.length || 0) + 1;
-    const newChap: StoryChapter = {
-      id: `chap-${Date.now()}`,
-      number: nextChapNum,
-      title: `Chapter ${nextChapNum}: ${newChapterTitle}`,
-      summary: newChapterSummary,
-      readTimeMinutes: 5,
-      status: "draft",
-      likesCount: 0,
-      commentsCount: 0,
-      updatedAt: new Date().toISOString().split("T")[0],
-    };
-
-    setStories((prev) =>
-      prev.map((s) => {
-        if (s.id === selectedStoryForChapter.id) {
-          const updatedChapters = [...(s.chapters || []), newChap];
-          return {
-            ...s,
-            totalChapters: updatedChapters.length,
-            chapters: updatedChapters,
-          };
-        }
-        return s;
-      })
-    );
-
-    setShowCreateChapterModal(false);
-    setNewChapterTitle("");
-    setNewChapterSummary("");
-  };
-
-  const confirmDeleteStory = () => {
-    if (storyToDeleteId) {
-      setStories((prev) => prev.filter((s) => s.id !== storyToDeleteId));
-      setStoryToDeleteId(null);
-    }
-  };
+  const statsStories = user.writingStats?.storiesPublished ?? 3;
+  const statsChapters = user.writingStats?.totalChaptersPublished ?? 24;
+  const statsWords = 18700;
+  const statsReaders = user.followersCount ?? 152;
 
   return (
-    <div className="space-y-10 pb-16">
-      {/* Studio Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] text-xs font-semibold uppercase tracking-wider">
-            <Flame className="w-3.5 h-3.5 text-[#680C07]" />
-            Author Studio Workspace
-          </div>
-          <h1 className="text-3xl font-extrabold text-stone-900 font-serif tracking-tight">
-            Writer Dashboard
-          </h1>
-          <p className="text-sm text-stone-600">
-            Pen new oral accounts, manage private draft books, and publish chapters to the archive.
-          </p>
-        </div>
+    <div className="max-w-2xl mx-auto space-y-6 pb-20">
 
+      {/* ── 1. Page Header ── */}
+      <div className="space-y-0.5 pt-2">
+        <h1 className="text-3xl font-extrabold text-stone-900 tracking-tight font-serif">
+          Studio
+        </h1>
+        <p className="text-sm text-stone-500 font-medium">
+          Write. Create. Inspire.
+        </p>
+      </div>
+
+      {/* ── 2. Quick Action Cards ── */}
+      <div className="grid grid-cols-2 gap-3">
+        {/* Create New Story */}
         <Link href="/studio/new">
-          <Button
-            className="bg-[#680C07] hover:bg-[#520905] text-white font-bold px-6 py-5 rounded-2xl shadow-md gap-2 shrink-0"
-          >
-            <Plus className="w-4 h-4 stroke-[3]" />
-            Create New Book
-          </Button>
+          <div className="group flex items-center gap-3 p-4 rounded-2xl border border-stone-200 bg-white hover:border-[#D4AF37]/50 hover:shadow-md transition-all cursor-pointer">
+            <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center shrink-0 group-hover:bg-[#D4AF37]/20 transition-colors">
+              <PenLine className="w-5 h-5 text-[#D4AF37]" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold text-stone-900 leading-tight">
+                Create New Story
+              </p>
+              <p className="text-xs text-stone-500 leading-tight mt-0.5">
+                Start writing your next masterpiece.
+              </p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
+          </div>
+        </Link>
+
+        {/* Continue Writing */}
+        <Link href="/studio/new">
+          <div className="group flex items-center gap-3 p-4 rounded-2xl border border-stone-200 bg-white hover:border-[#D4AF37]/50 hover:shadow-md transition-all cursor-pointer">
+            <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center shrink-0 group-hover:bg-[#D4AF37]/20 transition-colors">
+              <BookOpen className="w-5 h-5 text-[#D4AF37]" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold text-stone-900 leading-tight">
+                Continue Writing
+              </p>
+              <p className="text-xs text-stone-500 leading-tight mt-0.5">
+                Pick up where you left off.
+              </p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
+          </div>
         </Link>
       </div>
 
-      {/* KPI Cards Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-        <div
-          onClick={() => setStatusFilter("all")}
-          className={`p-4 rounded-2xl border shadow-xs space-y-1 cursor-pointer transition-all ${
-            statusFilter === "all"
-              ? "bg-[#680C07] text-white border-[#680C07]"
-              : "bg-white text-stone-900 border-stone-200 hover:border-stone-300"
-          }`}
-        >
-          <div className="flex items-center justify-between text-xs opacity-80">
-            <span>Total Books</span>
-            <BookOpen className="w-4 h-4" />
-          </div>
-          <p className="text-2xl font-extrabold font-serif">{totalStories}</p>
-          <span className="text-[10px] font-semibold opacity-90">All manuscripts</span>
+      {/* ── 3. Writing Overview ── */}
+      <div className="rounded-2xl border border-stone-200 bg-white p-5 space-y-4">
+        {/* Header row */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-bold text-stone-900">
+            Your Writing Overview
+          </h2>
+          <button
+            onClick={() => setShowPeriodMenu((p) => !p)}
+            className="relative flex items-center gap-1 text-xs font-semibold text-[#D4AF37] hover:text-[#B8860B] transition-colors"
+          >
+            {overviewPeriod}
+            <ChevronDown className="w-3.5 h-3.5" />
+            {showPeriodMenu && (
+              <div className="absolute top-6 right-0 bg-white border border-stone-200 rounded-xl shadow-lg z-10 py-1 min-w-[120px]">
+                {["This Week", "This Month", "All Time"].map((p) => (
+                  <button
+                    key={p}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOverviewPeriod(p);
+                      setShowPeriodMenu(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 text-xs font-medium hover:bg-stone-50 transition-colors ${
+                      p === overviewPeriod
+                        ? "text-[#D4AF37] font-bold"
+                        : "text-stone-700"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+            )}
+          </button>
         </div>
 
-        <div
-          onClick={() => setStatusFilter("draft")}
-          className={`p-4 rounded-2xl border shadow-xs space-y-1 cursor-pointer transition-all ${
-            statusFilter === "draft"
-              ? "bg-[#680C07] text-white border-[#680C07]"
-              : "bg-white text-stone-900 border-stone-200 hover:border-stone-300"
-          }`}
-        >
-          <div className="flex items-center justify-between text-xs opacity-80">
-            <span>Draft Books</span>
-            <Lock className="w-4 h-4" />
+        {/* Stats grid */}
+        <div className="grid grid-cols-4 gap-3">
+          {/* Stories */}
+          <div className="flex flex-col items-center gap-1">
+            <div className="flex items-center gap-1.5">
+              <FileText className="w-4 h-4 text-stone-400" />
+              <span className="text-xl font-extrabold text-stone-900 font-serif">
+                {statsStories}
+              </span>
+            </div>
+            <span className="text-[11px] text-stone-500 font-medium">
+              Stories
+            </span>
           </div>
-          <p className="text-2xl font-extrabold font-serif">{draftStoriesCount}</p>
-          <span className="text-[10px] font-semibold text-amber-600">Unpublished drafts</span>
-        </div>
 
-        <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-1">
-          <div className="flex items-center justify-between text-stone-500 text-xs">
-            <span>Book Chapters</span>
-            <FileText className="w-4 h-4 text-[#680C07]" />
+          {/* Chapters */}
+          <div className="flex flex-col items-center gap-1">
+            <div className="flex items-center gap-1.5">
+              <BookOpen className="w-4 h-4 text-stone-400" />
+              <span className="text-xl font-extrabold text-stone-900 font-serif">
+                {statsChapters}
+              </span>
+            </div>
+            <span className="text-[11px] text-stone-500 font-medium">
+              Chapters
+            </span>
           </div>
-          <p className="text-2xl font-extrabold text-stone-900 font-serif">{totalChapters}</p>
-          <span className="text-[10px] text-stone-400">Total chapters</span>
-        </div>
 
-        <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-1">
-          <div className="flex items-center justify-between text-stone-500 text-xs">
-            <span>Total Reads</span>
-            <Eye className="w-4 h-4 text-[#680C07]" />
+          {/* Words Written */}
+          <div className="flex flex-col items-center gap-1">
+            <div className="flex items-center gap-1.5">
+              <Pencil className="w-4 h-4 text-stone-400" />
+              <span className="text-xl font-extrabold text-stone-900 font-serif">
+                {formatWords(statsWords)}
+              </span>
+            </div>
+            <span className="text-[11px] text-stone-500 font-medium text-center leading-tight">
+              Words Written
+            </span>
           </div>
-          <p className="text-2xl font-extrabold text-stone-900 font-serif">
-            {(totalReads / 1000).toFixed(1)}k
-          </p>
-          <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-0.5">
-            +18% this mo
-          </span>
-        </div>
 
-        <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-1">
-          <div className="flex items-center justify-between text-stone-500 text-xs">
-            <span>Likes</span>
-            <Heart className="w-4 h-4 text-[#680C07]" />
+          {/* Readers */}
+          <div className="flex flex-col items-center gap-1">
+            <div className="flex items-center gap-1.5">
+              {/* star icon proxy */}
+              <svg
+                className="w-4 h-4 text-stone-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.019 6.218a1 1 0 00.95.69h6.536c.969 0 1.371 1.24.588 1.81l-5.293 3.846a1 1 0 00-.364 1.118l2.019 6.218c.3.921-.755 1.688-1.54 1.118l-5.293-3.846a1 1 0 00-1.176 0l-5.293 3.846c-.785.57-1.84-.197-1.54-1.118l2.019-6.218a1 1 0 00-.364-1.118L2.43 11.645c-.783-.57-.381-1.81.588-1.81h6.536a1 1 0 00.95-.69l2.019-6.218z"
+                />
+              </svg>
+              <span className="text-xl font-extrabold text-stone-900 font-serif">
+                {statsReaders}
+              </span>
+            </div>
+            <span className="text-[11px] text-stone-500 font-medium">
+              Readers
+            </span>
           </div>
-          <p className="text-2xl font-extrabold text-stone-900 font-serif">{totalLikes}</p>
-          <span className="text-[10px] text-stone-400">Reader hearts</span>
-        </div>
-
-        <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-1">
-          <div className="flex items-center justify-between text-stone-500 text-xs">
-            <span>Patron Support</span>
-            <DollarSign className="w-4 h-4 text-[#680C07]" />
-          </div>
-          <p className="text-2xl font-extrabold text-stone-900 font-serif">${totalTips}</p>
-          <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-0.5">
-            Paystack direct
-          </span>
         </div>
       </div>
 
-      {/* Story Manuscripts List with Draft Filter Tabs */}
-      <div className="space-y-4 bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-100 pb-4">
-          <div>
-            <h2 className="text-xl font-bold text-stone-900 font-serif">
-              Your Book Manuscripts ({filteredStories.length})
-            </h2>
-            <p className="text-xs text-stone-500">
-              Manage saved draft books and published manuscripts. Click &ldquo;Edit Book&rdquo; to modify chapters anytime.
-            </p>
-          </div>
-
-          {/* Status Filter Buttons */}
-          <div className="flex items-center gap-1.5 bg-stone-100 p-1 rounded-xl border border-stone-200 self-start sm:self-auto">
-            <button
-              type="button"
-              onClick={() => setStatusFilter("all")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                statusFilter === "all"
-                  ? "bg-[#680C07] text-white shadow-xs"
-                  : "text-stone-600 hover:text-stone-900"
-              }`}
-            >
-              All ({stories.length})
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setStatusFilter("draft")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
-                statusFilter === "draft"
-                  ? "bg-[#680C07] text-white shadow-xs"
-                  : "text-stone-600 hover:text-stone-900"
-              }`}
-            >
-              <Lock className="w-3 h-3" />
-              Draft Books ({draftStoriesCount})
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setStatusFilter("published")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                statusFilter === "published"
-                  ? "bg-[#680C07] text-white shadow-xs"
-                  : "text-stone-600 hover:text-stone-900"
-              }`}
-            >
-              Published ({publishedStoriesCount})
-            </button>
-          </div>
+      {/* ── 4. My Stories ── */}
+      <div className="space-y-3">
+        {/* Section header */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-stone-900 font-serif">
+            My Stories
+          </h2>
+          <Link
+            href="/studio"
+            className="flex items-center gap-0.5 text-xs font-semibold text-[#D4AF37] hover:text-[#B8860B] transition-colors"
+          >
+            View all
+            <ChevronRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
 
-        {filteredStories.length === 0 ? (
-          <div className="text-center py-12 space-y-3">
-            <Lock className="w-8 h-8 text-stone-400 mx-auto" />
-            <p className="text-sm font-bold text-stone-700 font-serif">No draft books found</p>
-            <p className="text-xs text-stone-500">Start a new manuscript and save it as a draft anytime.</p>
-            <Link href="/studio/new">
-              <Button size="sm" className="bg-[#680C07] text-white text-xs">
-                Create New Book
-              </Button>
-            </Link>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {filteredStories.map((story) => (
-              <div
+        {/* Story cards */}
+        <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden divide-y divide-stone-100">
+          {stories.map((story) => {
+            const progress = storyProgress(story);
+            const statusCfg =
+              STATUS_CONFIG[story.status] ?? STATUS_CONFIG.draft;
+            const updatedLabel =
+              story.status === "ongoing"
+                ? "Last updated 2 days ago"
+                : story.status === "completed"
+                ? "Last updated 1 week ago"
+                : "Last updated 3 days ago";
+
+            return (
+              <Link
                 key={story.id}
-                className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 rounded-2xl border border-stone-200 bg-stone-50/50 hover:bg-stone-50 transition-all"
+                href={`/story/${story.id}`}
+                className="block p-4 space-y-3 hover:bg-stone-50/70 active:bg-stone-100 transition-colors cursor-pointer group"
               >
-                {/* Cover & Title */}
-                <div className="flex items-center gap-4 min-w-0">
-                  <div className="relative w-16 h-20 rounded-xl overflow-hidden shrink-0 border border-stone-200">
-                    <Image src={story.coverImage} alt={story.title} fill className="object-cover" />
+                {/* Top row: cover + info + actions */}
+                <div className="flex items-start gap-3">
+                  {/* Cover image */}
+                  <div className="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 border border-stone-200 group-hover:border-[#D4AF37]/40 transition-colors">
+                    <Image
+                      src={story.coverImage}
+                      alt={story.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
                   </div>
-                  <div className="space-y-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20 text-[10px]">
-                        {story.tradition}
-                      </Badge>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span
-                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 ${
-                          story.status === "draft"
-                            ? "bg-amber-50 text-amber-700 border border-amber-300 font-bold"
-                            : story.status === "completed"
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                            : "bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20"
-                        }`}
+                        className={`text-[10px] px-2 py-0.5 rounded-full ${statusCfg.className}`}
                       >
-                        {story.status === "draft" && <Lock className="w-2.5 h-2.5" />}
-                        {story.status === "draft" ? "Private Draft" : story.status === "completed" ? "Completed Book" : "Ongoing Book"}
+                        {statusCfg.label}
+                      </span>
+                      <span className="text-[11px] text-stone-500">
+                        •{" "}
+                        {story.totalChapters ||
+                          story.chapters?.length ||
+                          1}{" "}
+                        Chapters
                       </span>
                     </div>
-                    <h3 className="text-base font-bold text-stone-900 truncate font-serif">
+                    <h3 className="text-sm font-bold text-stone-900 font-serif leading-snug truncate group-hover:text-[#B8860B] transition-colors">
                       {story.title}
                     </h3>
-                    <div className="flex items-center gap-3 text-xs text-stone-500">
-                      <span>{story.totalChapters || story.chapters?.length || 1} chapters</span>
-                      <span>•</span>
-                      <span>{story.readsCount} reads</span>
-                      <span>•</span>
-                      <span>Updated {story.updatedAt || "recently"}</span>
+                    <p className="text-[11px] text-stone-400">{updatedLabel}</p>
+                  </div>
+
+                  {/* Stats + overflow menu */}
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="flex items-center gap-1 text-[11px] text-stone-500">
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>{formatCount(story.readsCount)}</span>
                     </div>
+                    <div className="flex items-center gap-1 text-[11px] text-stone-500">
+                      <Heart className="w-3.5 h-3.5" />
+                      <span>{formatCount(story.likesCount)}</span>
+                    </div>
+                    {/* Overflow button — stops propagation so it doesn't trigger the Link */}
+                    <button
+                      onClick={(e) => e.preventDefault()}
+                      className="p-1 rounded-lg hover:bg-stone-200 transition-colors"
+                    >
+                      <MoreHorizontal className="w-4 h-4 text-stone-400" />
+                    </button>
                   </div>
                 </div>
 
-                {/* Actions */}
-                <div className="flex flex-wrap items-center gap-2 self-end md:self-center">
-                  <Link href="/studio/new">
-                    <Button
-                      size="sm"
-                      className="bg-[#680C07] hover:bg-[#520905] text-white text-xs rounded-xl font-bold gap-1 shadow-xs"
-                    >
-                      <Edit3 className="w-3.5 h-3.5" />
-                      {story.status === "draft" ? "Edit Draft Book" : "Edit Book"}
-                    </Button>
-                  </Link>
-
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setSelectedStoryForChapter(story);
-                      setShowCreateChapterModal(true);
-                    }}
-                    className="bg-white border-stone-300 text-stone-700 text-xs rounded-xl hover:bg-stone-100"
-                  >
-                    <Plus className="w-3.5 h-3.5 mr-1 text-[#680C07]" /> Add Chapter
-                  </Button>
-
-                  <Link href={`/story/${story.id}`}>
-                    <Button size="sm" variant="outline" className="bg-white border-stone-300 text-stone-700 text-xs rounded-xl">
-                      View Details
-                    </Button>
-                  </Link>
-
-                  <button
-                    type="button"
-                    onClick={() => setStoryToDeleteId(story.id)}
-                    className="p-2 rounded-xl text-stone-400 hover:text-[#680C07] hover:bg-[#680C07]/10 transition-colors"
-                    title="Delete manuscript"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                {/* Progress bar row */}
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[#D4AF37] rounded-full transition-all duration-500"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                  <span className="text-[11px] font-semibold text-stone-500 shrink-0">
+                    {progress}%
+                  </span>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              </Link>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Modal: Create New Story */}
-      <Dialog open={showCreateStoryModal} onOpenChange={setShowCreateStoryModal}>
-        <DialogContent className="max-w-lg w-full bg-white border border-stone-200 shadow-2xl rounded-3xl p-6 sm:p-8 space-y-5">
-          <DialogHeader className="space-y-1">
-            <DialogTitle className="text-2xl font-bold font-serif text-stone-900">
-              Create New Folklore Book
-            </DialogTitle>
-            <DialogDescription className="text-xs text-stone-500">
-              Initialize a new living book manuscript. Save as private draft or publish to the archive.
-            </DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handleCreateStory} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
-                Book Title
-              </label>
-              <Input
-                type="text"
-                placeholder="e.g. The Moon Bride & The River Spirits"
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-                required
-                className="bg-white border-stone-300 text-stone-900 font-serif font-bold text-sm"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
-                Subtitle <span className="text-stone-400 font-normal">(Optional)</span>
-              </label>
-              <Input
-                type="text"
-                placeholder="e.g. A Yoruba Myth of Devotion and High Waters"
-                value={newSubtitle}
-                onChange={(e) => setNewSubtitle(e.target.value)}
-                className="bg-white border-stone-300 text-stone-900 text-xs"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-stone-700 uppercase tracking-wider block">
-                  Tradition
-                </label>
-                <Select
-                  value={newTradition}
-                  onChange={(val) => setNewTradition(val as Tradition)}
-                  options={["Ashanti/Akan", "Yoruba", "Zulu", "Dogon", "Pan-African", "Swahili"]}
-                />
+      {/* ── 5. Writer Tools ── */}
+      <div className="space-y-3">
+        <h2 className="text-lg font-bold text-stone-900 font-serif">
+          Writer Tools
+        </h2>
+        <div className="grid grid-cols-5 gap-2">
+          {WRITER_TOOLS.map(({ icon: Icon, label }) => (
+            <button
+              key={label}
+              className="group flex flex-col items-center gap-2 p-3 rounded-2xl border border-stone-200 bg-white hover:border-[#D4AF37]/50 hover:bg-[#D4AF37]/5 transition-all"
+            >
+              <div className="w-10 h-10 rounded-xl bg-stone-50 group-hover:bg-[#D4AF37]/10 flex items-center justify-center transition-colors border border-stone-200 group-hover:border-[#D4AF37]/30">
+                <Icon className="w-5 h-5 text-[#D4AF37]" />
               </div>
+              <span className="text-[10px] font-semibold text-stone-600 text-center leading-tight">
+                {label}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-stone-700 uppercase tracking-wider block">
-                  Genre
-                </label>
-                <Select
-                  value={newGenre}
-                  onChange={(val) => setNewGenre(val)}
-                  options={["Trickster Lore", "Historical Epics", "Spiritual Lore", "Cosmology & Astronomy", "Animal Fables"]}
-                />
-              </div>
+      {/* ── 6. Resources & Help ── */}
+      <div className="space-y-3">
+        <h2 className="text-lg font-bold text-stone-900 font-serif">
+          Resources &amp; Help
+        </h2>
+        <div className="grid grid-cols-2 gap-3">
+          {/* Help Centre */}
+          <div className="group flex items-center gap-3 p-4 rounded-2xl border border-stone-200 bg-white hover:border-[#D4AF37]/50 hover:shadow-md transition-all cursor-pointer">
+            <div className="w-10 h-10 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-center shrink-0 group-hover:bg-[#D4AF37]/10 group-hover:border-[#D4AF37]/30 transition-all">
+              <HelpCircle className="w-5 h-5 text-[#D4AF37]" />
             </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
-                Synopsis
-              </label>
-              <textarea
-                rows={3}
-                placeholder="Describe the background and central conflict of your book..."
-                value={newSynopsis}
-                onChange={(e) => setNewSynopsis(e.target.value)}
-                className="w-full bg-stone-50 border border-stone-300 rounded-xl p-3 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#680C07]"
-              />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-stone-900 leading-tight">
+                Help Centre
+              </p>
+              <p className="text-[10px] text-stone-500 leading-tight mt-0.5">
+                Get answers to common questions about writing and publishing.
+              </p>
             </div>
+            <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
+          </div>
 
-            <div className="flex items-center justify-end gap-3 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowCreateStoryModal(false)}
-                className="border-stone-300 text-stone-700 text-xs"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                className="bg-[#680C07] hover:bg-[#520905] text-white text-xs font-bold px-6"
-              >
-                Save Draft Book
-              </Button>
+          {/* Writer Tips */}
+          <div className="group flex items-center gap-3 p-4 rounded-2xl border border-stone-200 bg-white hover:border-[#D4AF37]/50 hover:shadow-md transition-all cursor-pointer">
+            <div className="w-10 h-10 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-center shrink-0 group-hover:bg-[#D4AF37]/10 group-hover:border-[#D4AF37]/30 transition-all">
+              <GraduationCap className="w-5 h-5 text-[#D4AF37]" />
             </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Modal: Create New Chapter */}
-      <Dialog open={showCreateChapterModal} onOpenChange={setShowCreateChapterModal}>
-        <DialogContent className="max-w-md w-full bg-white border border-stone-200 shadow-2xl rounded-3xl p-6 sm:p-8 space-y-5">
-          <DialogHeader className="space-y-1">
-            <DialogTitle className="text-2xl font-bold font-serif text-stone-900">
-              Add New Chapter
-            </DialogTitle>
-            <DialogDescription className="text-xs text-stone-500">
-              Adding Chapter to <strong>{selectedStoryForChapter?.title}</strong>
-            </DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handleAddChapter} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
-                Chapter Title
-              </label>
-              <Input
-                type="text"
-                placeholder="e.g. Chapter 2: The River of Echoes"
-                value={newChapterTitle}
-                onChange={(e) => setNewChapterTitle(e.target.value)}
-                required
-                className="bg-white border-stone-300 text-stone-900 font-serif font-bold text-xs"
-              />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-stone-900 leading-tight">
+                Writer Tips
+              </p>
+              <p className="text-[10px] text-stone-500 leading-tight mt-0.5">
+                Practical guides and tips to improve your writing.
+              </p>
             </div>
+            <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
+          </div>
+        </div>
+      </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
-                Chapter Summary / Teaser
-              </label>
-              <textarea
-                rows={2}
-                placeholder="Brief summary of this chapter..."
-                value={newChapterSummary}
-                onChange={(e) => setNewChapterSummary(e.target.value)}
-                className="w-full bg-stone-50 border border-stone-300 rounded-xl p-3 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#680C07]"
-              />
-            </div>
-
-            <div className="flex items-center justify-end gap-3 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowCreateChapterModal(false)}
-                className="border-stone-300 text-stone-700 text-xs"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                className="bg-[#680C07] hover:bg-[#520905] text-white text-xs font-bold px-6"
-              >
-                Save Chapter
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Custom Themed Confirmation Modal */}
-      <ConfirmModal
-        isOpen={!!storyToDeleteId}
-        onClose={() => setStoryToDeleteId(null)}
-        onConfirm={confirmDeleteStory}
-        title="Delete Book Manuscript?"
-        description="Are you sure you want to permanently delete this book manuscript? All written chapters will be removed from your circle archive."
-        confirmText="Delete Manuscript"
-        cancelText="Keep Story"
-        variant="danger"
-      />
     </div>
   );
 }

@@ -51,7 +51,7 @@ export default function StoryDetailsPage() {
           The requested folklore manuscript could not be found in our digital archives.
         </p>
         <Link href="/explore">
-          <Button className="bg-[#680C07] hover:bg-[#520905] text-white">
+          <Button className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold">
             Return to Explore
           </Button>
         </Link>
@@ -126,8 +126,8 @@ export default function StoryDetailsPage() {
 
             {/* Read CTA button under cover */}
             <Link href={`/story/${currentStory.id}/read`} className="block">
-              <Button className="w-full bg-[#680C07] hover:bg-[#520905] text-white font-bold py-6 text-sm rounded-xl shadow-md">
-                <Play className="w-4 h-4 fill-white mr-2" />
+              <Button className="w-full bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold py-6 text-sm rounded-xl shadow-md">
+                <Play className="w-4 h-4 fill-stone-950 mr-2" />
                 Start Reading (Chap 1)
               </Button>
             </Link>
@@ -137,14 +137,14 @@ export default function StoryDetailsPage() {
           <div className="md:col-span-8 lg:col-span-9 space-y-6">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge className="bg-[#680C07]/10 border border-[#680C07]/20 text-[#680C07] text-xs font-semibold">
+                <Badge className="bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#D4AF37] text-xs font-semibold">
                   {currentStory.mainGenre}
                 </Badge>
                 <span
                   className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${
                     currentStory.status === "completed"
                       ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                      : "bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20"
+                      : "bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20"
                   }`}
                 >
                   {currentStory.status === "completed" ? "Completed Story" : "Ongoing Manuscript"}
@@ -168,7 +168,7 @@ export default function StoryDetailsPage() {
             {/* Author Profile Row */}
             <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-stone-50 rounded-2xl border border-stone-200">
               <div className="flex items-center gap-3">
-                <Link href={`/profile/kwame_asante`} className="relative w-12 h-12 rounded-full overflow-hidden border border-[#680C07]/30">
+                <Link href={`/profile/kwame_asante`} className="relative w-12 h-12 rounded-full overflow-hidden border border-[#D4AF37]/30">
                   <Image
                     src={
                       currentStory.authorAvatar ||
@@ -183,11 +183,11 @@ export default function StoryDetailsPage() {
                   <div className="flex items-center gap-2">
                     <Link
                       href={`/profile/kwame_asante`}
-                      className="text-sm font-bold text-stone-900 hover:text-[#680C07] font-serif"
+                      className="text-sm font-bold text-stone-900 hover:text-[#D4AF37] font-serif"
                     >
                       {currentStory.authorPenName || currentStory.authorName}
                     </Link>
-                    <Badge className="bg-[#680C07]/10 text-[#680C07] border border-[#680C07]/20 text-[10px]">
+                    <Badge className="bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20 text-[10px]">
                       Storyteller
                     </Badge>
                   </div>
@@ -204,13 +204,13 @@ export default function StoryDetailsPage() {
                   onClick={() => setIsFollowing(!isFollowing)}
                   className={`border-stone-300 text-xs rounded-xl ${
                     isFollowing
-                      ? "bg-[#680C07]/10 border-[#680C07]/20 text-[#680C07] font-semibold"
+                      ? "bg-[#D4AF37]/10 border-[#D4AF37]/20 text-[#D4AF37] font-semibold"
                       : "bg-white text-stone-700"
                   }`}
                 >
                   {isFollowing ? (
                     <>
-                      <UserCheck className="w-3.5 h-3.5 mr-1 text-[#680C07]" /> Following
+                      <UserCheck className="w-3.5 h-3.5 mr-1 text-[#D4AF37]" /> Following
                     </>
                   ) : (
                     <>
@@ -222,9 +222,9 @@ export default function StoryDetailsPage() {
                 <Button
                   size="sm"
                   onClick={() => setShowSupportModal(true)}
-                  className="bg-[#680C07] hover:bg-[#520905] text-white text-xs font-semibold rounded-xl shadow-xs"
+                  className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 text-xs font-bold rounded-xl shadow-xs"
                 >
-                  <Heart className="w-3.5 h-3.5 mr-1 fill-white" />
+                  <Heart className="w-3.5 h-3.5 mr-1 fill-stone-950" />
                   Support Author
                 </Button>
               </div>
@@ -273,7 +273,7 @@ export default function StoryDetailsPage() {
                   <strong className="text-stone-900">{currentStory.readsCount.toLocaleString()}</strong> Reads
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Heart className="w-4 h-4 text-[#680C07]" />
+                  <Heart className="w-4 h-4 text-[#D4AF37]" />
                   <strong className="text-stone-900">{likesCount}</strong> Likes
                 </span>
                 <span className="flex items-center gap-1.5">
@@ -288,10 +288,10 @@ export default function StoryDetailsPage() {
                   variant="outline"
                   onClick={handleLikeToggle}
                   className={`border-stone-300 rounded-xl ${
-                    isLiked ? "bg-red-50 border-red-300 text-red-600" : "bg-white text-stone-700"
+                    isLiked ? "bg-[#D4AF37]/10 border-[#D4AF37]/30 text-[#D4AF37] font-semibold" : "bg-white text-stone-700"
                   }`}
                 >
-                  <Heart className={`w-3.5 h-3.5 mr-1.5 ${isLiked ? "fill-red-500 text-red-500" : ""}`} />
+                  <Heart className={`w-3.5 h-3.5 mr-1.5 ${isLiked ? "fill-[#D4AF37] text-[#D4AF37]" : ""}`} />
                   {isLiked ? "Liked" : "Like"}
                 </Button>
 
@@ -300,10 +300,10 @@ export default function StoryDetailsPage() {
                   variant="outline"
                   onClick={() => toggleBookmark(currentStory.id)}
                   className={`border-stone-300 rounded-xl ${
-                    bookmarked ? "bg-[#680C07]/10 border-[#680C07]/20 text-[#680C07] font-semibold" : "bg-white text-stone-700"
+                    bookmarked ? "bg-[#D4AF37]/10 border-[#D4AF37]/20 text-[#D4AF37] font-semibold" : "bg-white text-stone-700"
                   }`}
                 >
-                  <Bookmark className={`w-3.5 h-3.5 mr-1.5 ${bookmarked ? "fill-[#680C07] text-[#680C07]" : ""}`} />
+                  <Bookmark className={`w-3.5 h-3.5 mr-1.5 ${bookmarked ? "fill-[#D4AF37] text-[#D4AF37]" : ""}`} />
                   {bookmarked ? "Bookmarked" : "Bookmark"}
                 </Button>
 
@@ -312,10 +312,10 @@ export default function StoryDetailsPage() {
                   variant="outline"
                   onClick={() => toggleFavorite(currentStory.id)}
                   className={`border-stone-300 rounded-xl ${
-                    favorited ? "bg-[#680C07]/10 border-[#680C07]/20 text-[#680C07] font-semibold" : "bg-white text-stone-700"
+                    favorited ? "bg-[#D4AF37]/10 border-[#D4AF37]/20 text-[#D4AF37] font-semibold" : "bg-white text-stone-700"
                   }`}
                 >
-                  <Sparkles className={`w-3.5 h-3.5 mr-1.5 ${favorited ? "fill-[#680C07] text-[#680C07]" : ""}`} />
+                  <Sparkles className={`w-3.5 h-3.5 mr-1.5 ${favorited ? "fill-[#D4AF37] text-[#D4AF37]" : ""}`} />
                   {favorited ? "Favorited" : "Favorite"}
                 </Button>
 
@@ -353,7 +353,7 @@ export default function StoryDetailsPage() {
             </p>
           </div>
           <Link href={`/story/${currentStory.id}/read`}>
-            <Button size="sm" className="bg-[#680C07] hover:bg-[#520905] text-white rounded-xl">
+            <Button size="sm" className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold rounded-xl">
               Read Chapter 1
             </Button>
           </Link>
@@ -367,11 +367,11 @@ export default function StoryDetailsPage() {
               className="flex items-center justify-between p-4 hover:bg-stone-50 rounded-2xl transition-all group"
             >
               <div className="flex items-center gap-4 min-w-0">
-                <div className="w-10 h-10 rounded-xl bg-[#680C07]/10 border border-[#680C07]/30 text-[#680C07] flex items-center justify-center font-bold text-sm shrink-0 font-serif">
+                <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] flex items-center justify-center font-bold text-sm shrink-0 font-serif">
                   {chapter.number}
                 </div>
                 <div className="space-y-1 min-w-0">
-                  <h3 className="text-sm font-bold text-stone-900 group-hover:text-[#680C07] transition-colors truncate">
+                  <h3 className="text-sm font-bold text-stone-900 group-hover:text-[#D4AF37] transition-colors truncate">
                     {chapter.title}
                   </h3>
                   <p className="text-xs text-stone-500 truncate max-w-xl">
@@ -385,9 +385,9 @@ export default function StoryDetailsPage() {
                   <Clock className="w-3.5 h-3.5" /> {chapter.readTimeMinutes}m
                 </span>
                 <span className="flex items-center gap-1">
-                  <Heart className="w-3.5 h-3.5 text-stone-300 group-hover:text-[#680C07]" /> {chapter.likesCount}
+                  <Heart className="w-3.5 h-3.5 text-stone-300 group-hover:text-[#D4AF37]" /> {chapter.likesCount}
                 </span>
-                <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-[#680C07] group-hover:translate-x-1 transition-all" />
+                <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-[#D4AF37] group-hover:translate-x-1 transition-all" />
               </div>
             </Link>
           ))}

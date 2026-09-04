@@ -39,7 +39,7 @@ export function TypographyCustomizer() {
                   className={cn(
                     "rounded-lg py-1.5 text-xs font-bold transition-all",
                     fontSize === s
-                      ? "bg-[#680C07] text-white shadow-sm"
+                      ? "bg-[#D4AF37] text-stone-950 shadow-sm"
                       : "bg-stone-100 text-stone-700 hover:bg-stone-200"
                   )}
                 >
@@ -58,7 +58,7 @@ export function TypographyCustomizer() {
                 className={cn(
                   "flex flex-col items-center gap-1 rounded-xl p-2 text-[10px] border transition-all",
                   readingTheme === 'parchment'
-                    ? "border-[#680C07] bg-[#F1E9DB] text-[#680C07] font-bold shadow-sm"
+                    ? "border-[#D4AF37] bg-[#F1E9DB] text-[#D4AF37] font-bold shadow-sm"
                     : "border-stone-200 bg-stone-50 text-stone-700 hover:border-stone-300"
                 )}
               >

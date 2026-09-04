@@ -23,13 +23,13 @@ export function DiscussionCard({ discussion }: { discussion: CommunityDiscussion
   };
 
   return (
-    <div className="flex gap-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm transition-all hover:border-[#680C07]/30 hover:shadow-md">
+    <div className="flex gap-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm transition-all hover:border-[#D4AF37]/30 hover:shadow-md">
       {/* Upvote Pill */}
       <button
         onClick={handleUpvote}
         className={`flex flex-col items-center justify-center h-16 w-12 rounded-xl border transition-all ${
           hasUpvoted
-            ? "border-[#680C07] bg-[#680C07]/10 text-[#680C07] font-bold"
+            ? "border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37] font-bold"
             : "border-stone-200 bg-stone-50 text-stone-600 hover:text-stone-900 hover:border-stone-300"
         }`}
       >
@@ -58,7 +58,7 @@ export function DiscussionCard({ discussion }: { discussion: CommunityDiscussion
           </div>
         </div>
 
-        <h3 className="font-serif text-base font-bold text-stone-900 hover:text-[#680C07] transition-colors cursor-pointer">
+        <h3 className="font-serif text-base font-bold text-stone-900 hover:text-[#D4AF37] transition-colors cursor-pointer">
           {discussion.title}
         </h3>
 
@@ -74,7 +74,7 @@ export function DiscussionCard({ discussion }: { discussion: CommunityDiscussion
 
           <div className="flex gap-1">
             {discussion.tags.map((tag) => (
-              <span key={tag} className="text-[10px] text-[#680C07] bg-[#680C07]/10 px-2 py-0.5 rounded font-medium">
+              <span key={tag} className="text-[10px] text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded font-medium">
                 #{tag}
               </span>
             ))}

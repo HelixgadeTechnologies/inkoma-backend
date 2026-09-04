@@ -108,10 +108,10 @@ export function BranchNodeCreator({
         {node.choices.map((choice, idx) => (
           <div
             key={choice.id}
-            className="rounded-xl border border-stone-200 bg-stone-50/60 p-4 space-y-3 transition-all hover:border-[#680C07]/30"
+            className="rounded-xl border border-stone-200 bg-stone-50/60 p-4 space-y-3 transition-all hover:border-[#D4AF37]/30"
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#680C07]/10 text-xs font-bold text-[#680C07]">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#D4AF37]/10 text-xs font-bold text-[#D4AF37]">
                 {String.fromCharCode(65 + idx)}
               </span>
               <button

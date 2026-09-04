@@ -13,7 +13,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 24 25% 12%;
 
-    --primary: 3 87% 22%;
+    --primary: 43 65% 52%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 38 25% 92%;
@@ -22,7 +22,7 @@
     --muted: 38 20% 92%;
     --muted-foreground: 24 15% 40%;
 
-    --accent: 3 87% 22%;
+    --accent: 43 65% 52%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
@@ -30,42 +30,12 @@
 
     --border: 35 20% 86%;
     --input: 35 20% 86%;
-    --ring: 3 87% 22%;
+    --ring: 43 65% 52%;
 
     --radius: 0.75rem;
 
-    --font-serif: "Cinzel Decorative", "Merriweather", "Georgia", serif;
+    --font-serif: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  }
-
-  .dark {
-    --background: 220 20% 6%;
-    --foreground: 45 30% 96%;
-
-    --card: 222 18% 10%;
-    --card-foreground: 45 30% 96%;
-
-    --popover: 222 18% 10%;
-    --popover-foreground: 45 30% 96%;
-
-    --primary: 3 87% 22%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 220 14% 16%;
-    --secondary-foreground: 45 30% 96%;
-
-    --muted: 220 14% 18%;
-    --muted-foreground: 220 10% 60%;
-
-    --accent: 3 87% 22%;
-    --accent-foreground: 45 30% 96%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 220 14% 18%;
-    --input: 220 14% 18%;
-    --ring: 3 87% 22%;
   }
 }
 
@@ -74,12 +44,12 @@
     @apply border-border;
   }
   body {
-    @apply bg-[#FAF8F5] dark:bg-stone-950 text-stone-900 dark:text-stone-100 font-sans antialiased;
+    @apply bg-[#FAF8F5] text-stone-900 font-sans antialiased;
     min-height: 100vh;
   }
 }
 
-/* Custom Folklore Textures & Scrollbars */
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -90,24 +60,26 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(104, 12, 7, 0.4);
+  background: #D4AF37;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(104, 12, 7, 0.7);
+  background: #c49f27;
+}
+
+.text-gold {
+  color: #B8860B;
 }
 
 .text-gold-gradient {
-  color: #680C07;
+  color: #B8860B;
 }
 
 .text-terracotta-gradient {
-  color: #680C07;
+  color: #B8860B;
 }
 
 .folklore-pattern {
   background-color: #FAF8F5;
-  background-image: radial-gradient(rgba(104, 12, 7, 0.06) 1.5px, transparent 0);
-  background-size: 24px 24px;
 }
