@@ -35,7 +35,12 @@ export function useStory(storyId?: string) {
 
   const currentStory = useMemo(() => {
     if (!storyId) return undefined;
-    return stories.find((s) => s.id === storyId || s.slug === storyId);
+    return stories.find(
+      (s) =>
+        s.id === storyId ||
+        s.slug === storyId ||
+        (s.aliases && s.aliases.includes(storyId))
+    );
   }, [stories, storyId]);
 
   const filteredStories = useMemo(() => {

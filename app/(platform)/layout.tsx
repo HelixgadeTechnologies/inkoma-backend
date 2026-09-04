@@ -8,7 +8,7 @@ export default function PlatformLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative flex min-h-screen flex-col bg-[#FAF8F5] text-stone-900 pb-16 md:pb-0 transition-colors">
+    <div className="relative flex min-h-screen flex-col bg-[#FAF8F5] dark:bg-[#1C1917] text-stone-900 dark:text-stone-100 pb-16 md:pb-0 transition-colors">
       <Navbar />
       <div className="flex w-full flex-1 px-2 sm:px-4 lg:px-6">
         <Sidebar />

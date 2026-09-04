@@ -46,7 +46,7 @@ function FacebookIcon(props: React.SVGProps<SVGSVGElement>) {
 
 export function Footer() {
   return (
-    <footer className="border-t border-stone-200 bg-[#F5F2EC] text-stone-700 font-sans transition-colors">
+    <footer className="border-t border-stone-200 dark:border-stone-800 bg-[#F5F2EC] dark:bg-stone-900 text-stone-700 dark:text-stone-300 font-sans transition-colors">
       <div className="w-full max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4 lg:grid-cols-5">
           {/* Brand Col */}
@@ -55,11 +55,11 @@ export function Footer() {
               <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-[#D4AF37] text-stone-950 p-2 shadow-md">
                 <span className="font-extrabold text-lg">📖</span>
               </div>
-              <span className="font-sans text-xl font-extrabold tracking-tight text-stone-900">
+              <span className="font-sans text-xl font-extrabold tracking-tight text-stone-900 dark:text-stone-100">
                 INKOMA
               </span>
             </div>
-            <p className="max-w-sm text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
+            <p className="max-w-sm text-xs sm:text-sm text-stone-600 dark:text-stone-400 leading-relaxed font-normal">
               Your global home for original stories across every genre. Read. Write. Connect. Belong.
             </p>
             <div className="flex items-center space-x-3 text-xs text-[#B8860B]">
@@ -71,7 +71,7 @@ export function Footer() {
 
             {/* Social Icons */}
             <div className="pt-2">
-              <p className="text-xs font-bold text-stone-800 uppercase tracking-wider mb-2.5">
+              <p className="text-xs font-bold text-stone-800 dark:text-stone-200 uppercase tracking-wider mb-2.5">
                 Connect with us
               </p>
               <div className="flex items-center space-x-2.5">
@@ -79,7 +79,7 @@ export function Footer() {
                   href="https://twitter.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 rounded-lg bg-white border border-stone-200 hover:border-[#D4AF37] hover:text-[#B8860B] text-stone-600 shadow-xs transition-colors"
+                  className="p-2 rounded-lg bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 hover:border-[#D4AF37] hover:text-[#B8860B] text-stone-600 dark:text-stone-300 shadow-xs transition-colors"
                   aria-label="Twitter / X"
                 >
                   <TwitterIcon className="w-4 h-4" />
@@ -88,7 +88,7 @@ export function Footer() {
                   href="https://instagram.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 rounded-lg bg-white border border-stone-200 hover:border-[#D4AF37] hover:text-[#B8860B] text-stone-600 shadow-xs transition-colors"
+                  className="p-2 rounded-lg bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 hover:border-[#D4AF37] hover:text-[#B8860B] text-stone-600 dark:text-stone-300 shadow-xs transition-colors"
                   aria-label="Instagram"
                 >
                   <InstagramIcon className="w-4 h-4" />
@@ -97,7 +97,7 @@ export function Footer() {
                   href="https://discord.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 rounded-lg bg-white border border-stone-200 hover:border-[#D4AF37] hover:text-[#B8860B] text-stone-600 shadow-xs transition-colors"
+                  className="p-2 rounded-lg bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 hover:border-[#D4AF37] hover:text-[#B8860B] text-stone-600 dark:text-stone-300 shadow-xs transition-colors"
                   aria-label="Discord"
                 >
                   <DiscordIcon className="w-4 h-4" />
@@ -106,7 +106,7 @@ export function Footer() {
                   href="https://youtube.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 rounded-lg bg-white border border-stone-200 hover:border-[#D4AF37] hover:text-[#B8860B] text-stone-600 shadow-xs transition-colors"
+                  className="p-2 rounded-lg bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 hover:border-[#D4AF37] hover:text-[#B8860B] text-stone-600 dark:text-stone-300 shadow-xs transition-colors"
                   aria-label="YouTube"
                 >
                   <YoutubeIcon className="w-4 h-4" />
@@ -115,7 +115,7 @@ export function Footer() {
                   href="https://facebook.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 rounded-lg bg-white border border-stone-200 hover:border-[#D4AF37] hover:text-[#B8860B] text-stone-600 shadow-xs transition-colors"
+                  className="p-2 rounded-lg bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 hover:border-[#D4AF37] hover:text-[#B8860B] text-stone-600 dark:text-stone-300 shadow-xs transition-colors"
                   aria-label="Facebook"
                 >
                   <FacebookIcon className="w-4 h-4" />
@@ -126,10 +126,10 @@ export function Footer() {
 
           {/* Platform Links */}
           <div>
-            <h4 className="font-sans text-xs font-extrabold text-stone-900 tracking-wider uppercase mb-3">
+            <h4 className="font-sans text-xs font-extrabold text-stone-900 dark:text-stone-100 tracking-wider uppercase mb-3">
               Explore Genres
             </h4>
-            <ul className="space-y-2 text-xs font-medium text-stone-600">
+            <ul className="space-y-2 text-xs font-medium text-stone-600 dark:text-stone-400">
               <li>
                 <Link href="/explore?genre=Romance" className="hover:text-[#B8860B] transition-colors">
                   Romance
@@ -155,10 +155,10 @@ export function Footer() {
 
           {/* Creators & Studio */}
           <div>
-            <h4 className="font-sans text-xs font-extrabold text-stone-900 tracking-wider uppercase mb-3">
+            <h4 className="font-sans text-xs font-extrabold text-stone-900 dark:text-stone-100 tracking-wider uppercase mb-3">
               For Writers
             </h4>
-            <ul className="space-y-2 text-xs font-medium text-stone-600">
+            <ul className="space-y-2 text-xs font-medium text-stone-600 dark:text-stone-400">
               <li>
                 <Link href="/studio" className="hover:text-[#B8860B] transition-colors">
                   Writer Studio
@@ -179,10 +179,10 @@ export function Footer() {
 
           {/* About */}
           <div>
-            <h4 className="font-sans text-xs font-extrabold text-stone-900 tracking-wider uppercase mb-3">
+            <h4 className="font-sans text-xs font-extrabold text-stone-900 dark:text-stone-100 tracking-wider uppercase mb-3">
               Platform &amp; Community
             </h4>
-            <ul className="space-y-2 text-xs font-medium text-stone-600">
+            <ul className="space-y-2 text-xs font-medium text-stone-600 dark:text-stone-400">
               <li>
                 <Link href="/about" className="hover:text-[#B8860B] transition-colors">
                   About INKOMA
@@ -210,10 +210,10 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 border-t border-stone-200 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500 gap-4">
+        <div className="mt-10 border-t border-stone-200 dark:border-stone-800 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500 dark:text-stone-400 gap-4">
           <p>© {new Date().getFullYear()} INKOMA. Stories. Everywhere.</p>
           <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1 text-stone-600">
+            <span className="flex items-center gap-1 text-stone-600 dark:text-stone-400">
               Crafted with <Heart className="h-3 w-3 text-rose-500 fill-current" /> for storytellers everywhere
             </span>
           </div>

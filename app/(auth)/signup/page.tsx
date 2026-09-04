@@ -32,7 +32,7 @@ export default function SignupPage() {
 
   return (
     <AuthCard
-      title="Join the Storyteller Circle"
+      title="Join the Inkoma Circle"
       description="Begin your journey as a reader or traditional storyteller in our digital folklore archive."
     >
       <form onSubmit={handleSubmit} className="space-y-4">

@@ -60,6 +60,7 @@ export interface StoryChapter {
 export interface Story {
   id: string;
   slug?: string;
+  aliases?: string[]; // extra URL identifiers (e.g. short IDs from a CMS)
   title: string;
   subtitle?: string;
   synopsis: string;

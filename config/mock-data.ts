@@ -4,6 +4,7 @@ export const MOCK_STORIES: Story[] = [
   {
     id: "anansi-and-the-pot-of-wisdom",
     slug: "anansi-and-the-pot-of-wisdom",
+    aliases: ["hr-4", "hr-1", "anansi-1"],
     title: "Anansi and the Pot of Wisdom",
     subtitle: "The Trickster's Folly in the High Baobab",
     synopsis: "When Kweku Anansi attempts to hoard all knowledge in the world within a clay pot, his pride is put to the test before the watchful eyes of the sky god Nyame.",
@@ -209,6 +210,7 @@ The clay pot smashed against the river stones with a sound like thunder. A great
   {
     id: "sundiata-the-lion-king-of-mali",
     slug: "sundiata-the-lion-king-of-mali",
+    aliases: ["hr-2", "sundiata-1"],
     title: "Sundiata: The Lion King of Mali",
     subtitle: "The Epic Rise of the Mandinka Empire",
     synopsis: "Born unable to walk, young Sundiata Keita rises through prophecy, iron will, and sacred sorcery to unite the twelve kingdoms against the ruthless sorcerer-king Soumaoro Kanté.",
@@ -281,6 +283,7 @@ The clay pot smashed against the river stones with a sound like thunder. A great
   {
     id: "mami-wata-whispering-currents",
     slug: "mami-wata-whispering-currents",
+    aliases: ["hr-3", "mami-1"],
     title: "Mami Wata: Whispering Currents",
     subtitle: "The Sacred Guardian of the Deep Delta",
     synopsis: "A young fisherman caught in the tempest of the Guinea Coast is taken into the underwater coral palaces of Mami Wata, where he must choose between boundless wealth and moral honor.",
@@ -315,6 +318,7 @@ The clay pot smashed against the river stones with a sound like thunder. A great
   {
     id: "dogon-sirius-star-dancers",
     slug: "dogon-sirius-star-dancers",
+    aliases: ["hr-5", "dogon-1"],
     title: "The Sirius Star Dancers of Dogon",
     subtitle: "Cosmology and Masked Sigui Rituals",
     synopsis: "Deep in the Bandiagara Escarpment, elder Oumar initiates a youth into the secret Sigui astronomical songs that mapped the white dwarf star centuries before telescopes were conceived.",

@@ -18,7 +18,7 @@ export function PwaBottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden items-center justify-around border-t border-stone-200 bg-white/95 backdrop-blur-md py-2 px-2 shadow-lg transition-colors">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden items-center justify-around border-t border-stone-200 dark:border-stone-800 bg-white/95 dark:bg-stone-900/95 backdrop-blur-md py-2 px-2 shadow-lg transition-colors">
       {navItems.map((item) => {
         const Icon = item.icon;
         const isActive =
