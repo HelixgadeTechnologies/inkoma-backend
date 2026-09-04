@@ -93,7 +93,7 @@ export default function StudioPage() {
   const statsReaders = user.followersCount ?? 152;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 pb-20">
+    <div className="space-y-6 pb-20">
 
       {/* ── 1. Page Header ── */}
       <div className="space-y-0.5 pt-2">
