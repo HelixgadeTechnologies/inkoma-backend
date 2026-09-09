@@ -7,6 +7,7 @@ export type Tradition =
   | 'Kikuyu'
   | 'Swahili'
   | 'Khoisan'
+  | 'Dominican Republic'
   | 'Pan-African';
 
 export type StoryDifficulty = 'Beginner' | 'Intermediate' | 'Elderly / Complex';

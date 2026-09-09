@@ -20,5 +20,6 @@ export const platformSidebarNav: NavItem[] = [
   { title: "Library", href: "/library", icon: "BookOpen" },
   { title: "Studio", href: "/studio", icon: "Feather" },
   { title: "Profile", href: "/profile", icon: "User" },
-  { title: "Support INKOMA", href: "/support", icon: "HelpCircle" },
+  { title: "Support INKOMA", href: "/support", icon: "Heart" },
+  { title: "Help Center", href: "/help", icon: "HelpCircle" },
 ];

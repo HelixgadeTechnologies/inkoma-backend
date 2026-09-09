@@ -14,6 +14,7 @@ import {
   BookOpen,
   Sliders,
   HelpCircle,
+  Heart,
   Bell,
   ChevronLeft,
   ChevronRight,
@@ -36,12 +37,13 @@ export function Sidebar() {
     User: <User className="h-4 w-4" />,
     Sliders: <Sliders className="h-4 w-4" />,
     HelpCircle: <HelpCircle className="h-4 w-4" />,
+    Heart: <Heart className="h-4 w-4 fill-none text-[#B8860B]" />,
   };
 
   return (
     <aside
       className={cn(
-        "sticky top-20 hidden h-[calc(100vh-5rem)] flex-col border-r border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 p-4 transition-all duration-300 md:flex z-30 shrink-0 shadow-xs",
+        "sticky top-20 hidden h-[calc(100vh-5rem)] flex-col border-r border-stone-200 bg-white p-4 transition-all duration-300 md:flex z-30 shrink-0 shadow-xs",
         isCollapsed ? "w-20 items-center px-2" : "w-64"
       )}
     >
@@ -49,7 +51,7 @@ export function Sidebar() {
       <button
         type="button"
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-4 z-40 flex h-6 w-6 items-center justify-center rounded-full border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-400 shadow-md hover:bg-stone-100 dark:hover:bg-stone-700 hover:text-stone-900 dark:hover:text-stone-100 transition-all"
+        className="absolute -right-3 top-4 z-40 flex h-6 w-6 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-600 shadow-md hover:bg-stone-100 hover:text-stone-900 transition-all"
         title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
       >
         {isCollapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
@@ -74,7 +76,7 @@ export function Sidebar() {
       {/* Main Navigation */}
       <div className="space-y-1 w-full flex-1">
         {!isCollapsed && (
-          <p className="px-3 text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-500">
+          <p className="px-3 text-[11px] font-bold uppercase tracking-wider text-stone-500">
             Navigation
           </p>
         )}
@@ -96,7 +98,7 @@ export function Sidebar() {
                   isCollapsed ? "justify-center p-2.5" : "justify-between px-3 py-2.5 text-sm font-medium",
                   isActive
                     ? "bg-[#D4AF37]/15 text-[#B8860B] border border-[#D4AF37]/30 font-bold shadow-xs"
-                    : "text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-950 dark:hover:text-stone-100"
+                    : "text-stone-700 hover:bg-stone-100 hover:text-stone-950"
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -116,9 +118,9 @@ export function Sidebar() {
 
       {/* App Footer Quote */}
       {!isCollapsed && (
-        <div className="mt-auto pt-4 border-t border-stone-200 dark:border-stone-800 text-[11px] text-stone-500 space-y-2">
+        <div className="mt-auto pt-4 border-t border-stone-200 text-[11px] text-stone-500 space-y-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 font-semibold text-stone-700 dark:text-stone-300">
+            <div className="flex items-center gap-1.5 font-semibold text-stone-700">
               <Sparkles className="h-3.5 w-3.5 text-[#B8860B]" />
               <span>Inkoma Wisdom</span>
             </div>
@@ -126,7 +128,7 @@ export function Sidebar() {
               PWA Ready
             </Badge>
           </div>
-          <p className="italic text-stone-500 dark:text-stone-500 text-[11px] leading-relaxed">
+          <p className="italic text-stone-500 text-[11px] leading-relaxed">
             &ldquo;Great stories connect minds, build bridges, and live forever across time.&rdquo;
           </p>
         </div>

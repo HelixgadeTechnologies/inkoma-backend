@@ -107,6 +107,17 @@ const CATEGORIES: CategoryItem[] = [
     badge: "Futuristic Mythos",
     icon: <Compass className="w-3.5 h-3.5 text-purple-400" />,
   },
+  {
+    id: "dominican-republic",
+    name: "Dominican & Taíno Lore",
+    tradition: "Dominican Republic",
+    count: 6,
+    description: "La Ciguapa, Cordillera mist & Quisqueya Taíno legends",
+    image: "https://images.unsplash.com/photo-1511497584788-876761c119ef?w=600&auto=format&fit=crop&q=80",
+    href: "/explore?tradition=Dominican%20Republic",
+    badge: "Caribbean Legends",
+    icon: <Sparkles className="w-3.5 h-3.5 text-emerald-300" />,
+  },
 ];
 
 export function CategoryCarousel() {

@@ -8,11 +8,8 @@ import {
   X,
   BookOpen,
   Heart,
-  Moon,
-  Sun,
   HelpCircle,
   BookMarked,
-  Mail,
   Settings,
   Globe,
   ChevronRight,
@@ -22,12 +19,10 @@ import { Button } from "@/components/ui/button";
 import { SearchBar } from "@/components/shared/search-bar";
 import { marketingNav } from "@/config/nav";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/hooks/useTheme";
 
 export function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = React.useState(false);
-  const { isDark, toggle: toggleDark } = useTheme();
   const menuRef = React.useRef<HTMLDivElement>(null);
 
   // Close when clicking outside
@@ -45,22 +40,17 @@ export function Navbar() {
     {
       icon: HelpCircle,
       label: "Help Center",
-      href: "/support",
+      href: "/help",
     },
     {
       icon: BookMarked,
       label: "Community Guidelines",
       href: "/community",
     },
-    {
-      icon: Mail,
-      label: "Contact Us",
-      href: "/support",
-    },
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-stone-200/80 dark:border-stone-700/80 bg-white/95 dark:bg-stone-900/95 backdrop-blur-md transition-colors shadow-sm">
+    <header className="sticky top-0 z-40 w-full border-b border-stone-200/80 bg-white/95 backdrop-blur-md transition-colors shadow-sm">
       <div className="flex h-20 w-full items-center justify-between px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
 
         {/* Brand Logo */}
@@ -69,7 +59,7 @@ export function Navbar() {
             <BookOpen className="h-6 w-6 stroke-[2.2]" />
           </div>
           <div className="flex flex-col">
-            <span className="font-sans text-xl font-extrabold tracking-tight text-stone-900 dark:text-stone-100 group-hover:text-[#B8860B] transition-colors leading-none">
+            <span className="font-sans text-xl font-extrabold tracking-tight text-stone-900 group-hover:text-[#B8860B] transition-colors leading-none">
               INKOMA
             </span>
             <span className="text-[11px] tracking-wider text-[#B8860B] font-medium mt-0.5">
@@ -93,7 +83,7 @@ export function Navbar() {
                   "px-3.5 py-2 rounded-xl text-sm font-semibold transition-all",
                   isActive
                     ? "text-[#B8860B] bg-[#D4AF37]/15"
-                    : "text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800"
+                    : "text-stone-700 hover:text-stone-900 hover:bg-stone-100"
                 )}
               >
                 {item.title}
@@ -128,8 +118,8 @@ export function Navbar() {
               className={cn(
                 "flex items-center justify-center w-10 h-10 rounded-xl transition-all",
                 menuOpen
-                  ? "bg-stone-900 dark:bg-stone-700 text-white"
-                  : "text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800"
+                  ? "bg-stone-900 text-white"
+                  : "text-stone-700 hover:bg-stone-100"
               )}
             >
               {menuOpen ? (
@@ -144,48 +134,18 @@ export function Navbar() {
               <div
                 className={cn(
                   "absolute right-0 top-[calc(100%+10px)] w-64 rounded-2xl overflow-hidden",
-                  "bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 shadow-2xl",
+                  "bg-white border border-stone-200 shadow-2xl",
                   "animate-in fade-in slide-in-from-top-2 duration-150"
                 )}
               >
-                {/* Dark Mode row */}
-                <div className="flex items-center justify-between px-4 py-3.5 border-b border-stone-200 dark:border-stone-700">
-                  <div className="flex items-center gap-3">
-                    {isDark
-                      ? <Sun className="text-[#D4AF37]" style={{ width: 18, height: 18 }} />
-                      : <Moon className="text-stone-500" style={{ width: 18, height: 18 }} />
-                    }
-                    <span className="text-sm font-semibold text-stone-800 dark:text-stone-200">
-                      {isDark ? "Light Mode" : "Dark Mode"}
-                    </span>
-                  </div>
-                  {/* Toggle pill */}
-                  <button
-                    role="switch"
-                    aria-checked={isDark}
-                    onClick={toggleDark}
-                    className={cn(
-                      "relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200",
-                      isDark ? "bg-[#D4AF37]" : "bg-stone-300"
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition-transform duration-200",
-                        isDark ? "translate-x-5" : "translate-x-0"
-                      )}
-                    />
-                  </button>
-                </div>
-
-                {/* Middle links */}
+                {/* Links */}
                 <div className="py-1.5">
                   {menuItems.map(({ icon: Icon, label, href }) => (
                     <Link
                       key={label}
                       href={href}
                       onClick={() => setMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
+                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100 hover:text-stone-900 transition-colors"
                     >
                       <Icon className="w-4 h-4 text-stone-400 shrink-0" />
                       {label}
@@ -194,21 +154,21 @@ export function Navbar() {
                 </div>
 
                 {/* Divider */}
-                <div className="border-t border-stone-200 dark:border-stone-700" />
+                <div className="border-t border-stone-200" />
 
                 {/* Settings */}
                 <div className="py-1.5">
                   <Link
                     href="/settings"
                     onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
+                    className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100 hover:text-stone-900 transition-colors"
                   >
                     <Settings className="w-4 h-4 text-stone-400 shrink-0" />
                     Settings
                   </Link>
 
                   {/* Language */}
-                  <button className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-900 dark:hover:text-stone-100 transition-colors">
+                  <button className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-stone-700 hover:bg-stone-100 hover:text-stone-900 transition-colors">
                     <Globe className="w-4 h-4 text-stone-400 shrink-0" />
                     <span className="flex-1 text-left">Language</span>
                     <span className="text-[#D4AF37] text-xs font-semibold flex items-center gap-0.5">
@@ -219,7 +179,7 @@ export function Navbar() {
                 </div>
 
                 {/* Divider */}
-                <div className="border-t border-stone-200 dark:border-stone-700" />
+                <div className="border-t border-stone-200" />
 
                 {/* Sign Up CTA */}
                 <div className="p-3">

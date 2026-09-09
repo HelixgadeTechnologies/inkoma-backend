@@ -350,6 +350,138 @@ The clay pot smashed against the river stones with a sound like thunder. A great
     isInteractive: true,
     hasAudioNarration: true,
   },
+  {
+    id: "la-ciguapa-secrets-of-cordillera",
+    slug: "la-ciguapa-secrets-of-cordillera",
+    aliases: ["dr-1", "hr-6", "ciguapa-1", "la-ciguapa"],
+    title: "La Ciguapa: Secrets of the Cordillera",
+    subtitle: "The Wild Maiden with Feet Pointing Backward",
+    synopsis: "Deep in the mist-shrouded pine forests of Jarabacoa, young Mateo encounters the legendary Ciguapa—a creature of raw nature and ancient Taíno spirits whose backward footprints lead seekers either to hidden wisdom or into the heart of the mountain.",
+    coverImage: "https://images.unsplash.com/photo-1511497584788-876761c119ef?q=80&w=800&auto=format&fit=crop",
+    tradition: "Dominican Republic",
+    mainGenre: "Caribbean Folklore",
+    subGenres: ["Mountain Legends", "Taíno Heritage", "Mythology"],
+    tags: ["DominicanRepublic", "Ciguapa", "Cordillera", "Taino", "Jarabacoa", "Quisqueya"],
+    difficulty: "Intermediate",
+    status: "completed",
+    authorId: "user-mateo-dr",
+    authorName: "Mateo Rosario",
+    authorPenName: "Mateo of Quisqueya",
+    authorAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop",
+    authorBio: "Dominican folklorist and preserver of Taíno & Afro-Caribbean oral mythology across the Cordillera Central.",
+    publishedAt: "Feb 28, 2026",
+    updatedAt: "Mar 04, 2026",
+    estimatedReadTime: 14,
+    totalChapters: 2,
+    totalBranches: 10,
+    readsCount: 24150,
+    likesCount: 2190,
+    bookmarksCount: 830,
+    favoritesCount: 960,
+    commentsCount: 115,
+    isFeatured: true,
+    isRecentlyUpdated: true,
+    isNewRelease: true,
+    isInteractive: true,
+    hasAudioNarration: true,
+    chapters: [
+      {
+        id: "dr-chap-1",
+        number: 1,
+        title: "The Footprints in the Pine Needles",
+        summary: "Mateo follows mysterious tracks pointing up mountain slopes, only to realize the traveler was moving downward.",
+        readTimeMinutes: 5,
+        status: "published",
+        likesCount: 740,
+        commentsCount: 38,
+        updatedAt: "2026-02-28",
+        rootNodeId: "dr-node-1",
+        nodes: {
+          "dr-node-1": {
+            id: "dr-node-1",
+            title: "The Mist of Jarabacoa",
+            content: `The twilight air of Jarabacoa smelled of sweet pine resin and damp river clay. Mateo tightened the straps of his leather satchel, gazing down at the forest floor.
+
+Distinct footprints indented the wet earth—toes pointing firmly up toward the highest peaks of the Cordillera Central. Yet the broken twigs and brushed ferns told a contradictory tale: whatever made these tracks was walking backwards, descending into the dark valley.
+
+"La Ciguapa," whispered Mateo's uncle in memory. "She carries the wild memory of Quisqueya. Follow her toes and you wander into trap; follow her direction and you find her gaze."`,
+            choices: [
+              {
+                id: "choice-dr-1a",
+                label: "Follow the physical direction of movement (descend toward the river)",
+                targetNodeId: "dr-node-2a",
+                moralWeight: 2,
+                consequenceHint: "Respects natural logic and heeds ancient hunter wisdom...",
+              },
+              {
+                id: "choice-dr-1b",
+                label: "Follow the direction the toes are pointing (ascend into the high pines)",
+                targetNodeId: "dr-node-2b",
+                moralWeight: -1,
+                consequenceHint: "Chases the optical illusion up the steep crags...",
+              },
+            ],
+          },
+          "dr-node-2a": {
+            id: "dr-node-2a",
+            title: "The Whispering Falls of Yaque del Norte",
+            content: `Following the physical path of bent ferns, Mateo reached the turquoise basin of the river. Crouched on a moss-covered boulder was a breathtaking figure—long, blue-black hair draping down past her ankles like a silk cloak, skin shimmering with river mist, and eyes wild yet ancient.
+
+She turned her head, her gaze piercing Mateo's soul without speaking a single spoken word. In her hands, she held a glowing Taíno petroglyph stone.`,
+            choices: [
+              {
+                id: "choice-dr-2a1",
+                label: "Bow your head in sign of peace and offer a fresh guayaba fruit",
+                targetNodeId: "dr-node-3a",
+                moralWeight: 3,
+                consequenceHint: "Demonstrates reverence for island spirits and nature...",
+              },
+              {
+                id: "choice-dr-2a2",
+                label: "Call out her name softly and ask for the mountain secret",
+                targetNodeId: "dr-node-3b",
+                moralWeight: 1,
+                consequenceHint: "Direct approach risks startling the shy guardian...",
+              },
+            ],
+          },
+          "dr-node-2b": {
+            id: "dr-node-2b",
+            title: "Lost in the High Pine Canopies",
+            content: `Climbing higher toward the cold peaks, Mateo found himself wrapped in thick mountain fog. The tracks disappeared into razor-sharp rocks. A soft, blue-black shadow darted high above the pine branches, laughing like a night bird.`,
+            choices: [
+              {
+                id: "choice-dr-2b1",
+                label: "Turn back toward the river stream sound",
+                targetNodeId: "dr-node-2a",
+                moralWeight: 1,
+              },
+            ],
+          },
+          "dr-node-3a": {
+            id: "dr-node-3a",
+            title: "The Gift of Quisqueya",
+            isEnding: true,
+            endingType: "triumph",
+            moralLesson: "True understanding of nature requires looking beyond surface appearances and showing respect to the guardians of the land.",
+            content: `La Ciguapa accepted the fruit with a gentle nod. She touched Mateo's forehead with the warm petroglyph stone, filling his mind with forgotten melodies of the Taíno caciques and the secret medicinal roots of the mountain.
+
+She leapt effortlessly across the foaming waters, vanishing into the ferns—leaving Mateo with the wisdom to protect the Cordillera for generations to come.`,
+            choices: [],
+          },
+          "dr-node-3b": {
+            id: "dr-node-3b",
+            title: "The Phantom of the Falls",
+            isEnding: true,
+            endingType: "mystery",
+            moralLesson: "Some mysteries of the forest are meant to be observed with awe rather than captured with curiosity.",
+            content: `At the sound of her name, La Ciguapa dove silently into the river basin without a splash. The waters rippled with golden light, leaving behind only a single glossy black feather and the scent of wild orchids.`,
+            choices: [],
+          },
+        },
+      },
+    ],
+  },
 ];
 
 export const MOCK_CURRENT_USER: UserProfile = {
