@@ -195,7 +195,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/community" className="hover:text-[#B8860B] transition-colors">
-                  Community Guidelines
+                  Community Discussion
                 </Link>
               </li>
               <li>

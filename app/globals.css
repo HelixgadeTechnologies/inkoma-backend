@@ -112,3 +112,12 @@
 .folklore-pattern {
   background-color: #FAF8F5;
 }
+
+/* Hide scrollbar utility for smooth horizontal carousels */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

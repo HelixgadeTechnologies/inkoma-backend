@@ -75,10 +75,10 @@ export function StoryShelf({ title, subtitle, icon, stories, viewAllHref }: Stor
         </div>
       </div>
 
-      {/* Story Cards Carousel - Side-by-side on mobile */}
+      {/* Story Cards Carousel - Scrollable horizontally across all screens */}
       <div
         ref={scrollRef}
-        className="flex items-stretch overflow-x-auto snap-x snap-mandatory scroll-smooth gap-4 sm:gap-5 pb-4 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-x-visible sm:pb-0"
+        className="flex items-stretch overflow-x-auto snap-x snap-mandatory scroll-smooth gap-4 sm:gap-5 pb-4 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none"
       >
         {stories.map((story) => {
           const bookmarked = isBookmarked(story.id);
@@ -87,7 +87,7 @@ export function StoryShelf({ title, subtitle, icon, stories, viewAllHref }: Stor
             <Link
               key={story.id}
               href={`/story/${story.id}`}
-              className="group relative flex flex-col bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 w-[80vw] max-w-[285px] sm:max-w-none sm:w-auto shrink-0 sm:shrink snap-start min-w-0"
+              className="group relative flex flex-col bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 w-[75vw] max-w-[285px] sm:w-[285px] shrink-0 snap-start min-w-0"
             >
               {/* Cover Image */}
               <div className="relative h-48 w-full overflow-hidden bg-stone-100 block">

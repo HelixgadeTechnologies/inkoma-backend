@@ -9,7 +9,7 @@ import {
   BookOpen,
   Heart,
   HelpCircle,
-  BookMarked,
+  MessageSquare,
   Settings,
   Globe,
   ChevronRight,
@@ -43,8 +43,8 @@ export function Navbar() {
       href: "/help",
     },
     {
-      icon: BookMarked,
-      label: "Community Guidelines",
+      icon: MessageSquare,
+      label: "Community Discussion",
       href: "/community",
     },
   ];

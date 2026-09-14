@@ -185,8 +185,9 @@ export function CategoryCarousel() {
                 alt={cat.name}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
+                unoptimized
               />
-              <div className="absolute inset-0 bg-stone-950/50" />
+              <div className="absolute inset-0 bg-stone-950/40" />
 
               <div className="absolute top-2.5 left-2.5">
                 <Badge className="bg-stone-900/80 text-white backdrop-blur-md text-[10px] font-semibold flex items-center gap-1 border-0">
@@ -202,15 +203,15 @@ export function CategoryCarousel() {
 
             {/* Details */}
             <div className="space-y-1">
-              <h3 className="text-sm font-bold text-stone-100 group-hover:text-[#D4AF37] transition-colors line-clamp-1">
+              <h3 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
                 {cat.name}
               </h3>
-              <p className="text-xs text-stone-400 line-clamp-2 leading-relaxed">
+              <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
                 {cat.description}
               </p>
             </div>
 
-            <div className="pt-3 mt-2 border-t border-stone-800 flex items-center justify-between text-[11px] font-bold text-[#D4AF37] group-hover:underline">
+            <div className="pt-3 mt-2 border-t border-stone-100 flex items-center justify-between text-[11px] font-bold text-[#B8860B] group-hover:underline">
               <span>Explore Tradition</span>
               <span>→</span>
             </div>

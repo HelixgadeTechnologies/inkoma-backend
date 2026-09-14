@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useStory } from "@/hooks/useStory";
@@ -13,6 +13,7 @@ import {
   Award,
   Bookmark,
   Eye,
+  ChevronLeft,
   ChevronRight,
   RotateCcw,
   BookOpen,
@@ -72,7 +73,7 @@ const GENRE_PILLS = [
   { id: "more", label: "More", icon: "➕" },
 ];
 
-// Trending Stories Data (exact match to image)
+// Trending Stories Data
 const TRENDING_STORIES = [
   {
     id: "tr-1",
@@ -129,9 +130,42 @@ const TRENDING_STORIES = [
     reads: "17.3K",
     rating: "4.5",
   },
+  {
+    id: "tr-6",
+    rank: 6,
+    title: "The Golden Stool of Ashanti",
+    author: "Akwasi Mensah",
+    genre: "HISTORICAL",
+    genreBg: "bg-amber-100 text-amber-900 border-amber-300",
+    cover: "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=600&auto=format&fit=crop",
+    reads: "16.1K",
+    rating: "4.8",
+  },
+  {
+    id: "tr-7",
+    rank: 7,
+    title: "Song of the Wind Singer",
+    author: "Folake Adeyemi",
+    genre: "MYSTERY",
+    genreBg: "bg-teal-100 text-teal-800 border-teal-300",
+    cover: "https://images.unsplash.com/photo-1511497584788-876761c119ef?q=80&w=600&auto=format&fit=crop",
+    reads: "14.8K",
+    rating: "4.7",
+  },
+  {
+    id: "tr-8",
+    rank: 8,
+    title: "River of the Moons",
+    author: "Tendai Moyo",
+    genre: "ADVENTURE",
+    genreBg: "bg-cyan-100 text-cyan-800 border-cyan-300",
+    cover: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop",
+    reads: "13.4K",
+    rating: "4.6",
+  },
 ];
 
-// Highest Rated Stories Data (exact match to image)
+// Highest Rated Stories Data
 const HIGHEST_RATED_STORIES = [
   {
     id: "hr-1",
@@ -139,7 +173,7 @@ const HIGHEST_RATED_STORIES = [
     author: "Nia Okonkwo",
     genre: "ROMANCE",
     cover: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=400&auto=format&fit=crop",
-    rating: "4.9",
+    rating: "4.95",
     reads: "25.4K",
   },
   {
@@ -148,7 +182,7 @@ const HIGHEST_RATED_STORIES = [
     author: "Zanele Dlamini",
     genre: "DRAMA",
     cover: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop",
-    rating: "4.8",
+    rating: "4.90",
     reads: "12.4K",
   },
   {
@@ -157,7 +191,7 @@ const HIGHEST_RATED_STORIES = [
     author: "Lebo Mokoena",
     genre: "PARANORMAL",
     cover: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400&auto=format&fit=crop",
-    rating: "4.8",
+    rating: "4.88",
     reads: "11.7K",
   },
   {
@@ -166,12 +200,48 @@ const HIGHEST_RATED_STORIES = [
     author: "E. Azuka",
     genre: "FANTASY",
     cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=400&auto=format&fit=crop",
-    rating: "4.7",
+    rating: "4.85",
     reads: "9.1K",
+  },
+  {
+    id: "hr-5",
+    title: "The Shadow King's Vow",
+    author: "Amara Diallo",
+    genre: "FANTASY",
+    cover: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=400&auto=format&fit=crop",
+    rating: "4.92",
+    reads: "34.2K",
+  },
+  {
+    id: "hr-6",
+    title: "Queen Amina: Warrior of Zaria",
+    author: "Khadija Bello",
+    genre: "HISTORICAL",
+    cover: "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=400&auto=format&fit=crop",
+    rating: "4.89",
+    reads: "28.6K",
+  },
+  {
+    id: "hr-7",
+    title: "Mami Wata: Water Spirit",
+    author: "Folake Adeyemi",
+    genre: "MYTHOLOGY",
+    cover: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=400&auto=format&fit=crop",
+    rating: "4.87",
+    reads: "19.3K",
+  },
+  {
+    id: "hr-8",
+    title: "Sundiata: Lion King of Mali",
+    author: "Mariama Ba",
+    genre: "EPIC",
+    cover: "https://images.unsplash.com/photo-1509099836639-18ba1795216d?q=80&w=400&auto=format&fit=crop",
+    rating: "4.94",
+    reads: "42.1K",
   },
 ];
 
-// Top Authors Data (exact match to image)
+// Top Authors Data
 const TOP_AUTHORS = [
   {
     id: "author-1",
@@ -208,6 +278,27 @@ const TOP_AUTHORS = [
     reads: "14.3K Reads",
     avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=300&auto=format&fit=crop",
   },
+  {
+    id: "author-6",
+    rank: 6,
+    name: "Akwasi Mensah",
+    reads: "13.8K Reads",
+    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=300&auto=format&fit=crop",
+  },
+  {
+    id: "author-7",
+    rank: 7,
+    name: "Khadija Bello",
+    reads: "12.5K Reads",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop",
+  },
+  {
+    id: "author-8",
+    rank: 8,
+    name: "Amara Diallo",
+    reads: "11.9K Reads",
+    avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=300&auto=format&fit=crop",
+  },
 ];
 
 export default function ExplorePage() {
@@ -215,6 +306,21 @@ export default function ExplorePage() {
   const { isBookmarked, toggleBookmark } = useLibrary();
   const [selectedPill, setSelectedPill] = useState("all");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+
+  const trendingScrollRef = useRef<HTMLDivElement>(null);
+  const highestRatedScrollRef = useRef<HTMLDivElement>(null);
+  const topAuthorsScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollRow = (
+    ref: React.RefObject<HTMLDivElement | null>,
+    direction: "left" | "right",
+    amount = 300
+  ) => {
+    if (ref.current) {
+      const scrollAmount = direction === "left" ? -amount : amount;
+      ref.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-20 text-stone-900 font-sans">
@@ -320,7 +426,7 @@ export default function ExplorePage() {
         </div>
       </div>
 
-      {/* 5. SECTION 1: TRENDING STORIES (Exact match to image) */}
+      {/* 5. SECTION 1: TRENDING STORIES */}
       <section className="space-y-4 pt-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -329,22 +435,45 @@ export default function ExplorePage() {
               Trending Stories
             </h2>
           </div>
-          <Link
-            href="/explore?sort=trending"
-            className="text-xs font-bold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-1 transition-colors"
-          >
-            <span>View all</span>
-            <ChevronRight className="w-4 h-4" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => scrollRow(trendingScrollRef, "left", 320)}
+                className="p-1.5 rounded-xl border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 hover:border-[#D4AF37]/60 transition-all shadow-xs active:scale-95"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollRow(trendingScrollRef, "right", 320)}
+                className="p-1.5 rounded-xl border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 hover:border-[#D4AF37]/60 transition-all shadow-xs active:scale-95"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+            <Link
+              href="/explore?sort=trending"
+              className="text-xs font-bold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-1 transition-colors pl-1"
+            >
+              <span>View all</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
 
         {/* Horizontal Carousel of Portrait Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 overflow-x-auto pb-2 scrollbar-none">
+        <div
+          ref={trendingScrollRef}
+          className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-3 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none"
+        >
           {TRENDING_STORIES.map((story) => {
             const bookmarked = isBookmarked(story.id);
 
             return (
-              <Link key={story.id} href={`/story/${story.id}`} className="group block">
+              <Link key={story.id} href={`/story/${story.id}`} className="group block shrink-0 snap-start w-[180px] sm:w-[210px]">
                 <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between h-full p-3 space-y-2.5 relative">
                   {/* Portrait Cover Image */}
                   <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-stone-100 border border-stone-200">
@@ -355,7 +484,7 @@ export default function ExplorePage() {
                       className="object-cover group-hover:scale-105 transition-transform duration-700"
                     />
 
-                    {/* Rank Badge #1..5 */}
+                    {/* Rank Badge #1..8 */}
                     <div className="absolute top-2 left-2 w-6 h-6 rounded-full bg-[#D4AF37] text-stone-950 text-xs font-black flex items-center justify-center shadow-md">
                       {story.rank}
                     </div>
@@ -411,7 +540,7 @@ export default function ExplorePage() {
         </div>
       </section>
 
-      {/* 6. SECTION 2: HIGHEST RATED THIS WEEK (Exact match to image) */}
+      {/* 6. SECTION 2: HIGHEST RATED THIS WEEK */}
       <section className="space-y-4 pt-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -420,26 +549,49 @@ export default function ExplorePage() {
               Highest Rated This Week
             </h2>
           </div>
-          <Link
-            href="/explore?sort=highest_rated"
-            className="text-xs font-bold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-1 transition-colors"
-          >
-            <span>View all</span>
-            <ChevronRight className="w-4 h-4" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => scrollRow(highestRatedScrollRef, "left", 320)}
+                className="p-1.5 rounded-xl border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 hover:border-[#D4AF37]/60 transition-all shadow-xs active:scale-95"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollRow(highestRatedScrollRef, "right", 320)}
+                className="p-1.5 rounded-xl border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 hover:border-[#D4AF37]/60 transition-all shadow-xs active:scale-95"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+            <Link
+              href="/explore?sort=highest_rated"
+              className="text-xs font-bold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-1 transition-colors pl-1"
+            >
+              <span>View all</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
 
-        {/* Vertical List of Horizontal Story Cards */}
-        <div className="space-y-3">
+        {/* Horizontal Carousel of Highest Rated Story Cards */}
+        <div
+          ref={highestRatedScrollRef}
+          className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-3 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none"
+        >
           {HIGHEST_RATED_STORIES.map((story) => {
             const bookmarked = isBookmarked(story.id);
 
             return (
-              <Link key={story.id} href={`/story/${story.id}`} className="group block">
-                <div className="bg-white border border-stone-200 rounded-2xl p-3 flex items-center justify-between hover:border-[#D4AF37]/60 transition-all shadow-xs">
-                  <div className="flex items-center space-x-3.5 min-w-0">
-                    {/* Left Square Thumbnail */}
-                    <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden bg-stone-100 border border-stone-200 shrink-0">
+              <Link key={story.id} href={`/story/${story.id}`} className="group block shrink-0 snap-start w-[270px] sm:w-[310px]">
+                <div className="bg-white border border-stone-200 rounded-2xl p-3.5 flex flex-col justify-between h-full hover:border-[#D4AF37]/60 transition-all shadow-xs space-y-3">
+                  <div className="flex items-center space-x-3 min-w-0">
+                    {/* Square Thumbnail */}
+                    <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-stone-100 border border-stone-200 shrink-0">
                       <SafeImage
                         src={story.cover}
                         alt={story.title}
@@ -448,9 +600,9 @@ export default function ExplorePage() {
                       />
                     </div>
 
-                    {/* Middle Details */}
-                    <div className="space-y-1 min-w-0">
-                      <h4 className="text-sm sm:text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate font-serif">
+                    {/* Details */}
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate font-serif">
                         {story.title}
                       </h4>
                       <p className="text-xs text-stone-500 font-medium truncate">{story.author}</p>
@@ -460,14 +612,14 @@ export default function ExplorePage() {
                     </div>
                   </div>
 
-                  {/* Right Side Rating, Reads & Bookmark */}
-                  <div className="flex items-center space-x-4 shrink-0">
-                    <div className="text-right space-y-0.5">
-                      <div className="flex items-center justify-end gap-1 text-xs font-black text-[#B8860B]">
+                  {/* Bottom Rating, Reads & Bookmark */}
+                  <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs">
+                    <div className="flex items-center space-x-3">
+                      <div className="flex items-center gap-1 font-black text-[#B8860B]">
                         <Star className="w-3.5 h-3.5 fill-[#B8860B] text-[#B8860B]" />
                         <span>{story.rating}</span>
                       </div>
-                      <div className="flex items-center justify-end gap-1 text-[11px] text-stone-500 font-medium">
+                      <div className="flex items-center gap-1 text-[11px] text-stone-500 font-medium">
                         <Eye className="w-3 h-3 text-stone-400" />
                         <span>{story.reads}</span>
                       </div>
@@ -479,7 +631,7 @@ export default function ExplorePage() {
                         e.stopPropagation();
                         toggleBookmark(story.id);
                       }}
-                      className={`p-2 rounded-xl transition-colors ${
+                      className={`p-1.5 rounded-xl transition-colors ${
                         bookmarked
                           ? "text-[#B8860B] bg-[#D4AF37]/15"
                           : "text-stone-400 hover:text-stone-800 hover:bg-stone-100"
@@ -496,7 +648,7 @@ export default function ExplorePage() {
         </div>
       </section>
 
-      {/* 7. SECTION 3: TOP AUTHORS THIS WEEK (Exact match to image) */}
+      {/* 7. SECTION 3: TOP AUTHORS THIS WEEK */}
       <section className="space-y-4 pt-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -505,20 +657,43 @@ export default function ExplorePage() {
               Top Authors This Week
             </h2>
           </div>
-          <Link
-            href="/explore?sort=authors"
-            className="text-xs font-bold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-1 transition-colors"
-          >
-            <span>View all</span>
-            <ChevronRight className="w-4 h-4" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => scrollRow(topAuthorsScrollRef, "left", 260)}
+                className="p-1.5 rounded-xl border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 hover:border-[#D4AF37]/60 transition-all shadow-xs active:scale-95"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollRow(topAuthorsScrollRef, "right", 260)}
+                className="p-1.5 rounded-xl border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 hover:border-[#D4AF37]/60 transition-all shadow-xs active:scale-95"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+            <Link
+              href="/explore?sort=authors"
+              className="text-xs font-bold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-1 transition-colors pl-1"
+            >
+              <span>View all</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
 
         {/* Horizontal Row of Circular Profile Cards */}
-        <div className="grid grid-cols-3 sm:grid-cols-5 gap-4 overflow-x-auto pb-2 scrollbar-none">
+        <div
+          ref={topAuthorsScrollRef}
+          className="flex items-stretch gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-3 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none"
+        >
           {TOP_AUTHORS.map((author) => (
-            <Link key={author.id} href={`/profile/${author.name.toLowerCase().replace(/\s+/g, '_')}`} className="group block text-center">
-              <div className="flex flex-col items-center space-y-2">
+            <Link key={author.id} href={`/profile/${author.name.toLowerCase().replace(/\s+/g, '_')}`} className="group block text-center shrink-0 snap-start w-[105px] sm:w-[125px]">
+              <div className="flex flex-col items-center space-y-2 p-1">
                 {/* Circular Avatar Container with Gold Ring & Number Badge */}
                 <div className="relative">
                   <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-[#D4AF37] p-1 bg-white shadow-sm overflow-hidden relative group-hover:scale-105 transition-transform duration-300">
@@ -529,14 +704,14 @@ export default function ExplorePage() {
                       className="object-cover rounded-full"
                     />
                   </div>
-                  {/* Rank Badge #1..5 */}
+                  {/* Rank Badge #1..8 */}
                   <div className="absolute top-0 left-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#D4AF37] text-stone-950 text-xs font-black flex items-center justify-center shadow-md">
                     {author.rank}
                   </div>
                 </div>
 
-                <div className="space-y-0.5">
-                  <h4 className="text-xs sm:text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate max-w-[100px] sm:max-w-[120px] mx-auto font-serif">
+                <div className="space-y-0.5 w-full">
+                  <h4 className="text-xs sm:text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate w-full font-serif">
                     {author.name}
                   </h4>
                   <p className="text-[10px] sm:text-xs text-stone-500 font-medium truncate">{author.reads}</p>
