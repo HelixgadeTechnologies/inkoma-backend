@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Story } from "@/types";
@@ -57,7 +57,7 @@ const STATUS_CONFIG: Record<
       "bg-[#D4AF37]/15 text-[#B8860B] border border-[#D4AF37]/40 font-bold",
   },
   completed: {
-    label: "PUBLISHED",
+    label: "COMPLETED",
     className:
       "bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold",
   },
@@ -84,7 +84,22 @@ export default function StudioPage() {
   const [overviewPeriod, setOverviewPeriod] = useState("This Month");
   const [showPeriodMenu, setShowPeriodMenu] = useState(false);
 
-  const stories = MOCK_STORIES.slice(0, 3); // show first 3 as "my stories"
+  const [stories, setStories] = useState<Story[]>(MOCK_STORIES.slice(0, 3));
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("inkoma_custom_stories");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setStories([...parsed, ...MOCK_STORIES.slice(0, 3)]);
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
   const user = MOCK_CURRENT_USER;
 
   const statsStories = user.writingStats?.storiesPublished ?? 3;

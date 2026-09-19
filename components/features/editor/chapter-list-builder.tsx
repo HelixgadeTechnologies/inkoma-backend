@@ -18,6 +18,25 @@ export function calculateReadTime(content?: string): number {
   return Math.max(1, Math.ceil(words / 200));
 }
 
+function renumberChapters(list: StoryChapter[]): StoryChapter[] {
+  return list.map((c, i) => {
+    const num = i + 1;
+    let updatedTitle = c.title;
+    if (!c.title || /^Chapter\s+\d+$/i.test(c.title.trim())) {
+      updatedTitle = `Chapter ${num}`;
+    } else if (/^Chapter\s+\d+:\s*(.*)$/i.test(c.title.trim())) {
+      const match = c.title.trim().match(/^Chapter\s+\d+:\s*(.*)$/i);
+      updatedTitle = `Chapter ${num}: ${match ? match[1] : ""}`;
+    }
+    return {
+      ...c,
+      number: num,
+      chapterNumber: num,
+      title: updatedTitle,
+    };
+  });
+}
+
 export function ChapterListBuilder({
   chapters,
   onChange,
@@ -28,18 +47,18 @@ export function ChapterListBuilder({
   const [editingSummary, setEditingSummary] = React.useState("");
   const [editingAudioUrl, setEditingAudioUrl] = React.useState("");
 
-  const handleAddChapter = () => {
-    const nextChapterNum = chapters.length + 1;
-    const defaultContent = "High priest Okomfo Anokye gathered the clans beneath the silk-cotton tree...";
+  const handleAddChapter = (insertAfterIndex?: number) => {
+    const insertPos = insertAfterIndex !== undefined ? insertAfterIndex + 1 : chapters.length;
+    const nextChapterNum = insertPos + 1;
     const newChap: StoryChapter = {
       id: `chapter-${Date.now()}`,
       storyId: "draft-story",
       number: nextChapterNum,
       chapterNumber: nextChapterNum,
-      title: `Chapter ${nextChapterNum}: The Awakening of the Spirits`,
-      synopsis: "The journey continues as ancient omens reveal hidden paths ahead.",
-      content: defaultContent,
-      estimatedReadTime: calculateReadTime(defaultContent),
+      title: `Chapter ${nextChapterNum}`,
+      synopsis: "",
+      content: "",
+      estimatedReadTime: 1,
       publishedAt: new Date().toISOString().split("T")[0],
       hasAudioNarration: false,
       readsCount: 0,
@@ -47,10 +66,14 @@ export function ChapterListBuilder({
       commentsCount: 0,
     };
 
-    const updated = [...chapters, newChap];
-    onChange(updated);
+    const nextList = [...chapters];
+    nextList.splice(insertPos, 0, newChap);
+    const renumbered = renumberChapters(nextList);
+
+    onChange(renumbered);
     if (onSelectChapterToEdit) {
-      onSelectChapterToEdit(newChap);
+      const selected = renumbered[insertPos] || newChap;
+      onSelectChapterToEdit(selected);
     }
   };
 
@@ -81,10 +104,8 @@ export function ChapterListBuilder({
 
   const handleDeleteChapter = (chapId: string) => {
     if (chapters.length <= 1) return; // keep at least 1
-    const filtered = chapters
-      .filter((c) => c.id !== chapId)
-      .map((c, idx) => ({ ...c, chapterNumber: idx + 1, number: idx + 1 }));
-    onChange(filtered);
+    const filtered = chapters.filter((c) => c.id !== chapId);
+    onChange(renumberChapters(filtered));
   };
 
   const moveChapter = (index: number, direction: "up" | "down") => {
@@ -96,8 +117,7 @@ export function ChapterListBuilder({
     list[index] = list[targetIdx];
     list[targetIdx] = temp;
 
-    const renumbered = list.map((c, idx) => ({ ...c, chapterNumber: idx + 1, number: idx + 1 }));
-    onChange(renumbered);
+    onChange(renumberChapters(list));
   };
 
   return (
@@ -114,11 +134,11 @@ export function ChapterListBuilder({
 
         <Button
           type="button"
-          onClick={handleAddChapter}
+          onClick={() => handleAddChapter()}
           className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold rounded-xl gap-1.5 px-4"
         >
           <Plus className="w-3.5 h-3.5" />
-          Add Book Chapter
+          Add Chapter
         </Button>
       </div>
 
@@ -269,15 +289,15 @@ export function ChapterListBuilder({
                 )}
               </div>
 
-              {/* "+ Add Next Chapter" Button under EACH chapter */}
+              {/* "+ Add Chapter" Button under EACH chapter */}
               <div className="flex justify-center pt-1 pb-2">
                 <button
                   type="button"
-                  onClick={handleAddChapter}
+                  onClick={() => handleAddChapter(idx)}
                   className="flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-xl border border-dashed border-[#D4AF37]/30 bg-[#D4AF37]/5 hover:bg-[#D4AF37]/10 text-[#D4AF37] text-xs font-bold transition-all shadow-2xs"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  <span>Add Chapter {idx + 2} to Book</span>
+                  <span>Add Chapter</span>
                 </button>
               </div>
             </div>

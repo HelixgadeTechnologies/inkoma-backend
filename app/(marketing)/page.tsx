@@ -25,7 +25,6 @@ import {
   Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CategoryCarousel } from "@/components/features/discovery/category-carousel";
 
 // SafeImage component to guarantee NO broken image displays
 function SafeImage({
@@ -320,8 +319,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FOLKLORE CATEGORIES & TRADITIONS HORIZONTAL CAROUSEL */}
-      <CategoryCarousel />
 
       {/* ========================================================================= */}
       {/* 1. FEATURED STORIES */}

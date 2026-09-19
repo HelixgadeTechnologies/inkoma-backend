@@ -19,14 +19,17 @@ import {
   ArrowRight,
   UploadCloud,
   Search,
+  CheckCircle2,
+  Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select } from "@/components/ui/select";
 import { ChapterListBuilder, calculateReadTime } from "@/components/features/editor/chapter-list-builder";
-import { StoryChapter, StoryStatus } from "@/types";
+import { Story, StoryChapter, StoryStatus } from "@/types";
 import { MAIN_GENRES, SUB_GENRES, TRIGGER_WARNINGS } from "@/config/genres";
+import { MOCK_CURRENT_USER } from "@/config/mock-data";
 
 // SafeImage component to guarantee NO broken image displays
 function SafeImage({
@@ -142,6 +145,39 @@ const COVER_TEMPLATES = [
   },
 ];
 
+// Story Languages: Top 5 in Nigeria, Top 5 in Africa, Top 5 in the World
+const STORY_LANGUAGES = [
+  // Top 5 Nigeria & World
+  { value: "English", label: "English" },
+  { value: "Hausa", label: "Hausa" },
+  { value: "Yoruba", label: "Yoruba" },
+  { value: "Igbo", label: "Igbo" },
+  { value: "Nigerian Pidgin", label: "Nigerian Pidgin" },
+
+  // Top 5 Africa
+  { value: "Swahili", label: "Swahili (Kiswahili)" },
+  { value: "Arabic", label: "Arabic" },
+  { value: "French", label: "French" },
+  { value: "Zulu", label: "Zulu" },
+  { value: "Amharic", label: "Amharic" },
+
+  // Top 5 World
+  { value: "Mandarin Chinese", label: "Mandarin Chinese" },
+  { value: "Spanish", label: "Spanish" },
+  { value: "Hindi", label: "Hindi" },
+];
+
+// Age Ratings: Everybody, 7+, 13+, 16+, 18+, 21+
+const AGE_RATINGS = [
+  { value: "", label: "Select age rating" },
+  { value: "Everybody", label: "Everybody" },
+  { value: "7+", label: "7+" },
+  { value: "13+", label: "13+" },
+  { value: "16+", label: "16+" },
+  { value: "18+", label: "18+" },
+  { value: "21+", label: "21+" },
+];
+
 export default function StudioNewStoryPage() {
   const router = useRouter();
   const [activeStep, setActiveStep] = React.useState<1 | 2 | 3 | 4>(1);
@@ -238,17 +274,17 @@ export default function StudioNewStoryPage() {
 
   const handleAddNewChapter = () => {
     const nextNum = chapters.length + 1;
-    const defaultContent = `The morning brought a fragile quiet over the city as Chapter ${nextNum} began...`;
     const newChap: StoryChapter = {
       id: `chapter-${Date.now()}`,
       storyId: "draft-story",
       number: nextNum,
       chapterNumber: nextNum,
-      title: `Chapter ${nextNum}: Unspoken Words`,
-      summary: "A new revelation changes everything Clara thought she knew.",
-      synopsis: "A new revelation changes everything Clara thought she knew.",
-      content: defaultContent,
-      estimatedReadTime: calculateReadTime(defaultContent),
+      title: `Chapter ${nextNum}`,
+      summary: "",
+      synopsis: "",
+      content: "",
+      status: "draft",
+      estimatedReadTime: 1,
       publishedAt: new Date().toISOString().split("T")[0],
       updatedAt: new Date().toISOString().split("T")[0],
       hasAudioNarration: false,
@@ -281,6 +317,52 @@ export default function StudioNewStoryPage() {
 
   const handlePublish = () => {
     setIsPublishing(true);
+
+    const publishedTag = status === "completed" ? "Completed" : "Ongoing";
+    const newStoryId = `story-${Date.now()}`;
+
+    const newStory: Story = {
+      id: newStoryId,
+      slug: (title || "untitled-story").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      title: title.trim() || "Untitled Story",
+      subtitle: subtitle.trim() || undefined,
+      synopsis: synopsis.trim() || "A captivating story on INKOMA.",
+      coverImage: coverImage || COVER_TEMPLATES[0].url,
+      tradition: "Pan-African",
+      mainGenre: mainGenre || "Folklore",
+      subGenres: subGenres,
+      triggerWarnings: selectedTriggerWarnings,
+      targetAudience: targetAudience || "All Ages",
+      tags: [publishedTag, mainGenre, ...subGenres].filter(Boolean),
+      difficulty: "Intermediate",
+      status: status,
+      authorId: MOCK_CURRENT_USER.id,
+      authorName: MOCK_CURRENT_USER.displayName,
+      authorPenName: MOCK_CURRENT_USER.penName || MOCK_CURRENT_USER.displayName,
+      authorAvatar: MOCK_CURRENT_USER.avatarUrl,
+      authorBio: MOCK_CURRENT_USER.bio,
+      publishedAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      updatedAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      estimatedReadTime: chapters.reduce((acc, c) => acc + (c.estimatedReadTime || 1), 0),
+      totalChapters: chapters.length,
+      chaptersCount: chapters.length,
+      chapters: chapters,
+      readsCount: 0,
+      likesCount: 0,
+      bookmarksCount: 0,
+      commentsCount: 0,
+      isInteractive: false,
+      hasAudioNarration: chapters.some((c) => c.hasAudioNarration),
+    };
+
+    try {
+      const existing = localStorage.getItem("inkoma_custom_stories");
+      const list = existing ? JSON.parse(existing) : [];
+      localStorage.setItem("inkoma_custom_stories", JSON.stringify([newStory, ...list]));
+    } catch {
+      // ignore
+    }
+
     setTimeout(() => {
       setIsPublishing(false);
       setSaved(true);
@@ -525,13 +607,7 @@ export default function StudioNewStoryPage() {
                 <Select
                   value={storyLanguage}
                   onChange={(val) => setStoryLanguage(val)}
-                  options={[
-                    { value: "English", label: "English" },
-                    { value: "Swahili", label: "Swahili" },
-                    { value: "Yoruba", label: "Yoruba" },
-                    { value: "Zulu", label: "Zulu" },
-                    { value: "French", label: "French" },
-                  ]}
+                  options={STORY_LANGUAGES}
                   className="bg-[#faf8f5] dark:bg-[#1c1b22] border-stone-300 dark:border-stone-800 text-stone-900 dark:text-stone-200 rounded-xl text-xs py-2.5"
                 />
               </div>
@@ -566,15 +642,108 @@ export default function StudioNewStoryPage() {
               <Select
                 value={ageRating}
                 onChange={(val) => setAgeRating(val)}
-                options={[
-                  { value: "", label: "Select age rating" },
-                  { value: "Everyone (G)", label: "Everyone (G)" },
-                  { value: "Teen (13+)", label: "Teen (13+)" },
-                  { value: "Mature (17+)", label: "Mature (17+)" },
-                  { value: "Adults Only (18+)", label: "Adults Only (18+)" },
-                ]}
+                options={AGE_RATINGS}
                 className="bg-[#faf8f5] dark:bg-[#1c1b22] border-stone-300 dark:border-stone-800 text-stone-900 dark:text-stone-200 rounded-xl text-xs py-2.5"
               />
+            </div>
+
+            {/* Story Status Selection (Ongoing vs Completed) */}
+            <div className="space-y-2.5 pt-1">
+              <div className="flex items-center justify-between text-xs">
+                <label className="font-semibold text-stone-800 dark:text-stone-200 flex items-center gap-1.5">
+                  Story Status <span className="text-[#D4AF37]">*</span>
+                </label>
+                <span className="text-[11px] text-stone-500 dark:text-stone-400">
+                  Select whether you are still writing or finished
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Ongoing Option */}
+                <button
+                  type="button"
+                  onClick={() => setStatus("ongoing")}
+                  className={`flex items-start gap-3.5 p-4 rounded-2xl border text-left transition-all cursor-pointer relative ${
+                    status === "ongoing"
+                      ? "border-[#D4AF37] bg-[#D4AF37]/10 ring-2 ring-[#D4AF37]/30 shadow-sm"
+                      : "border-stone-200 dark:border-stone-800 bg-[#faf8f5] dark:bg-[#1c1b22] hover:border-stone-300 dark:hover:border-stone-700"
+                  }`}
+                >
+                  <div
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                      status === "ongoing"
+                        ? "bg-[#D4AF37] text-stone-950 font-bold shadow-xs"
+                        : "bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-400"
+                    }`}
+                  >
+                    <Clock className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-bold text-stone-900 dark:text-white">
+                        Ongoing Story
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#D4AF37]/20 text-[#B8860B] dark:text-[#E5C158] border border-[#D4AF37]/40">
+                        Ongoing Tag
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">
+                      Still writing. New chapters will be published progressively.
+                    </p>
+                  </div>
+                </button>
+
+                {/* Completed Option */}
+                <button
+                  type="button"
+                  onClick={() => setStatus("completed")}
+                  className={`flex items-start gap-3.5 p-4 rounded-2xl border text-left transition-all cursor-pointer relative ${
+                    status === "completed"
+                      ? "border-emerald-500 bg-emerald-500/10 ring-2 ring-emerald-500/30 shadow-sm"
+                      : "border-stone-200 dark:border-stone-800 bg-[#faf8f5] dark:bg-[#1c1b22] hover:border-stone-300 dark:hover:border-stone-700"
+                  }`}
+                >
+                  <div
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                      status === "completed"
+                        ? "bg-emerald-600 text-white font-bold shadow-xs"
+                        : "bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-400"
+                    }`}
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-bold text-stone-900 dark:text-white">
+                        Completed Story
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                        Completed Tag
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">
+                      Finished manuscript. All chapters are ready for readers to binge.
+                    </p>
+                  </div>
+                </button>
+              </div>
+
+              {/* Tag preview indicator */}
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-stone-50 dark:bg-[#18171e] border border-stone-200 dark:border-stone-800 text-xs text-stone-600 dark:text-stone-300">
+                <span className="text-stone-400 font-medium text-[11px]">Platform Tag Preview:</span>
+                {status === "completed" ? (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Completed
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#D4AF37]/15 text-[#B8860B] dark:text-[#E5C158] border border-[#D4AF37]/40">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span> Ongoing
+                  </span>
+                )}
+                <span className="text-[11px] text-stone-500 ml-auto hidden sm:inline">
+                  Shown on story cards across Explore &amp; Library
+                </span>
+              </div>
             </div>
 
             {/* Trigger Warnings */}
@@ -597,37 +766,27 @@ export default function StudioNewStoryPage() {
                 className="bg-[#faf8f5] dark:bg-[#1c1b22] border-stone-300 dark:border-stone-800 text-stone-900 dark:text-stone-200 rounded-xl text-xs py-2.5"
               />
 
-              <p className="text-[11px] text-stone-500 dark:text-stone-400 pt-1">
-                Choose any themes that exist in your story.
-              </p>
-
-              {/* Theme Pill Tags */}
-              <div className="flex flex-wrap gap-2 pt-1">
-                {["Violence", "Strong Language", "Mature Themes", "Gore", "Bullying"].map((theme) => {
-                  const isSelected = selectedTriggerWarnings.includes(theme);
-                  return (
-                    <button
-                      key={theme}
-                      type="button"
-                      onClick={() => toggleTriggerWarning(theme)}
-                      className={`px-3.5 py-1.5 rounded-full text-xs font-medium border transition-all ${
-                        isSelected
-                          ? "bg-[#D4AF37]/20 border-[#D4AF37] text-[#D4AF37]"
-                          : "bg-stone-100 dark:bg-[#1c1b22] border-stone-300 dark:border-stone-800 text-stone-700 dark:text-stone-300 hover:border-stone-400 dark:hover:border-stone-700"
-                      }`}
+              {/* Selected Trigger Warning Badges */}
+              {selectedTriggerWarnings.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {selectedTriggerWarnings.map((warning) => (
+                    <span
+                      key={warning}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#D4AF37]/15 text-[#B8860B] border border-[#D4AF37]/30"
                     >
-                      {theme}
-                    </button>
-                  );
-                })}
-                <button
-                  type="button"
-                  onClick={() => {}}
-                  className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-stone-100 dark:bg-[#1c1b22] border border-stone-300 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-stone-700"
-                >
-                  + More
-                </button>
-              </div>
+                      <span>{warning}</span>
+                      <button
+                        type="button"
+                        onClick={() => toggleTriggerWarning(warning)}
+                        className="hover:text-stone-950 dark:hover:text-white font-bold ml-0.5 text-xs cursor-pointer"
+                        aria-label={`Remove ${warning}`}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -890,7 +1049,7 @@ export default function StudioNewStoryPage() {
                     className="bg-[#D4AF37] hover:bg-[#c49f27] text-black text-xs font-bold rounded-xl gap-2 px-6 py-5"
                   >
                     <Plus className="w-4 h-4" />
-                    <span>Add Chapter {chapters.length + 1}</span>
+                    <span>Add Chapter</span>
                   </Button>
                 </div>
               </div>
@@ -953,20 +1112,55 @@ export default function StudioNewStoryPage() {
             </h3>
 
             <div className="space-y-4">
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <label className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider block">
-                  Publication Status
+                  Story Publication Status Tag
                 </label>
-                <Select
-                  value={status}
-                  onChange={(val) => setStatus(val as StoryStatus)}
-                  options={[
-                    { value: "ongoing", label: "Ongoing Book (Publishing chapters progressively)" },
-                    { value: "completed", label: "Completed Book (All chapters finished)" },
-                    { value: "draft", label: "Private Draft" },
-                  ]}
-                  className="bg-[#faf8f5] dark:bg-[#1c1b22] border-stone-300 dark:border-stone-800 text-stone-900 dark:text-stone-200 text-xs"
-                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setStatus("ongoing")}
+                    className={`flex items-center gap-3 p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                      status === "ongoing"
+                        ? "border-[#D4AF37] bg-[#D4AF37]/10 ring-2 ring-[#D4AF37]/30"
+                        : "border-stone-200 dark:border-stone-800 bg-[#faf8f5] dark:bg-[#1c1b22] hover:border-stone-300 dark:hover:border-stone-700"
+                    }`}
+                  >
+                    <div
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
+                        status === "ongoing" ? "bg-[#D4AF37] text-stone-950 font-bold" : "bg-stone-200 dark:bg-stone-800 text-stone-500"
+                      }`}
+                    >
+                      <Clock className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-stone-900 dark:text-white">Ongoing Story</div>
+                      <div className="text-[11px] text-stone-500 dark:text-stone-400">Publishing chapters progressively</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setStatus("completed")}
+                    className={`flex items-center gap-3 p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                      status === "completed"
+                        ? "border-emerald-500 bg-emerald-500/10 ring-2 ring-emerald-500/30"
+                        : "border-stone-200 dark:border-stone-800 bg-[#faf8f5] dark:bg-[#1c1b22] hover:border-stone-300 dark:hover:border-stone-700"
+                    }`}
+                  >
+                    <div
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
+                        status === "completed" ? "bg-emerald-600 text-white font-bold" : "bg-stone-200 dark:bg-stone-800 text-stone-500"
+                      }`}
+                    >
+                      <CheckCircle2 className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-stone-900 dark:text-white">Completed Story</div>
+                      <div className="text-[11px] text-stone-500 dark:text-stone-400">All chapters finished &amp; ready</div>
+                    </div>
+                  </button>
+                </div>
               </div>
 
               <div className="p-4 bg-[#D4AF37]/10 rounded-2xl border border-[#D4AF37]/30 space-y-2 text-xs text-stone-900 dark:text-stone-200">
@@ -981,6 +1175,21 @@ export default function StudioNewStoryPage() {
                   <li className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                     <span>Main Genre: <strong>{mainGenre || "Not set"}</strong></span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                    <span className="flex items-center gap-1.5">
+                      Publication Tag:
+                      {status === "completed" ? (
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                          Completed
+                        </span>
+                      ) : (
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#D4AF37]/20 text-[#B8860B] dark:text-[#E5C158] border border-[#D4AF37]/40">
+                          Ongoing
+                        </span>
+                      )}
+                    </span>
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />

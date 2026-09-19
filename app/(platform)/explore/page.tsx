@@ -23,6 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
+import { CategoryCarousel } from "@/components/features/discovery/category-carousel";
 
 // SafeImage component to guarantee NO broken image displays
 function SafeImage({
@@ -60,6 +61,34 @@ function SafeImage({
       unoptimized
     />
   );
+}
+
+// Genre Badge Styles for Highest Rated section in Light Mode
+function getGenreBadgeClass(genre: string) {
+  const g = genre.toUpperCase();
+  switch (g) {
+    case "ROMANCE":
+      return "bg-rose-50 text-rose-700 border-rose-200";
+    case "DRAMA":
+      return "bg-purple-50 text-purple-700 border-purple-200";
+    case "PARANORMAL":
+    case "MYSTERY":
+      return "bg-teal-50 text-teal-700 border-teal-200";
+    case "FANTASY":
+      return "bg-emerald-50 text-emerald-700 border-emerald-200";
+    case "HISTORICAL":
+      return "bg-amber-50 text-amber-800 border-amber-200";
+    case "MYTHOLOGY":
+      return "bg-cyan-50 text-cyan-700 border-cyan-200";
+    case "EPIC":
+      return "bg-indigo-50 text-indigo-700 border-indigo-200";
+    case "THRILLER":
+      return "bg-red-50 text-red-700 border-red-200";
+    case "SCI-FI":
+      return "bg-blue-50 text-blue-700 border-blue-200";
+    default:
+      return "bg-stone-100 text-stone-700 border-stone-200";
+  }
 }
 
 // Genre Pill Options
@@ -173,7 +202,7 @@ const HIGHEST_RATED_STORIES = [
     author: "Nia Okonkwo",
     genre: "ROMANCE",
     cover: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=400&auto=format&fit=crop",
-    rating: "4.95",
+    rating: "4.9",
     reads: "25.4K",
   },
   {
@@ -182,7 +211,7 @@ const HIGHEST_RATED_STORIES = [
     author: "Zanele Dlamini",
     genre: "DRAMA",
     cover: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop",
-    rating: "4.90",
+    rating: "4.8",
     reads: "12.4K",
   },
   {
@@ -191,7 +220,7 @@ const HIGHEST_RATED_STORIES = [
     author: "Lebo Mokoena",
     genre: "PARANORMAL",
     cover: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400&auto=format&fit=crop",
-    rating: "4.88",
+    rating: "4.8",
     reads: "11.7K",
   },
   {
@@ -200,7 +229,7 @@ const HIGHEST_RATED_STORIES = [
     author: "E. Azuka",
     genre: "FANTASY",
     cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=400&auto=format&fit=crop",
-    rating: "4.85",
+    rating: "4.7",
     reads: "9.1K",
   },
   {
@@ -209,7 +238,7 @@ const HIGHEST_RATED_STORIES = [
     author: "Amara Diallo",
     genre: "FANTASY",
     cover: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=400&auto=format&fit=crop",
-    rating: "4.92",
+    rating: "4.9",
     reads: "34.2K",
   },
   {
@@ -218,7 +247,7 @@ const HIGHEST_RATED_STORIES = [
     author: "Khadija Bello",
     genre: "HISTORICAL",
     cover: "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=400&auto=format&fit=crop",
-    rating: "4.89",
+    rating: "4.9",
     reads: "28.6K",
   },
   {
@@ -227,7 +256,7 @@ const HIGHEST_RATED_STORIES = [
     author: "Folake Adeyemi",
     genre: "MYTHOLOGY",
     cover: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=400&auto=format&fit=crop",
-    rating: "4.87",
+    rating: "4.8",
     reads: "19.3K",
   },
   {
@@ -236,7 +265,7 @@ const HIGHEST_RATED_STORIES = [
     author: "Mariama Ba",
     genre: "EPIC",
     cover: "https://images.unsplash.com/photo-1509099836639-18ba1795216d?q=80&w=400&auto=format&fit=crop",
-    rating: "4.94",
+    rating: "4.9",
     reads: "42.1K",
   },
 ];
@@ -308,7 +337,6 @@ export default function ExplorePage() {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   const trendingScrollRef = useRef<HTMLDivElement>(null);
-  const highestRatedScrollRef = useRef<HTMLDivElement>(null);
   const topAuthorsScrollRef = useRef<HTMLDivElement>(null);
 
   const scrollRow = (
@@ -426,7 +454,10 @@ export default function ExplorePage() {
         </div>
       </div>
 
-      {/* 5. SECTION 1: TRENDING STORIES */}
+      {/* EXPLORE FOLKLORE CATEGORIES & TRADITIONS */}
+      <CategoryCarousel />
+
+      {/* SECTION 1: TRENDING STORIES */}
       <section className="space-y-4 pt-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -540,115 +571,7 @@ export default function ExplorePage() {
         </div>
       </section>
 
-      {/* 6. SECTION 2: HIGHEST RATED THIS WEEK */}
-      <section className="space-y-4 pt-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Star className="w-5 h-5 fill-[#B8860B] text-[#B8860B]" />
-            <h2 className="text-lg sm:text-xl font-bold font-serif text-stone-950 tracking-tight">
-              Highest Rated This Week
-            </h2>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => scrollRow(highestRatedScrollRef, "left", 320)}
-                className="p-1.5 rounded-xl border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 hover:border-[#D4AF37]/60 transition-all shadow-xs active:scale-95"
-                aria-label="Scroll left"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => scrollRow(highestRatedScrollRef, "right", 320)}
-                className="p-1.5 rounded-xl border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 hover:border-[#D4AF37]/60 transition-all shadow-xs active:scale-95"
-                aria-label="Scroll right"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-            <Link
-              href="/explore?sort=highest_rated"
-              className="text-xs font-bold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-1 transition-colors pl-1"
-            >
-              <span>View all</span>
-              <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </div>
-
-        {/* Horizontal Carousel of Highest Rated Story Cards */}
-        <div
-          ref={highestRatedScrollRef}
-          className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-3 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none"
-        >
-          {HIGHEST_RATED_STORIES.map((story) => {
-            const bookmarked = isBookmarked(story.id);
-
-            return (
-              <Link key={story.id} href={`/story/${story.id}`} className="group block shrink-0 snap-start w-[270px] sm:w-[310px]">
-                <div className="bg-white border border-stone-200 rounded-2xl p-3.5 flex flex-col justify-between h-full hover:border-[#D4AF37]/60 transition-all shadow-xs space-y-3">
-                  <div className="flex items-center space-x-3 min-w-0">
-                    {/* Square Thumbnail */}
-                    <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-stone-100 border border-stone-200 shrink-0">
-                      <SafeImage
-                        src={story.cover}
-                        alt={story.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    </div>
-
-                    {/* Details */}
-                    <div className="space-y-1 min-w-0 flex-1">
-                      <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate font-serif">
-                        {story.title}
-                      </h4>
-                      <p className="text-xs text-stone-500 font-medium truncate">{story.author}</p>
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 border border-stone-200 text-[9px] font-extrabold uppercase">
-                        {story.genre}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Bottom Rating, Reads & Bookmark */}
-                  <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex items-center gap-1 font-black text-[#B8860B]">
-                        <Star className="w-3.5 h-3.5 fill-[#B8860B] text-[#B8860B]" />
-                        <span>{story.rating}</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-[11px] text-stone-500 font-medium">
-                        <Eye className="w-3 h-3 text-stone-400" />
-                        <span>{story.reads}</span>
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        toggleBookmark(story.id);
-                      }}
-                      className={`p-1.5 rounded-xl transition-colors ${
-                        bookmarked
-                          ? "text-[#B8860B] bg-[#D4AF37]/15"
-                          : "text-stone-400 hover:text-stone-800 hover:bg-stone-100"
-                      }`}
-                      aria-label="Bookmark"
-                    >
-                      <Bookmark className={`w-4 h-4 ${bookmarked ? "fill-[#B8860B]" : ""}`} />
-                    </button>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* 7. SECTION 3: TOP AUTHORS THIS WEEK */}
+      {/* SECTION 2: TOP AUTHORS THIS WEEK */}
       <section className="space-y-4 pt-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -719,6 +642,111 @@ export default function ExplorePage() {
               </div>
             </Link>
           ))}
+        </div>
+      </section>
+
+      {/* SECTION 3: HIGHEST RATED THIS WEEK */}
+      <section className="space-y-4 pt-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Star className="w-5 h-5 fill-[#D4AF37] text-[#D4AF37]" />
+            <h2 className="text-lg sm:text-xl font-bold font-serif text-stone-950 tracking-tight">
+              Highest Rated This Week
+            </h2>
+          </div>
+          <Link
+            href="/explore?sort=highest_rated"
+            className="text-xs sm:text-sm font-bold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-1 transition-colors"
+          >
+            <span>View all</span>
+            <ChevronRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        {/* Vertical List of Highest Rated Stories */}
+        <div className="flex flex-col space-y-2.5 sm:space-y-3">
+          {HIGHEST_RATED_STORIES.map((story) => {
+            const bookmarked = isBookmarked(story.id);
+
+            return (
+              <Link
+                key={story.id}
+                href={`/story/${story.id}`}
+                className="group block"
+              >
+                <div className="bg-white border border-stone-200/85 rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-3 sm:gap-4 hover:border-[#D4AF37]/60 hover:shadow-xs transition-all duration-200">
+                  {/* Left Side: Thumbnail + Info */}
+                  <div className="flex items-center gap-3.5 sm:gap-4 min-w-0 flex-1">
+                    {/* Cover Image */}
+                    <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden bg-stone-100 border border-stone-200/80 shrink-0">
+                      <SafeImage
+                        src={story.cover}
+                        alt={story.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+
+                    {/* Details: Title, Author, Genre Badge */}
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <h4 className="text-sm sm:text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate font-serif">
+                        {story.title}
+                      </h4>
+                      <p className="text-xs text-stone-500 font-medium truncate">
+                        {story.author}
+                      </p>
+                      <div>
+                        <span
+                          className={`inline-block px-2.5 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider border ${getGenreBadgeClass(
+                            story.genre
+                          )}`}
+                        >
+                          {story.genre}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Side: Stats (Star Rating + Reads) & Bookmark Button */}
+                  <div className="flex items-center gap-3.5 sm:gap-5 shrink-0">
+                    {/* Rating & Reads Stack */}
+                    <div className="flex flex-col items-end space-y-1 text-right">
+                      <div className="flex items-center gap-1.5 font-bold text-stone-900 text-xs sm:text-sm">
+                        <Star className="w-3.5 h-3.5 fill-[#D4AF37] text-[#D4AF37]" />
+                        <span>{story.rating}</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-[11px] sm:text-xs text-stone-500 font-medium">
+                        <Eye className="w-3.5 h-3.5 text-stone-400" />
+                        <span>{story.reads}</span>
+                      </div>
+                    </div>
+
+                    {/* Bookmark Button */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleBookmark(story.id);
+                      }}
+                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl border flex items-center justify-center transition-all ${
+                        bookmarked
+                          ? "border-[#D4AF37] bg-[#D4AF37]/15 text-[#B8860B]"
+                          : "border-stone-200 bg-white text-stone-400 hover:text-stone-900 hover:border-stone-300 hover:bg-stone-50"
+                      }`}
+                      aria-label="Bookmark story"
+                    >
+                      <Bookmark
+                        className={`w-4 h-4 ${
+                          bookmarked ? "fill-[#B8860B]" : ""
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
     </div>
