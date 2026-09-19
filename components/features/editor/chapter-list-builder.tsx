@@ -10,6 +10,7 @@ interface ChapterListBuilderProps {
   chapters: StoryChapter[];
   onChange: (chapters: StoryChapter[]) => void;
   onSelectChapterToEdit?: (chapter: StoryChapter) => void;
+  onOpenProseEditor?: (chapter: StoryChapter) => void;
 }
 
 export function calculateReadTime(content?: string): number {
@@ -41,6 +42,7 @@ export function ChapterListBuilder({
   chapters,
   onChange,
   onSelectChapterToEdit,
+  onOpenProseEditor,
 }: ChapterListBuilderProps) {
   const [editingChapterId, setEditingChapterId] = React.useState<string | null>(null);
   const [editingTitle, setEditingTitle] = React.useState("");
@@ -201,13 +203,19 @@ export function ChapterListBuilder({
                     </div>
 
                     <div className="flex items-center gap-2 self-end sm:self-center">
-                      {onSelectChapterToEdit && (
+                      {(onOpenProseEditor || onSelectChapterToEdit) && (
                         <Button
                           type="button"
                           variant="outline"
                           size="sm"
-                          onClick={() => onSelectChapterToEdit(chap)}
-                          className="text-xs rounded-xl border-stone-300 text-stone-700 hover:bg-stone-100"
+                          onClick={() => {
+                            if (onOpenProseEditor) {
+                              onOpenProseEditor(chap);
+                            } else if (onSelectChapterToEdit) {
+                              onSelectChapterToEdit(chap);
+                            }
+                          }}
+                          className="text-xs rounded-xl border-stone-300 text-stone-700 hover:bg-stone-100 hover:text-stone-900"
                         >
                           <FileText className="w-3.5 h-3.5 mr-1 text-[#D4AF37]" /> Edit Prose
                         </Button>

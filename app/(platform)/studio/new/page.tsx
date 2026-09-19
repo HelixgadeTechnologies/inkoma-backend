@@ -21,12 +21,18 @@ import {
   Search,
   CheckCircle2,
   Clock,
+  Eye,
+  Edit3,
+  Heart,
+  Bookmark,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select } from "@/components/ui/select";
 import { ChapterListBuilder, calculateReadTime } from "@/components/features/editor/chapter-list-builder";
+import { ProseRenderer } from "@/components/features/editor/prose-renderer";
 import { Story, StoryChapter, StoryStatus } from "@/types";
 import { MAIN_GENRES, SUB_GENRES, TRIGGER_WARNINGS } from "@/config/genres";
 import { MOCK_CURRENT_USER } from "@/config/mock-data";
@@ -180,7 +186,7 @@ const AGE_RATINGS = [
 
 export default function StudioNewStoryPage() {
   const router = useRouter();
-  const [activeStep, setActiveStep] = React.useState<1 | 2 | 3 | 4>(1);
+  const [activeStep, setActiveStep] = React.useState<1 | 2 | 3 | 4 | 5>(1);
 
   // --- Step 1: Story Details State ---
   const [title, setTitle] = React.useState("");
@@ -231,8 +237,73 @@ export default function StudioNewStoryPage() {
   const [selectedChapterId, setSelectedChapterId] = React.useState<string>("chapter-1");
   const activeChapter = chapters.find((c) => c.id === selectedChapterId) || chapters[0];
 
+  // --- Step 4: Reader Preview Customization State ---
+  const [previewTheme, setPreviewTheme] = React.useState<"paper" | "sandstone" | "night">("paper");
+  const [previewFontSize, setPreviewFontSize] = React.useState<"sm" | "md" | "lg">("md");
+
   const [saved, setSaved] = React.useState(false);
   const [isPublishing, setIsPublishing] = React.useState(false);
+
+  // Save draft state to localStorage
+  const saveDraftToStorage = (stepToSave: number = activeStep) => {
+    try {
+      const draft = {
+        title,
+        subtitle,
+        synopsis,
+        mainGenre,
+        subGenres,
+        storyLanguage,
+        targetAudience,
+        ageRating,
+        selectedTriggerWarnings,
+        coverImage,
+        status,
+        chapters,
+        selectedChapterId: activeChapter?.id || selectedChapterId,
+        activeStep: stepToSave,
+      };
+      localStorage.setItem("inkoma_draft_story", JSON.stringify(draft));
+    } catch {
+      // ignore
+    }
+  };
+
+  // Hydrate draft from localStorage on mount (e.g. after returning from dedicated writer)
+  React.useEffect(() => {
+    try {
+      const stored = localStorage.getItem("inkoma_draft_story");
+      if (stored) {
+        const draft = JSON.parse(stored);
+        if (draft.title !== undefined) setTitle(draft.title);
+        if (draft.subtitle !== undefined) setSubtitle(draft.subtitle);
+        if (draft.synopsis !== undefined) setSynopsis(draft.synopsis);
+        if (draft.mainGenre !== undefined) setMainGenre(draft.mainGenre);
+        if (Array.isArray(draft.subGenres)) setSubGenres(draft.subGenres);
+        if (draft.storyLanguage !== undefined) setStoryLanguage(draft.storyLanguage);
+        if (draft.targetAudience !== undefined) setTargetAudience(draft.targetAudience);
+        if (draft.ageRating !== undefined) setAgeRating(draft.ageRating);
+        if (Array.isArray(draft.selectedTriggerWarnings)) setSelectedTriggerWarnings(draft.selectedTriggerWarnings);
+        if (draft.coverImage) setCoverImage(draft.coverImage);
+        if (draft.status) setStatus(draft.status);
+        if (Array.isArray(draft.chapters) && draft.chapters.length > 0) {
+          setChapters(draft.chapters);
+        }
+        if (draft.selectedChapterId) setSelectedChapterId(draft.selectedChapterId);
+        if (draft.activeStep && [1, 2, 3, 4, 5].includes(draft.activeStep)) {
+          setActiveStep(draft.activeStep as 1 | 2 | 3 | 4 | 5);
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  // Navigate to dedicated chapter formatting studio
+  const handleOpenWriter = (chapterId: string) => {
+    saveDraftToStorage(3);
+    router.push(`/studio/new/write?chapterId=${chapterId}`);
+  };
 
   // Drag and Drop Upload Handler
   const processFile = (file: File) => {
@@ -383,9 +454,9 @@ export default function StudioNewStoryPage() {
 
   return (
     <div className="space-y-6 pb-24 w-full text-stone-900 dark:text-stone-100 font-sans">
-      {/* STEPPER BAR (1 - Story Details, 2 - Cover, 3 - Chapters, 4 - Publish) */}
+      {/* STEPPER BAR (1 - Details, 2 - Cover, 3 - Chapters, 4 - Preview, 5 - Publish) */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between max-w-xl mx-auto py-3">
+        <div className="flex items-center justify-between max-w-2xl mx-auto py-3">
           {/* Step 1 */}
           <button
             type="button"
@@ -408,7 +479,7 @@ export default function StudioNewStoryPage() {
                 activeStep >= 1 ? "text-[#D4AF37]" : "text-stone-500 dark:text-stone-500"
               }`}
             >
-              Story Details
+              Details
             </span>
           </button>
 
@@ -470,7 +541,7 @@ export default function StudioNewStoryPage() {
 
           <div className={`h-[1.5px] flex-1 -mt-5 transition-colors ${activeStep >= 4 ? "bg-[#D4AF37]" : "bg-stone-200 dark:bg-stone-800"}`} />
 
-          {/* Step 4 */}
+          {/* Step 4: Preview */}
           <button
             type="button"
             onClick={() => setActiveStep(4)}
@@ -478,16 +549,44 @@ export default function StudioNewStoryPage() {
           >
             <div
               className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                activeStep === 4
+                activeStep > 4
+                  ? "bg-[#D4AF37] text-black"
+                  : activeStep === 4
                   ? "bg-[#D4AF37] text-black"
                   : "border border-stone-300 dark:border-stone-700 text-stone-500 dark:text-stone-400 bg-stone-100 dark:bg-[#141318]"
               }`}
             >
-              4
+              {activeStep > 4 ? <Check className="w-4 h-4 stroke-[3]" /> : 4}
             </div>
             <span
               className={`text-xs font-bold transition-colors ${
                 activeStep >= 4 ? "text-[#D4AF37]" : "text-stone-500 dark:text-stone-500"
+              }`}
+            >
+              Preview
+            </span>
+          </button>
+
+          <div className={`h-[1.5px] flex-1 -mt-5 transition-colors ${activeStep >= 5 ? "bg-[#D4AF37]" : "bg-stone-200 dark:bg-stone-800"}`} />
+
+          {/* Step 5: Publish */}
+          <button
+            type="button"
+            onClick={() => setActiveStep(5)}
+            className="flex flex-col items-center space-y-1.5 flex-1 relative group cursor-pointer"
+          >
+            <div
+              className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                activeStep === 5
+                  ? "bg-[#D4AF37] text-black"
+                  : "border border-stone-300 dark:border-stone-700 text-stone-500 dark:text-stone-400 bg-stone-100 dark:bg-[#141318]"
+              }`}
+            >
+              5
+            </div>
+            <span
+              className={`text-xs font-bold transition-colors ${
+                activeStep >= 5 ? "text-[#D4AF37]" : "text-stone-500 dark:text-stone-500"
               }`}
             >
               Publish
@@ -977,6 +1076,7 @@ export default function StudioNewStoryPage() {
             chapters={chapters}
             onChange={(updatedChaps) => setChapters(updatedChaps)}
             onSelectChapterToEdit={(chap) => setSelectedChapterId(chap.id)}
+            onOpenProseEditor={(chap) => handleOpenWriter(chap.id)}
           />
 
           {activeChapter && (
@@ -1023,23 +1123,53 @@ export default function StudioNewStoryPage() {
                   />
                 </div>
 
-                <div className="space-y-1.5 pt-2">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
-                      Chapter Content & Prose
-                    </label>
-                    <span className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
-                      {activeWordCount} words • ~{activeReadTime} min read
-                    </span>
+                {/* Chapter Prose & Dedicated Studio Action */}
+                <div className="space-y-2 pt-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <label className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider block">
+                        Chapter Content &amp; Prose
+                      </label>
+                      <span className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
+                        {activeWordCount} words • ~{activeReadTime} min read
+                      </span>
+                    </div>
+
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => handleOpenWriter(activeChapter.id)}
+                      className="bg-[#D4AF37] hover:bg-[#c49f27] text-stone-950 font-extrabold text-xs rounded-xl gap-1.5 px-3.5 py-1.5 shadow-sm self-start sm:self-auto"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                      <span>Open Full Formatting Studio</span>
+                    </Button>
                   </div>
-                  <textarea
-                    rows={12}
-                    value={activeChapter.content || ""}
-                    onChange={(e) => handleUpdateActiveChapter("content", e.target.value)}
-                    placeholder="Write your chapter text here..."
-                    className="w-full bg-[#faf8f5] dark:bg-[#1c1b22] border border-stone-300 dark:border-stone-800 rounded-2xl p-4 text-sm text-stone-900 dark:text-white leading-relaxed focus:outline-none focus:border-[#D4AF37]"
-                    required
-                  />
+
+                  <div className="relative">
+                    <textarea
+                      rows={10}
+                      value={activeChapter.content || ""}
+                      onChange={(e) => handleUpdateActiveChapter("content", e.target.value)}
+                      placeholder="Write your chapter text here, or click 'Open Full Formatting Studio' above for rich text tools..."
+                      className="w-full bg-[#faf8f5] dark:bg-[#1c1b22] border border-stone-300 dark:border-stone-800 rounded-2xl p-4 text-sm text-stone-900 dark:text-white leading-relaxed focus:outline-none focus:border-[#D4AF37]"
+                      required
+                    />
+
+                    {/* Quick launcher overlay button inside textarea footer */}
+                    <div className="pt-2 flex justify-between items-center text-xs">
+                      <span className="text-[11px] text-stone-400">
+                        Supports **bold**, *italic*, # headings, &gt; proverbs
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenWriter(activeChapter.id)}
+                        className="text-xs text-[#B8860B] dark:text-[#E5C158] font-bold hover:underline flex items-center gap-1"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" /> Launch Full Page Writer
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="pt-2 flex justify-center">
@@ -1077,6 +1207,15 @@ export default function StudioNewStoryPage() {
                       <strong className="text-lg font-bold text-[#D4AF37]">~{activeReadTime} min</strong>
                     </div>
                   </div>
+
+                  <div className="p-3.5 bg-[#D4AF37]/10 rounded-2xl border border-[#D4AF37]/30 text-xs space-y-1.5">
+                    <span className="font-bold text-[#D4AF37] block text-[11px] uppercase tracking-wider">
+                      Author Tip
+                    </span>
+                    <p className="text-stone-600 dark:text-stone-300 text-[11px] leading-relaxed">
+                      Click <strong>Open Full Formatting Studio</strong> for a distraction-free page with bold, headings, proverbs, and oral lore tools.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1092,19 +1231,232 @@ export default function StudioNewStoryPage() {
               <ChevronLeft className="w-4 h-4" /> Back to Cover
             </Button>
 
+            {/* Changed from 'Continue to Publish' to 'Preview Story' */}
             <Button
               type="button"
               onClick={() => setActiveStep(4)}
-              className="bg-[#D4AF37] hover:bg-[#c49f27] text-black text-xs font-bold rounded-xl gap-1.5 px-6 py-5"
+              className="bg-[#D4AF37] hover:bg-[#c49f27] text-black text-xs font-bold rounded-xl gap-2 px-7 py-5 shadow-sm"
             >
-              Continue to Publish <ChevronRight className="w-4 h-4" />
+              <Eye className="w-4 h-4" />
+              <span>Preview Story</span>
+              <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         </div>
       )}
 
-      {/* STEP 4: PUBLISH */}
+      {/* STEP 4: READER PREVIEW (View story from a reader's point of view) */}
       {activeStep === 4 && (
+        <div className="space-y-6 max-w-4xl mx-auto animate-in fade-in duration-200">
+          {/* Preview Banner & Header */}
+          <div className="bg-[#FAF6EE] dark:bg-[#19171d] border border-[#D4AF37]/40 rounded-3xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#D4AF37] text-stone-950">
+                  <Eye className="w-3.5 h-3.5" /> Reader Point of View
+                </span>
+                <span className="text-xs font-mono text-stone-500">Live Preview</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold font-serif text-stone-900 dark:text-white">
+                {title || "Untitled Story"}
+              </h2>
+              <p className="text-xs text-stone-500 dark:text-stone-400">
+                This is how your readers will experience your chapters, formatting, and cultural lore on INKOMA.
+              </p>
+            </div>
+
+            {/* Reading Theme & Font Size Controls */}
+            <div className="flex flex-wrap items-center gap-2 bg-white dark:bg-[#121115] p-2 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-2xs">
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] uppercase font-bold text-stone-400 px-1">Theme:</span>
+                {(["paper", "sandstone", "night"] as const).map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setPreviewTheme(t)}
+                    className={`px-2.5 py-1 rounded-xl text-xs font-bold capitalize transition-all ${
+                      previewTheme === t
+                        ? "bg-[#D4AF37] text-stone-950 shadow-2xs"
+                        : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+
+              <div className="h-4 w-[1px] bg-stone-300 dark:bg-stone-700 mx-1 hidden sm:block" />
+
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] uppercase font-bold text-stone-400 px-1">Font:</span>
+                {(["sm", "md", "lg"] as const).map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setPreviewFontSize(s)}
+                    className={`w-7 h-7 rounded-xl text-xs font-bold transition-all flex items-center justify-center ${
+                      previewFontSize === s
+                        ? "bg-[#D4AF37] text-stone-950 shadow-2xs"
+                        : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white"
+                    }`}
+                  >
+                    {s === "sm" ? "A-" : s === "md" ? "A" : "A+"}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Chapter Navigation Tabs */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+            {chapters.map((chap) => (
+              <button
+                key={chap.id}
+                type="button"
+                onClick={() => setSelectedChapterId(chap.id)}
+                className={`px-4 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2 ${
+                  chap.id === activeChapter.id
+                    ? "bg-[#D4AF37] text-stone-950 shadow-sm"
+                    : "bg-white dark:bg-[#141318] border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:border-stone-300"
+                }`}
+              >
+                <span>Ch. {chap.chapterNumber || chap.number}</span>
+                <span className="opacity-85 font-normal max-w-[140px] truncate">{chap.title}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Reader Canvas Card */}
+          <article
+            className={`rounded-3xl p-6 sm:p-12 space-y-8 transition-colors duration-300 border ${
+              previewTheme === "night"
+                ? "bg-[#121110] text-[#E6E1D5] border-[#2D2A26] shadow-2xl"
+                : previewTheme === "sandstone"
+                ? "bg-[#F4ECD8] text-[#3D2612] border-[#E2D2B8] shadow-sm"
+                : "bg-white text-stone-900 border-[#E8DFD1] shadow-sm"
+            }`}
+          >
+            {/* Reader Story Header */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 border-b border-stone-200/50 dark:border-stone-800/50 pb-6">
+              {coverImage && (
+                <div className="relative w-16 h-22 sm:w-20 sm:h-28 rounded-xl overflow-hidden shrink-0 border border-stone-300 dark:border-stone-700 shadow-md">
+                  <SafeImage src={coverImage} alt={title} fill className="object-cover" />
+                </div>
+              )}
+
+              <div className="space-y-1.5 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#D4AF37]">
+                    {mainGenre || "Folklore"}
+                  </span>
+                  {status === "completed" ? (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                      Completed
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#D4AF37]/20 text-[#B8860B] dark:text-[#E5C158] border border-[#D4AF37]/40">
+                      Ongoing
+                    </span>
+                  )}
+                  {ageRating && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
+                      {ageRating}
+                    </span>
+                  )}
+                </div>
+
+                <h1 className="text-2xl sm:text-3xl font-extrabold font-serif tracking-tight">
+                  {title || "Untitled Story"}
+                </h1>
+                {subtitle && (
+                  <p className="text-xs sm:text-sm font-serif italic text-stone-500 dark:text-stone-400">
+                    {subtitle}
+                  </p>
+                )}
+
+                <div className="text-xs text-stone-500 dark:text-stone-400 pt-1 flex items-center gap-2">
+                  <span>By <strong>{MOCK_CURRENT_USER.displayName}</strong></span>
+                  <span>•</span>
+                  <span>Chapter {activeChapter.chapterNumber || activeChapter.number} of {chapters.length}</span>
+                  <span>•</span>
+                  <span>~{activeReadTime} min read</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Chapter Header */}
+            <div className="space-y-2 border-b border-stone-200/40 dark:border-stone-800/40 pb-4">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
+                Chapter {activeChapter.chapterNumber || activeChapter.number}
+              </span>
+              <h2 className="text-xl sm:text-2xl font-bold font-serif">
+                {activeChapter.title}
+              </h2>
+              {activeChapter.synopsis && (
+                <p className="text-xs italic text-stone-500 dark:text-stone-400 font-serif">
+                  {activeChapter.synopsis}
+                </p>
+              )}
+            </div>
+
+            {/* Chapter Formatted Prose Content */}
+            <div className="py-2">
+              <ProseRenderer content={activeContent} fontSize={previewFontSize} />
+            </div>
+
+            {/* Reader Engagement Footer Preview */}
+            <div className="border-t border-stone-200/50 dark:border-stone-800/50 pt-6 flex flex-wrap items-center justify-between gap-3 text-xs opacity-80">
+              <div className="flex items-center gap-3">
+                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/50">
+                  <Heart className="w-3.5 h-3.5 text-[#D4AF37]" /> 0 Readers Liked
+                </span>
+                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/50">
+                  <Bookmark className="w-3.5 h-3.5 text-[#D4AF37]" /> Add to Library
+                </span>
+              </div>
+
+              <span className="text-[11px] text-stone-400 italic">
+                Interactive reader reactions active once published
+              </span>
+            </div>
+          </article>
+
+          {/* Navigation Action Buttons */}
+          <div className="flex items-center justify-between pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setActiveStep(3)}
+              className="text-xs rounded-xl border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 gap-1.5 px-4 py-5"
+            >
+              <ChevronLeft className="w-4 h-4" /> Back to Edit Chapters
+            </Button>
+
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleOpenWriter(activeChapter.id)}
+                className="text-xs rounded-xl border-[#D4AF37]/40 text-[#B8860B] dark:text-[#E5C158] hover:bg-[#D4AF37]/10 gap-1.5 px-4 py-5"
+              >
+                <Edit3 className="w-3.5 h-3.5" /> Edit Prose in Writing Studio
+              </Button>
+
+              <Button
+                type="button"
+                onClick={() => setActiveStep(5)}
+                className="bg-[#D4AF37] hover:bg-[#c49f27] text-black text-xs font-extrabold rounded-xl gap-2 px-7 py-5 shadow-md"
+              >
+                <span>Continue to Publish</span>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 5: PUBLISH (Publishing Options & Final Summary) */}
+      {activeStep === 5 && (
         <div className="space-y-6 max-w-3xl mx-auto animate-in fade-in duration-200">
           <div className="bg-white dark:bg-[#141318] rounded-3xl border border-stone-200 dark:border-stone-800 p-6 space-y-5">
             <h3 className="text-base font-bold text-stone-900 dark:text-white border-b border-stone-100 dark:border-stone-800 pb-3">
@@ -1202,10 +1554,10 @@ export default function StudioNewStoryPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setActiveStep(3)}
+                  onClick={() => setActiveStep(4)}
                   className="text-xs rounded-xl border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 gap-1.5"
                 >
-                  <ChevronLeft className="w-4 h-4" /> Back to Chapters
+                  <ChevronLeft className="w-4 h-4" /> Back to Preview
                 </Button>
 
                 <Button
