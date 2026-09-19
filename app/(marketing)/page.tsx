@@ -19,7 +19,6 @@ import {
   Flame,
   Award,
   TrendingUp,
-  UserPlus,
   ArrowRight,
   CheckCircle2,
   Share2,
@@ -125,18 +124,11 @@ export default function HomePage() {
     "author-3": false,
   });
 
-  const spotlightScrollRef = React.useRef<HTMLDivElement>(null);
   const featuredScrollRef = React.useRef<HTMLDivElement>(null);
   const recommendedScrollRef = React.useRef<HTMLDivElement>(null);
   const newReleasesScrollRef = React.useRef<HTMLDivElement>(null);
   const recentlyUpdatedScrollRef = React.useRef<HTMLDivElement>(null);
-
-  const scrollSpotlight = (direction: "left" | "right") => {
-    if (spotlightScrollRef.current) {
-      const amount = direction === "left" ? -600 : 600;
-      spotlightScrollRef.current.scrollBy({ left: amount, behavior: "smooth" });
-    }
-  };
+  const topAuthorsScrollRef = React.useRef<HTMLDivElement>(null);
 
   const scrollRow = (ref: React.RefObject<HTMLDivElement | null>, direction: "left" | "right") => {
     if (ref.current) {
@@ -376,813 +368,311 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Featured Story Spotlight Carousel */}
-        <div className="relative group">
-          {/* Spotlight Left / Right Floating Navigation Buttons */}
-          <button
-            type="button"
-            onClick={() => scrollSpotlight("left")}
-            className="absolute left-2 sm:-left-3 top-1/2 -translate-y-1/2 z-20 p-2 sm:p-2.5 rounded-full bg-white/95 hover:bg-white text-stone-800 shadow-lg border border-stone-200/80 backdrop-blur-md transition-all hover:scale-110 active:scale-95 flex items-center justify-center opacity-90 group-hover:opacity-100"
-            aria-label="Previous spotlight story"
-          >
-            <ChevronLeft className="w-5 h-5 text-stone-800" />
-          </button>
-          <button
-            type="button"
-            onClick={() => scrollSpotlight("right")}
-            className="absolute right-2 sm:-right-3 top-1/2 -translate-y-1/2 z-20 p-2 sm:p-2.5 rounded-full bg-white/95 hover:bg-white text-stone-800 shadow-lg border border-stone-200/80 backdrop-blur-md transition-all hover:scale-110 active:scale-95 flex items-center justify-center opacity-90 group-hover:opacity-100"
-            aria-label="Next spotlight story"
-          >
-            <ChevronRight className="w-5 h-5 text-stone-800" />
-          </button>
-
-          {/* Spotlight Scroll Container */}
-          <div
-            ref={spotlightScrollRef}
-            className="flex items-stretch gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none"
-          >
-            {/* Spotlight 1: Beyond the Sunset */}
-            <div className="w-[88vw] sm:w-[580px] md:w-[700px] lg:w-[840px] shrink-0 snap-start">
-              <Link href="/story/anansi-and-the-pot-of-wisdom" className="block group/card h-full">
-                <div className="grid grid-cols-1 md:grid-cols-12 bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-md hover:border-[#D4AF37]/60 transition-all duration-300 h-full">
-                  {/* Left Cover Image */}
-                  <div className="md:col-span-5 relative aspect-[16/9] md:aspect-auto min-h-[220px]">
-                    <SafeImage
-                      src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800&auto=format&fit=crop"
-                      alt="Beyond the Sunset"
-                      fill
-                      className="object-cover group-hover/card:scale-105 transition-transform duration-700"
-                    />
-                    <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5">
-                      <span className="px-3 py-1 rounded-full bg-rose-100 text-rose-800 border border-rose-300 text-[10px] font-extrabold uppercase tracking-wider">
-                        SPOTLIGHT FEATURED
-                      </span>
-                      <span className="px-2.5 py-0.5 rounded-full bg-stone-900/80 text-white text-[10px] font-bold backdrop-blur-md">
-                        1 of 4
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Right Card Details */}
-                  <div className="md:col-span-7 p-5 sm:p-6 flex flex-col justify-between space-y-4">
-                    <div className="space-y-3">
-                      <h3 className="text-xl sm:text-2xl font-bold text-stone-900 group-hover/card:text-[#B8860B] transition-colors">
-                        Beyond the Sunset
-                      </h3>
-
-                      <div className="flex items-center space-x-2.5">
-                        <div className="relative w-7 h-7 rounded-full overflow-hidden border border-[#D4AF37]/50 shrink-0">
-                          <SafeImage
-                            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"
-                            alt="Nia Okonkwo"
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <span className="text-xs sm:text-sm font-medium text-stone-700">Nia Okonkwo</span>
-                      </div>
-
-                      <p className="text-stone-600 text-xs sm:text-sm leading-relaxed line-clamp-2">
-                        Two hearts. One impossible choice. A love that defies time and fate across ancient realms.
-                      </p>
-                    </div>
-
-                    {/* Bottom stats bar */}
-                    <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500">
-                      <div className="flex items-center space-x-4">
-                        <span className="flex items-center gap-1.5 font-medium">
-                          <Eye className="w-3.5 h-3.5 text-stone-500" />
-                          25.4K reads
-                        </span>
-                        <span className="flex items-center gap-1.5 font-medium">
-                          <Heart className="w-3.5 h-3.5 text-stone-500" />
-                          2.1K likes
-                        </span>
-                      </div>
-
-                      <button
-                        onClick={(e) => toggleBookmark("featured-1", e)}
-                        className={`p-2 rounded-lg transition-colors ${
-                          bookmarked["featured-1"]
-                            ? "text-[#B8860B] bg-[#D4AF37]/15"
-                            : "text-stone-500 hover:text-stone-900 hover:bg-stone-100"
-                        }`}
-                        aria-label="Bookmark story"
-                      >
-                        <Bookmark
-                          className={`w-4 h-4 ${bookmarked["featured-1"] ? "fill-[#B8860B]" : ""}`}
-                        />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </div>
-
-            {/* Spotlight 2: The Golden Stool of Ashanti */}
-            <div className="w-[88vw] sm:w-[580px] md:w-[700px] lg:w-[840px] shrink-0 snap-start">
-              <Link href="/story/anansi-and-the-pot-of-wisdom" className="block group/card h-full">
-                <div className="grid grid-cols-1 md:grid-cols-12 bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-md hover:border-[#D4AF37]/60 transition-all duration-300 h-full">
-                  {/* Left Cover Image */}
-                  <div className="md:col-span-5 relative aspect-[16/9] md:aspect-auto min-h-[220px]">
-                    <SafeImage
-                      src="https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=800&auto=format&fit=crop"
-                      alt="The Golden Stool of Ashanti"
-                      fill
-                      className="object-cover group-hover/card:scale-105 transition-transform duration-700"
-                    />
-                    <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5">
-                      <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-extrabold uppercase tracking-wider">
-                        SPOTLIGHT FEATURED
-                      </span>
-                      <span className="px-2.5 py-0.5 rounded-full bg-stone-900/80 text-white text-[10px] font-bold backdrop-blur-md">
-                        2 of 4
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Right Card Details */}
-                  <div className="md:col-span-7 p-5 sm:p-6 flex flex-col justify-between space-y-4">
-                    <div className="space-y-3">
-                      <h3 className="text-xl sm:text-2xl font-bold text-stone-900 group-hover/card:text-[#B8860B] transition-colors">
-                        The Golden Stool of Ashanti
-                      </h3>
-
-                      <div className="flex items-center space-x-2.5">
-                        <div className="relative w-7 h-7 rounded-full overflow-hidden border border-[#D4AF37]/50 shrink-0">
-                          <SafeImage
-                            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop"
-                            alt="Akwasi Mensah"
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <span className="text-xs sm:text-sm font-medium text-stone-700">Akwasi Mensah</span>
-                      </div>
-
-                      <p className="text-stone-600 text-xs sm:text-sm leading-relaxed line-clamp-2">
-                        The sacred ancestral relic descends from stormy skies. A young blacksmith must defend the stool against invading empires.
-                      </p>
-                    </div>
-
-                    {/* Bottom stats bar */}
-                    <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500">
-                      <div className="flex items-center space-x-4">
-                        <span className="flex items-center gap-1.5 font-medium">
-                          <Eye className="w-3.5 h-3.5 text-stone-500" />
-                          38.2K reads
-                        </span>
-                        <span className="flex items-center gap-1.5 font-medium">
-                          <Heart className="w-3.5 h-3.5 text-stone-500" />
-                          3.4K likes
-                        </span>
-                      </div>
-
-                      <button
-                        onClick={(e) => toggleBookmark("featured-spot-2", e)}
-                        className={`p-2 rounded-lg transition-colors ${
-                          bookmarked["featured-spot-2"]
-                            ? "text-[#B8860B] bg-[#D4AF37]/15"
-                            : "text-stone-500 hover:text-stone-900 hover:bg-stone-100"
-                        }`}
-                        aria-label="Bookmark story"
-                      >
-                        <Bookmark
-                          className={`w-4 h-4 ${bookmarked["featured-spot-2"] ? "fill-[#B8860B]" : ""}`}
-                        />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </div>
-
-            {/* Spotlight 3: Sundiata: Lion King of Mali */}
-            <div className="w-[88vw] sm:w-[580px] md:w-[700px] lg:w-[840px] shrink-0 snap-start">
-              <Link href="/story/sundiata-the-lion-king-of-mali" className="block group/card h-full">
-                <div className="grid grid-cols-1 md:grid-cols-12 bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-md hover:border-[#D4AF37]/60 transition-all duration-300 h-full">
-                  {/* Left Cover Image */}
-                  <div className="md:col-span-5 relative aspect-[16/9] md:aspect-auto min-h-[220px]">
-                    <SafeImage
-                      src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?q=80&w=800&auto=format&fit=crop"
-                      alt="Sundiata: Lion King of Mali"
-                      fill
-                      className="object-cover group-hover/card:scale-105 transition-transform duration-700"
-                    />
-                    <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5">
-                      <span className="px-3 py-1 rounded-full bg-yellow-100 text-yellow-900 border border-yellow-300 text-[10px] font-extrabold uppercase tracking-wider">
-                        SPOTLIGHT FEATURED
-                      </span>
-                      <span className="px-2.5 py-0.5 rounded-full bg-stone-900/80 text-white text-[10px] font-bold backdrop-blur-md">
-                        3 of 4
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Right Card Details */}
-                  <div className="md:col-span-7 p-5 sm:p-6 flex flex-col justify-between space-y-4">
-                    <div className="space-y-3">
-                      <h3 className="text-xl sm:text-2xl font-bold text-stone-900 group-hover/card:text-[#B8860B] transition-colors">
-                        Sundiata: Lion King of Mali
-                      </h3>
-
-                      <div className="flex items-center space-x-2.5">
-                        <div className="relative w-7 h-7 rounded-full overflow-hidden border border-[#D4AF37]/50 shrink-0">
-                          <SafeImage
-                            src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop"
-                            alt="Mariama Ba"
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <span className="text-xs sm:text-sm font-medium text-stone-700">Mariama Ba</span>
-                      </div>
-
-                      <p className="text-stone-600 text-xs sm:text-sm leading-relaxed line-clamp-2">
-                        Exiled prince, legendary warrior, founder of the Mali Empire. An iron rod will help him rise to conquer destiny.
-                      </p>
-                    </div>
-
-                    {/* Bottom stats bar */}
-                    <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500">
-                      <div className="flex items-center space-x-4">
-                        <span className="flex items-center gap-1.5 font-medium">
-                          <Eye className="w-3.5 h-3.5 text-stone-500" />
-                          42.1K reads
-                        </span>
-                        <span className="flex items-center gap-1.5 font-medium">
-                          <Heart className="w-3.5 h-3.5 text-stone-500" />
-                          4.8K likes
-                        </span>
-                      </div>
-
-                      <button
-                        onClick={(e) => toggleBookmark("featured-spot-3", e)}
-                        className={`p-2 rounded-lg transition-colors ${
-                          bookmarked["featured-spot-3"]
-                            ? "text-[#B8860B] bg-[#D4AF37]/15"
-                            : "text-stone-500 hover:text-stone-900 hover:bg-stone-100"
-                        }`}
-                        aria-label="Bookmark story"
-                      >
-                        <Bookmark
-                          className={`w-4 h-4 ${bookmarked["featured-spot-3"] ? "fill-[#B8860B]" : ""}`}
-                        />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </div>
-
-            {/* Spotlight 4: The Mask of Oya & The Storm Spirits */}
-            <div className="w-[88vw] sm:w-[580px] md:w-[700px] lg:w-[840px] shrink-0 snap-start">
-              <Link href="/story/anansi-and-the-pot-of-wisdom" className="block group/card h-full">
-                <div className="grid grid-cols-1 md:grid-cols-12 bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-md hover:border-[#D4AF37]/60 transition-all duration-300 h-full">
-                  {/* Left Cover Image */}
-                  <div className="md:col-span-5 relative aspect-[16/9] md:aspect-auto min-h-[220px]">
-                    <SafeImage
-                      src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop"
-                      alt="The Mask of Oya & The Storm Spirits"
-                      fill
-                      className="object-cover group-hover/card:scale-105 transition-transform duration-700"
-                    />
-                    <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5">
-                      <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-900 border border-purple-300 text-[10px] font-extrabold uppercase tracking-wider">
-                        SPOTLIGHT FEATURED
-                      </span>
-                      <span className="px-2.5 py-0.5 rounded-full bg-stone-900/80 text-white text-[10px] font-bold backdrop-blur-md">
-                        4 of 4
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Right Card Details */}
-                  <div className="md:col-span-7 p-5 sm:p-6 flex flex-col justify-between space-y-4">
-                    <div className="space-y-3">
-                      <h3 className="text-xl sm:text-2xl font-bold text-stone-900 group-hover/card:text-[#B8860B] transition-colors">
-                        The Mask of Oya & The Storm Spirits
-                      </h3>
-
-                      <div className="flex items-center space-x-2.5">
-                        <div className="relative w-7 h-7 rounded-full overflow-hidden border border-[#D4AF37]/50 shrink-0">
-                          <SafeImage
-                            src="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=200&auto=format&fit=crop"
-                            alt="Babatunde Lawal"
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <span className="text-xs sm:text-sm font-medium text-stone-700">Babatunde Lawal</span>
-                      </div>
-
-                      <p className="text-stone-600 text-xs sm:text-sm leading-relaxed line-clamp-2">
-                        When monsoon winds howl across the Niger River, the high priestess unleashes the wrath of the wind orisha.
-                      </p>
-                    </div>
-
-                    {/* Bottom stats bar */}
-                    <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500">
-                      <div className="flex items-center space-x-4">
-                        <span className="flex items-center gap-1.5 font-medium">
-                          <Eye className="w-3.5 h-3.5 text-stone-500" />
-                          29.7K reads
-                        </span>
-                        <span className="flex items-center gap-1.5 font-medium">
-                          <Heart className="w-3.5 h-3.5 text-stone-500" />
-                          2.6K likes
-                        </span>
-                      </div>
-
-                      <button
-                        onClick={(e) => toggleBookmark("featured-spot-4", e)}
-                        className={`p-2 rounded-lg transition-colors ${
-                          bookmarked["featured-spot-4"]
-                            ? "text-[#B8860B] bg-[#D4AF37]/15"
-                            : "text-stone-500 hover:text-stone-900 hover:bg-stone-100"
-                        }`}
-                        aria-label="Bookmark story"
-                      >
-                        <Bookmark
-                          className={`w-4 h-4 ${bookmarked["featured-spot-4"] ? "fill-[#B8860B]" : ""}`}
-                        />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </div>
-        </div>
-
         {/* Featured Stories Horizontal Carousel */}
         <div
           ref={featuredScrollRef}
           className="flex items-stretch gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 pt-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none"
         >
-          {/* Spotlight Featured Card in Scroll Row */}
-          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[270px] sm:w-[290px]">
-            <div className="bg-white border-2 border-[#D4AF37]/50 rounded-2xl overflow-hidden hover:border-[#D4AF37] transition-all duration-300 shadow-sm flex flex-col justify-between h-full p-3.5 space-y-3 relative">
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-stone-100 border border-stone-200">
+          {/* Featured Card 1: Beyond the Sunset */}
+          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10">
+                <span className="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300 text-[9px] font-extrabold uppercase tracking-wider">
+                  SPOTLIGHT
+                </span>
+              </div>
+
+              <div className="absolute inset-0 z-0 opacity-80">
                 <SafeImage
                   src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800&auto=format&fit=crop"
                   alt="Beyond the Sunset"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-rose-600 text-white text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shadow-md">
-                  <Sparkles className="w-3 h-3 fill-white" />
-                  <span>SPOTLIGHT</span>
-                </div>
-                <div className="absolute bottom-2.5 right-2.5">
-                  <span className="px-2.5 py-0.5 rounded-full bg-stone-900/90 text-amber-300 border border-amber-400/40 text-[9px] font-extrabold uppercase tracking-wider backdrop-blur-md">
-                    ROMANCE
-                  </span>
-                </div>
               </div>
 
-              <div className="space-y-1.5 flex-1">
-                <h4 className="text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   Beyond the Sunset
                 </h4>
-                <p className="text-xs text-stone-600 font-medium line-clamp-1">Nia Okonkwo</p>
-                <p className="text-xs text-stone-500 leading-relaxed line-clamp-2 pt-0.5">
-                  Two hearts. One impossible choice. A love that defies time and fate across ancient realms.
-                </p>
-              </div>
+                <p className="text-[11px] text-stone-600 font-medium truncate">Nia Okonkwo</p>
 
-              <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500">
-                <span className="flex items-center gap-1 font-medium">
-                  <Eye className="w-3.5 h-3.5 text-stone-500" />
-                  25.4K reads
-                </span>
-                <button
-                  onClick={(e) => toggleBookmark("featured-0", e)}
-                  className={`p-1.5 rounded-lg transition-colors ${
-                    bookmarked["featured-0"]
-                      ? "text-[#B8860B] bg-[#D4AF37]/15"
-                      : "text-stone-500 hover:text-stone-900 hover:bg-stone-100"
-                  }`}
-                  aria-label="Bookmark"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked["featured-0"] ? "fill-[#B8860B]" : ""}`} />
-                </button>
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    25.4K
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Heart className="w-3 h-3" />
+                    2.1K
+                  </span>
+                </div>
               </div>
             </div>
           </Link>
 
-          {/* Featured Card 1 */}
-          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[270px] sm:w-[290px]">
-            <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between h-full p-3.5 space-y-3">
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-stone-100 border border-stone-200">
+          {/* Featured Card 2: The Shadow King's Vow */}
+          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10">
+                <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-300 text-[9px] font-extrabold uppercase tracking-wider">
+                  FANTASY
+                </span>
+              </div>
+
+              <div className="absolute inset-0 z-0 opacity-80">
                 <SafeImage
                   src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=800&auto=format&fit=crop"
                   alt="The Shadow King's Vow"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-white/95 border border-[#D4AF37] text-stone-900 text-xs font-black flex items-center gap-1.5 shadow-md backdrop-blur-md">
-                  <Star className="w-3.5 h-3.5 fill-[#B8860B] text-[#B8860B]" />
-                  <span>4.95</span>
-                  <span className="text-[10px] text-stone-500 font-normal">(1.4K)</span>
-                </div>
-                <div className="absolute bottom-2.5 right-2.5">
-                  <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-300 text-[9px] font-extrabold uppercase tracking-wider backdrop-blur-md">
-                    FANTASY
-                  </span>
-                </div>
               </div>
 
-              <div className="space-y-1.5 flex-1">
-                <h4 className="text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   The Shadow King's Vow
                 </h4>
-                <p className="text-xs text-stone-600 font-medium line-clamp-1">Amara Diallo</p>
-                <p className="text-xs text-stone-500 leading-relaxed line-clamp-2 pt-0.5">
-                  An ancient oath broken. A kingdom hanging in the balance as darkness reawakens.
-                </p>
-              </div>
+                <p className="text-[11px] text-stone-600 font-medium truncate">Amara Diallo</p>
 
-              <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500">
-                <span className="flex items-center gap-1 font-medium">
-                  <Eye className="w-3.5 h-3.5 text-stone-500" />
-                  34.2K reads
-                </span>
-                <button
-                  onClick={(e) => toggleBookmark("hr-1", e)}
-                  className={`p-1.5 rounded-lg transition-colors ${
-                    bookmarked["hr-1"]
-                      ? "text-[#B8860B] bg-[#D4AF37]/15"
-                      : "text-stone-500 hover:text-stone-900 hover:bg-stone-100"
-                  }`}
-                  aria-label="Bookmark"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked["hr-1"] ? "fill-[#B8860B]" : ""}`} />
-                </button>
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    34.2K
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Heart className="w-3 h-3" />
+                    1.4K
+                  </span>
+                </div>
               </div>
             </div>
           </Link>
 
-          {/* Featured Card 2 */}
-          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[270px] sm:w-[290px]">
-            <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between h-full p-3.5 space-y-3">
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-stone-100 border border-stone-200">
+          {/* Featured Card 3: Song of the Baobab */}
+          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10">
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 text-[9px] font-extrabold uppercase tracking-wider">
+                  FOLKLORE
+                </span>
+              </div>
+
+              <div className="absolute inset-0 z-0 opacity-80">
                 <SafeImage
                   src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=800&auto=format&fit=crop"
                   alt="Song of the Baobab"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-white/95 border border-[#D4AF37] text-stone-900 text-xs font-black flex items-center gap-1.5 shadow-md backdrop-blur-md">
-                  <Star className="w-3.5 h-3.5 fill-[#B8860B] text-[#B8860B]" />
-                  <span>4.82</span>
-                  <span className="text-[10px] text-stone-500 font-normal">(890)</span>
-                </div>
-                <div className="absolute bottom-2.5 right-2.5">
-                  <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 text-[9px] font-extrabold uppercase tracking-wider backdrop-blur-md">
-                    FOLKLORE
-                  </span>
-                </div>
               </div>
 
-              <div className="space-y-1.5 flex-1">
-                <h4 className="text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   Song of the Baobab
                 </h4>
-                <p className="text-xs text-stone-600 font-medium line-clamp-1">Tariq Al-Mansoor</p>
-                <p className="text-xs text-stone-500 leading-relaxed line-clamp-2 pt-0.5">
-                  Spirits whisper through the thousand-year roots, offering forbidden power to seekers.
-                </p>
-              </div>
+                <p className="text-[11px] text-stone-600 font-medium truncate">Kofi Mensah</p>
 
-              <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500">
-                <span className="flex items-center gap-1 font-medium">
-                  <Eye className="w-3.5 h-3.5 text-stone-500" />
-                  21.8K reads
-                </span>
-                <button
-                  onClick={(e) => toggleBookmark("hr-2", e)}
-                  className={`p-1.5 rounded-lg transition-colors ${
-                    bookmarked["hr-2"]
-                      ? "text-[#B8860B] bg-[#D4AF37]/15"
-                      : "text-stone-500 hover:text-stone-900 hover:bg-stone-100"
-                  }`}
-                  aria-label="Bookmark"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked["hr-2"] ? "fill-[#B8860B]" : ""}`} />
-                </button>
-              </div>
-            </div>
-          </Link>
-
-          {/* Featured Card 3 */}
-          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[270px] sm:w-[290px]">
-            <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between h-full p-3.5 space-y-3">
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-stone-100 border border-stone-200">
-                <SafeImage
-                  src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?q=80&w=800&auto=format&fit=crop"
-                  alt="Spirits of the Crimson River"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-white/95 border border-[#D4AF37] text-stone-900 text-xs font-black flex items-center gap-1.5 shadow-md backdrop-blur-md">
-                  <Star className="w-3.5 h-3.5 fill-[#B8860B] text-[#B8860B]" />
-                  <span>4.91</span>
-                  <span className="text-[10px] text-stone-500 font-normal">(1.2K)</span>
-                </div>
-                <div className="absolute bottom-2.5 right-2.5">
-                  <span className="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300 text-[9px] font-extrabold uppercase tracking-wider backdrop-blur-md">
-                    MYTHOLOGY
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    19.8K
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Heart className="w-3 h-3" />
+                    890
                   </span>
                 </div>
               </div>
-
-              <div className="space-y-1.5 flex-1">
-                <h4 className="text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
-                  Spirits of the Crimson River
-                </h4>
-                <p className="text-xs text-stone-600 font-medium line-clamp-1">Zoya Ndiaye</p>
-                <p className="text-xs text-stone-500 leading-relaxed line-clamp-2 pt-0.5">
-                  A river of blood, a sacred pact, and a brave maiden destined to heal two warring tribes.
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500">
-                <span className="flex items-center gap-1 font-medium">
-                  <Eye className="w-3.5 h-3.5 text-stone-500" />
-                  28.5K reads
-                </span>
-                <button
-                  onClick={(e) => toggleBookmark("hr-3", e)}
-                  className={`p-1.5 rounded-lg transition-colors ${
-                    bookmarked["hr-3"]
-                      ? "text-[#B8860B] bg-[#D4AF37]/15"
-                      : "text-stone-500 hover:text-stone-900 hover:bg-stone-100"
-                  }`}
-                  aria-label="Bookmark"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked["hr-3"] ? "fill-[#B8860B]" : ""}`} />
-                </button>
-              </div>
             </div>
           </Link>
 
-          {/* Featured Card 4 */}
-          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[270px] sm:w-[290px]">
-            <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between h-full p-3.5 space-y-3">
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-stone-100 border border-stone-200">
+          {/* Featured Card 4: The Golden Stool of Ashanti */}
+          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10">
+                <span className="px-2.5 py-0.5 rounded-full bg-yellow-100 text-yellow-900 border border-yellow-300 text-[9px] font-extrabold uppercase tracking-wider">
+                  HISTORICAL
+                </span>
+              </div>
+
+              <div className="absolute inset-0 z-0 opacity-80">
                 <SafeImage
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop"
-                  alt="The Starlight Covenant"
+                  src="https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=800&auto=format&fit=crop"
+                  alt="The Golden Stool of Ashanti"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-white/95 border border-[#D4AF37] text-stone-900 text-xs font-black flex items-center gap-1.5 shadow-md backdrop-blur-md">
-                  <Star className="w-3.5 h-3.5 fill-[#B8860B] text-[#B8860B]" />
-                  <span>4.88</span>
-                  <span className="text-[10px] text-stone-500 font-normal">(1.1K)</span>
-                </div>
-                <div className="absolute bottom-2.5 right-2.5">
-                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-[9px] font-extrabold uppercase tracking-wider backdrop-blur-md">
-                    SCI-FI
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
+                  The Golden Stool of Ashanti
+                </h4>
+                <p className="text-[11px] text-stone-600 font-medium truncate">Akwasi Mensah</p>
+
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    38.2K
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Heart className="w-3 h-3" />
+                    2.3K
                   </span>
                 </div>
-              </div>
-
-              <div className="space-y-1.5 flex-1">
-                <h4 className="text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
-                  The Starlight Covenant
-                </h4>
-                <p className="text-xs text-stone-600 font-medium line-clamp-1">Zuri Mbeki</p>
-                <p className="text-xs text-stone-500 leading-relaxed line-clamp-2 pt-0.5">
-                  Afrofuturistic starfarers defending their ancestral solar legacy against star invaders.
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500">
-                <span className="flex items-center gap-1 font-medium">
-                  <Eye className="w-3.5 h-3.5 text-stone-500" />
-                  19.8K reads
-                </span>
-                <button
-                  onClick={(e) => toggleBookmark("hr-4", e)}
-                  className={`p-1.5 rounded-lg transition-colors ${
-                    bookmarked["hr-4"]
-                      ? "text-[#B8860B] bg-[#D4AF37]/15"
-                      : "text-stone-500 hover:text-stone-900 hover:bg-stone-100"
-                  }`}
-                  aria-label="Bookmark"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked["hr-4"] ? "fill-[#B8860B]" : ""}`} />
-                </button>
               </div>
             </div>
           </Link>
 
-          {/* Featured Card 5 */}
-          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[270px] sm:w-[290px]">
-            <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between h-full p-3.5 space-y-3">
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-stone-100 border border-stone-200">
+          {/* Featured Card 5: Whispers of the Ancestors */}
+          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-[9px] font-extrabold uppercase tracking-wider">
+                  SPIRITUAL
+                </span>
+              </div>
+
+              <div className="absolute inset-0 z-0 opacity-80">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=800&auto=format&fit=crop"
+                  alt="Whispers of the Ancestors"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
+                  Whispers of the Ancestors
+                </h4>
+                <p className="text-[11px] text-stone-600 font-medium truncate">Zanele Dlamini</p>
+
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    22.1K
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Heart className="w-3 h-3" />
+                    1.1K
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          {/* Featured Card 6: Mami Wata: Whispering Currents */}
+          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10">
+                <span className="px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-300 text-[9px] font-extrabold uppercase tracking-wider">
+                  MYTHOLOGY
+                </span>
+              </div>
+
+              <div className="absolute inset-0 z-0 opacity-80">
                 <SafeImage
                   src="https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=800&auto=format&fit=crop"
-                  alt="Sundiata: Lion King of Mali"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-white/95 border border-[#D4AF37] text-stone-900 text-xs font-black flex items-center gap-1.5 shadow-md backdrop-blur-md">
-                  <Star className="w-3.5 h-3.5 fill-[#B8860B] text-[#B8860B]" />
-                  <span>4.98</span>
-                  <span className="text-[10px] text-stone-500 font-normal">(2.3K)</span>
-                </div>
-                <div className="absolute bottom-2.5 right-2.5">
-                  <span className="px-2.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-300 text-[9px] font-extrabold uppercase tracking-wider backdrop-blur-md">
-                    EPIC
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-1.5 flex-1">
-                <h4 className="text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
-                  Sundiata: Lion King of Mali
-                </h4>
-                <p className="text-xs text-stone-600 font-medium line-clamp-1">Mariama Ba</p>
-                <p className="text-xs text-stone-500 leading-relaxed line-clamp-2 pt-0.5">
-                  The heroic griot epic of the child who could not walk and rose to unite the Mali Empire.
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500">
-                <span className="flex items-center gap-1 font-medium">
-                  <Eye className="w-3.5 h-3.5 text-stone-500" />
-                  42.1K reads
-                </span>
-                <button
-                  onClick={(e) => toggleBookmark("hr-5", e)}
-                  className={`p-1.5 rounded-lg transition-colors ${
-                    bookmarked["hr-5"]
-                      ? "text-[#B8860B] bg-[#D4AF37]/15"
-                      : "text-stone-500 hover:text-stone-900 hover:bg-stone-100"
-                  }`}
-                  aria-label="Bookmark"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked["hr-5"] ? "fill-[#B8860B]" : ""}`} />
-                </button>
-              </div>
-            </div>
-          </Link>
-
-          {/* Featured Card 6 */}
-          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[270px] sm:w-[290px]">
-            <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between h-full p-3.5 space-y-3">
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-stone-100 border border-stone-200">
-                <SafeImage
-                  src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800&auto=format&fit=crop"
                   alt="Mami Wata: Whispering Currents"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-white/95 border border-[#D4AF37] text-stone-900 text-xs font-black flex items-center gap-1.5 shadow-md backdrop-blur-md">
-                  <Star className="w-3.5 h-3.5 fill-[#B8860B] text-[#B8860B]" />
-                  <span>4.92</span>
-                  <span className="text-[10px] text-stone-500 font-normal">(1.6K)</span>
-                </div>
-                <div className="absolute bottom-2.5 right-2.5">
-                  <span className="px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-300 text-[9px] font-extrabold uppercase tracking-wider backdrop-blur-md">
-                    MYTHOLOGY
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
+                  Mami Wata: Currents
+                </h4>
+                <p className="text-[11px] text-stone-600 font-medium truncate">Nia Okonkwo</p>
+
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    28.6K
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Heart className="w-3 h-3" />
+                    1.6K
                   </span>
                 </div>
-              </div>
-
-              <div className="space-y-1.5 flex-1">
-                <h4 className="text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
-                  Mami Wata: Whispering Currents
-                </h4>
-                <p className="text-xs text-stone-600 font-medium line-clamp-1">Nia Okonkwo</p>
-                <p className="text-xs text-stone-500 leading-relaxed line-clamp-2 pt-0.5">
-                  A seaside encounter with the elusive water deity testing the humility of mortal fishermen.
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500">
-                <span className="flex items-center gap-1 font-medium">
-                  <Eye className="w-3.5 h-3.5 text-stone-500" />
-                  28.6K reads
-                </span>
-                <button
-                  onClick={(e) => toggleBookmark("hr-6", e)}
-                  className={`p-1.5 rounded-lg transition-colors ${
-                    bookmarked["hr-6"]
-                      ? "text-[#B8860B] bg-[#D4AF37]/15"
-                      : "text-stone-500 hover:text-stone-900 hover:bg-stone-100"
-                  }`}
-                  aria-label="Bookmark"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked["hr-6"] ? "fill-[#B8860B]" : ""}`} />
-                </button>
               </div>
             </div>
           </Link>
 
-          {/* Featured Card 7 */}
-          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[270px] sm:w-[290px]">
-            <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between h-full p-3.5 space-y-3">
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-stone-100 border border-stone-200">
+          {/* Featured Card 7: Dogon: Sirius Star Dancers */}
+          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10">
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-300 text-[9px] font-extrabold uppercase tracking-wider">
+                  COSMOLOGY
+                </span>
+              </div>
+
+              <div className="absolute inset-0 z-0 opacity-80">
                 <SafeImage
                   src="https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=800&auto=format&fit=crop"
                   alt="Dogon: Sirius Star Dancers"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-white/95 border border-[#D4AF37] text-stone-900 text-xs font-black flex items-center gap-1.5 shadow-md backdrop-blur-md">
-                  <Star className="w-3.5 h-3.5 fill-[#B8860B] text-[#B8860B]" />
-                  <span>4.90</span>
-                  <span className="text-[10px] text-stone-500 font-normal">(980)</span>
-                </div>
-                <div className="absolute bottom-2.5 right-2.5">
-                  <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-300 text-[9px] font-extrabold uppercase tracking-wider backdrop-blur-md">
-                    COSMOLOGY
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
+                  Dogon: Star Dancers
+                </h4>
+                <p className="text-[11px] text-stone-600 font-medium truncate">Oumar Sangare</p>
+
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    21.4K
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Heart className="w-3 h-3" />
+                    980
                   </span>
                 </div>
-              </div>
-
-              <div className="space-y-1.5 flex-1">
-                <h4 className="text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
-                  Dogon: Sirius Star Dancers
-                </h4>
-                <p className="text-xs text-stone-600 font-medium line-clamp-1">Oumar Sangare</p>
-                <p className="text-xs text-stone-500 leading-relaxed line-clamp-2 pt-0.5">
-                  Ancient celestial knowledge handed down through generations of high cliff priests.
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500">
-                <span className="flex items-center gap-1 font-medium">
-                  <Eye className="w-3.5 h-3.5 text-stone-500" />
-                  21.4K reads
-                </span>
-                <button
-                  onClick={(e) => toggleBookmark("hr-7", e)}
-                  className={`p-1.5 rounded-lg transition-colors ${
-                    bookmarked["hr-7"]
-                      ? "text-[#B8860B] bg-[#D4AF37]/15"
-                      : "text-stone-500 hover:text-stone-900 hover:bg-stone-100"
-                  }`}
-                  aria-label="Bookmark"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked["hr-7"] ? "fill-[#B8860B]" : ""}`} />
-                </button>
               </div>
             </div>
           </Link>
 
-          {/* Featured Card 8 */}
-          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[270px] sm:w-[290px]">
-            <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between h-full p-3.5 space-y-3">
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-stone-100 border border-stone-200">
+          {/* Featured Card 8: Queen Moremi's Sacred Oath */}
+          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10">
+                <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-300 text-[9px] font-extrabold uppercase tracking-wider">
+                  LEGEND
+                </span>
+              </div>
+
+              <div className="absolute inset-0 z-0 opacity-80">
                 <SafeImage
                   src="https://images.unsplash.com/photo-1511497584788-876761c119ef?q=80&w=800&auto=format&fit=crop"
                   alt="Queen Moremi's Sacred Oath"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-white/95 border border-[#D4AF37] text-stone-900 text-xs font-black flex items-center gap-1.5 shadow-md backdrop-blur-md">
-                  <Star className="w-3.5 h-3.5 fill-[#B8860B] text-[#B8860B]" />
-                  <span>4.86</span>
-                  <span className="text-[10px] text-stone-500 font-normal">(840)</span>
-                </div>
-                <div className="absolute bottom-2.5 right-2.5">
-                  <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-300 text-[9px] font-extrabold uppercase tracking-wider backdrop-blur-md">
-                    LEGEND
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
+                  Queen Moremi's Oath
+                </h4>
+                <p className="text-[11px] text-stone-600 font-medium truncate">Folake Adeyemi</p>
+
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    17.5K
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Heart className="w-3 h-3" />
+                    840
                   </span>
                 </div>
-              </div>
-
-              <div className="space-y-1.5 flex-1">
-                <h4 className="text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
-                  Queen Moremi's Sacred Oath
-                </h4>
-                <p className="text-xs text-stone-600 font-medium line-clamp-1">Folake Adeyemi</p>
-                <p className="text-xs text-stone-500 leading-relaxed line-clamp-2 pt-0.5">
-                  A courageous queen infiltrates the forest spirit raiders to rescue the sacred city of Ife.
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500">
-                <span className="flex items-center gap-1 font-medium">
-                  <Eye className="w-3.5 h-3.5 text-stone-500" />
-                  17.5K reads
-                </span>
-                <button
-                  onClick={(e) => toggleBookmark("hr-8", e)}
-                  className={`p-1.5 rounded-lg transition-colors ${
-                    bookmarked["hr-8"]
-                      ? "text-[#B8860B] bg-[#D4AF37]/15"
-                      : "text-stone-500 hover:text-stone-900 hover:bg-stone-100"
-                  }`}
-                  aria-label="Bookmark"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked["hr-8"] ? "fill-[#B8860B]" : ""}`} />
-                </button>
               </div>
             </div>
           </Link>
@@ -1595,312 +1085,336 @@ export default function HomePage() {
           ref={newReleasesScrollRef}
           className="flex items-stretch gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 pt-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none"
         >
-          {/* New Release 1 */}
-          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[320px] sm:w-[380px]">
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 flex gap-4 items-center hover:border-[#D4AF37]/60 transition-all shadow-sm relative overflow-hidden h-full">
-              <div className="absolute top-2 right-2 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-[10px] font-black flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-emerald-600" />
-                NEW RELEASE
+          {/* New Release Card 1: Chronicles of the Sun Emperor */}
+          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                  <Sparkles className="w-2.5 h-2.5 text-emerald-600" />
+                  NEW RELEASE
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-stone-900/70 text-white text-[9px] font-bold backdrop-blur-md">
+                  2h ago
+                </span>
               </div>
 
-              <div className="relative w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden shrink-0 border border-stone-200 bg-stone-100">
+              <div className="absolute inset-0 z-0 opacity-80">
                 <SafeImage
-                  src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=400&auto=format&fit=crop"
+                  src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800&auto=format&fit=crop"
                   alt="Chronicles of the Sun Emperor"
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
               </div>
 
-              <div className="min-w-0 flex-1 space-y-1.5">
-                <h4 className="text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   Chronicles of the Sun Emperor
                 </h4>
-                <p className="text-xs text-stone-600 font-medium">Kwame Asante • Published 2h ago</p>
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">
-                  A young prince rises against cosmic warlords to reclaim his empire's lost throne.
-                </p>
-                <div className="flex items-center space-x-3 text-xs text-stone-500 pt-1 font-medium">
+                <p className="text-[11px] text-stone-600 font-medium truncate">Kwame Asante</p>
+
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
                   <span className="flex items-center gap-1">
-                    <BookOpen className="w-3.5 h-3.5 text-[#B8860B]" />
-                    12 chapters
+                    <BookOpen className="w-3 h-3 text-[#B8860B]" />
+                    12 chs
                   </span>
                   <span className="flex items-center gap-1">
-                    <Eye className="w-3.5 h-3.5 text-stone-500" />
-                    4.2K reads
+                    <Eye className="w-3 h-3" />
+                    4.2K
                   </span>
                 </div>
               </div>
             </div>
           </Link>
 
-          {/* New Release 2 */}
-          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[320px] sm:w-[380px]">
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 flex gap-4 items-center hover:border-[#D4AF37]/60 transition-all shadow-sm relative overflow-hidden h-full">
-              <div className="absolute top-2 right-2 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-[10px] font-black flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-emerald-600" />
-                NEW RELEASE
+          {/* New Release Card 2: Secrets of the Moonlight River */}
+          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                  <Sparkles className="w-2.5 h-2.5 text-emerald-600" />
+                  NEW RELEASE
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-stone-900/70 text-white text-[9px] font-bold backdrop-blur-md">
+                  4h ago
+                </span>
               </div>
 
-              <div className="relative w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden shrink-0 border border-stone-200 bg-stone-100">
+              <div className="absolute inset-0 z-0 opacity-80">
                 <SafeImage
-                  src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400&auto=format&fit=crop"
+                  src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=800&auto=format&fit=crop"
                   alt="Secrets of the Moonlight River"
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
               </div>
 
-              <div className="min-w-0 flex-1 space-y-1.5">
-                <h4 className="text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   Secrets of the Moonlight River
                 </h4>
-                <p className="text-xs text-stone-600 font-medium">Amina Yusuf • Published 4h ago</p>
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">
-                  Mystical enchantments awake whenever the river turns silver at midnight.
-                </p>
-                <div className="flex items-center space-x-3 text-xs text-stone-500 pt-1 font-medium">
+                <p className="text-[11px] text-stone-600 font-medium truncate">Amina Yusuf</p>
+
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
                   <span className="flex items-center gap-1">
-                    <BookOpen className="w-3.5 h-3.5 text-[#B8860B]" />
-                    8 chapters
+                    <BookOpen className="w-3 h-3 text-[#B8860B]" />
+                    8 chs
                   </span>
                   <span className="flex items-center gap-1">
-                    <Eye className="w-3.5 h-3.5 text-stone-500" />
-                    3.8K reads
+                    <Eye className="w-3 h-3" />
+                    3.8K
                   </span>
                 </div>
               </div>
             </div>
           </Link>
 
-          {/* New Release 3 */}
-          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[320px] sm:w-[380px]">
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 flex gap-4 items-center hover:border-[#D4AF37]/60 transition-all shadow-sm relative overflow-hidden h-full">
-              <div className="absolute top-2 right-2 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-[10px] font-black flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-emerald-600" />
-                NEW RELEASE
+          {/* New Release Card 3: Tears of the Desert Rose */}
+          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                  <Sparkles className="w-2.5 h-2.5 text-emerald-600" />
+                  NEW RELEASE
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-stone-900/70 text-white text-[9px] font-bold backdrop-blur-md">
+                  Today
+                </span>
               </div>
 
-              <div className="relative w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden shrink-0 border border-stone-200 bg-stone-100">
+              <div className="absolute inset-0 z-0 opacity-80">
                 <SafeImage
-                  src="https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=400&auto=format&fit=crop"
+                  src="https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=800&auto=format&fit=crop"
                   alt="Tears of the Desert Rose"
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
               </div>
 
-              <div className="min-w-0 flex-1 space-y-1.5">
-                <h4 className="text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   Tears of the Desert Rose
                 </h4>
-                <p className="text-xs text-stone-600 font-medium">Kenzo Mensah • Published Today</p>
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">
-                  A high-stakes romance set against caravan journeys through ancient trading posts.
-                </p>
-                <div className="flex items-center space-x-3 text-xs text-stone-500 pt-1 font-medium">
+                <p className="text-[11px] text-stone-600 font-medium truncate">Kenzo Mensah</p>
+
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
                   <span className="flex items-center gap-1">
-                    <BookOpen className="w-3.5 h-3.5 text-[#B8860B]" />
-                    6 chapters
+                    <BookOpen className="w-3 h-3 text-[#B8860B]" />
+                    6 chs
                   </span>
                   <span className="flex items-center gap-1">
-                    <Eye className="w-3.5 h-3.5 text-stone-500" />
-                    2.9K reads
+                    <Eye className="w-3 h-3" />
+                    2.9K
                   </span>
                 </div>
               </div>
             </div>
           </Link>
 
-          {/* New Release 4 */}
-          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[320px] sm:w-[380px]">
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 flex gap-4 items-center hover:border-[#D4AF37]/60 transition-all shadow-sm relative overflow-hidden h-full">
-              <div className="absolute top-2 right-2 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-[10px] font-black flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-emerald-600" />
-                NEW RELEASE
+          {/* New Release Card 4: Guardian of the Forgotten Realm */}
+          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                  <Sparkles className="w-2.5 h-2.5 text-emerald-600" />
+                  NEW RELEASE
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-stone-900/70 text-white text-[9px] font-bold backdrop-blur-md">
+                  1d ago
+                </span>
               </div>
 
-              <div className="relative w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden shrink-0 border border-stone-200 bg-stone-100">
+              <div className="absolute inset-0 z-0 opacity-80">
                 <SafeImage
-                  src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=400&auto=format&fit=crop"
+                  src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop"
                   alt="Guardian of the Forgotten Realm"
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
               </div>
 
-              <div className="min-w-0 flex-1 space-y-1.5">
-                <h4 className="text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   Guardian of the Forgotten Realm
                 </h4>
-                <p className="text-xs text-stone-600 font-medium">Nneka Okafor • Published Yesterday</p>
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">
-                  Interactive multi-choice quest deep inside the sacred forest of spirits.
-                </p>
-                <div className="flex items-center space-x-3 text-xs text-stone-500 pt-1 font-medium">
+                <p className="text-[11px] text-stone-600 font-medium truncate">Nneka Okafor</p>
+
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
                   <span className="flex items-center gap-1">
-                    <BookOpen className="w-3.5 h-3.5 text-[#B8860B]" />
-                    15 chapters
+                    <BookOpen className="w-3 h-3 text-[#B8860B]" />
+                    15 chs
                   </span>
                   <span className="flex items-center gap-1">
-                    <Eye className="w-3.5 h-3.5 text-stone-500" />
-                    5.1K reads
+                    <Eye className="w-3 h-3" />
+                    5.1K
                   </span>
                 </div>
               </div>
             </div>
           </Link>
 
-          {/* New Release 5 */}
-          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[320px] sm:w-[380px]">
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 flex gap-4 items-center hover:border-[#D4AF37]/60 transition-all shadow-sm relative overflow-hidden h-full">
-              <div className="absolute top-2 right-2 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-[10px] font-black flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-emerald-600" />
-                NEW RELEASE
+          {/* New Release Card 5: Dance of the Firefly Spirits */}
+          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                  <Sparkles className="w-2.5 h-2.5 text-emerald-600" />
+                  NEW RELEASE
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-stone-900/70 text-white text-[9px] font-bold backdrop-blur-md">
+                  Today
+                </span>
               </div>
 
-              <div className="relative w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden shrink-0 border border-stone-200 bg-stone-100">
+              <div className="absolute inset-0 z-0 opacity-80">
                 <SafeImage
-                  src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?q=80&w=400&auto=format&fit=crop"
+                  src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?q=80&w=800&auto=format&fit=crop"
                   alt="Dance of the Firefly Spirits"
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
               </div>
 
-              <div className="min-w-0 flex-1 space-y-1.5">
-                <h4 className="text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   Dance of the Firefly Spirits
                 </h4>
-                <p className="text-xs text-stone-600 font-medium">Zoya Ndiaye • Published Today</p>
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">
-                  Luminescent nocturnal folklore woven through Senegalese delta river journeys.
-                </p>
-                <div className="flex items-center space-x-3 text-xs text-stone-500 pt-1 font-medium">
+                <p className="text-[11px] text-stone-600 font-medium truncate">Zoya Ndiaye</p>
+
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
                   <span className="flex items-center gap-1">
-                    <BookOpen className="w-3.5 h-3.5 text-[#B8860B]" />
-                    10 chapters
+                    <BookOpen className="w-3 h-3 text-[#B8860B]" />
+                    10 chs
                   </span>
                   <span className="flex items-center gap-1">
-                    <Eye className="w-3.5 h-3.5 text-stone-500" />
-                    3.4K reads
+                    <Eye className="w-3 h-3" />
+                    3.4K
                   </span>
                 </div>
               </div>
             </div>
           </Link>
 
-          {/* New Release 6 */}
-          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[320px] sm:w-[380px]">
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 flex gap-4 items-center hover:border-[#D4AF37]/60 transition-all shadow-sm relative overflow-hidden h-full">
-              <div className="absolute top-2 right-2 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-[10px] font-black flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-emerald-600" />
-                NEW RELEASE
+          {/* New Release Card 6: The Drum That Awakened the Sun */}
+          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                  <Sparkles className="w-2.5 h-2.5 text-emerald-600" />
+                  NEW RELEASE
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-stone-900/70 text-white text-[9px] font-bold backdrop-blur-md">
+                  Today
+                </span>
               </div>
 
-              <div className="relative w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden shrink-0 border border-stone-200 bg-stone-100">
+              <div className="absolute inset-0 z-0 opacity-80">
                 <SafeImage
-                  src="https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=400&auto=format&fit=crop"
+                  src="https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=800&auto=format&fit=crop"
                   alt="The Drum That Awakened the Sun"
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
               </div>
 
-              <div className="min-w-0 flex-1 space-y-1.5">
-                <h4 className="text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   The Drum That Awakened the Sun
                 </h4>
-                <p className="text-xs text-stone-600 font-medium">Chikezie Obi • Published Today</p>
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">
-                  A rhythmic quest across ancient hills to summon the dawn after endless twilight.
-                </p>
-                <div className="flex items-center space-x-3 text-xs text-stone-500 pt-1 font-medium">
+                <p className="text-[11px] text-stone-600 font-medium truncate">Chikezie Obi</p>
+
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
                   <span className="flex items-center gap-1">
-                    <BookOpen className="w-3.5 h-3.5 text-[#B8860B]" />
-                    7 chapters
+                    <BookOpen className="w-3 h-3 text-[#B8860B]" />
+                    7 chs
                   </span>
                   <span className="flex items-center gap-1">
-                    <Eye className="w-3.5 h-3.5 text-stone-500" />
-                    4.0K reads
+                    <Eye className="w-3 h-3" />
+                    4.0K
                   </span>
                 </div>
               </div>
             </div>
           </Link>
 
-          {/* New Release 7 */}
-          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[320px] sm:w-[380px]">
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 flex gap-4 items-center hover:border-[#D4AF37]/60 transition-all shadow-sm relative overflow-hidden h-full">
-              <div className="absolute top-2 right-2 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-[10px] font-black flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-emerald-600" />
-                NEW RELEASE
+          {/* New Release Card 7: Sands of the Sahara Caravan */}
+          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                  <Sparkles className="w-2.5 h-2.5 text-emerald-600" />
+                  NEW RELEASE
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-stone-900/70 text-white text-[9px] font-bold backdrop-blur-md">
+                  1d ago
+                </span>
               </div>
 
-              <div className="relative w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden shrink-0 border border-stone-200 bg-stone-100">
+              <div className="absolute inset-0 z-0 opacity-80">
                 <SafeImage
-                  src="https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=400&auto=format&fit=crop"
+                  src="https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=800&auto=format&fit=crop"
                   alt="Sands of the Sahara Caravan"
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
               </div>
 
-              <div className="min-w-0 flex-1 space-y-1.5">
-                <h4 className="text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   Sands of the Sahara Caravan
                 </h4>
-                <p className="text-xs text-stone-600 font-medium">Fatima Zahra • Published Yesterday</p>
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">
-                  Lost navigational scrolls lead a merchant guild to a forgotten subterranean oasis.
-                </p>
-                <div className="flex items-center space-x-3 text-xs text-stone-500 pt-1 font-medium">
+                <p className="text-[11px] text-stone-600 font-medium truncate">Fatima Zahra</p>
+
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
                   <span className="flex items-center gap-1">
-                    <BookOpen className="w-3.5 h-3.5 text-[#B8860B]" />
-                    9 chapters
+                    <BookOpen className="w-3 h-3 text-[#B8860B]" />
+                    9 chs
                   </span>
                   <span className="flex items-center gap-1">
-                    <Eye className="w-3.5 h-3.5 text-stone-500" />
-                    3.6K reads
+                    <Eye className="w-3 h-3" />
+                    3.6K
                   </span>
                 </div>
               </div>
             </div>
           </Link>
 
-          {/* New Release 8 */}
-          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[320px] sm:w-[380px]">
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 flex gap-4 items-center hover:border-[#D4AF37]/60 transition-all shadow-sm relative overflow-hidden h-full">
-              <div className="absolute top-2 right-2 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-[10px] font-black flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-emerald-600" />
-                NEW RELEASE
+          {/* New Release Card 8: Legend of the Iron Spear */}
+          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                  <Sparkles className="w-2.5 h-2.5 text-emerald-600" />
+                  NEW RELEASE
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-stone-900/70 text-white text-[9px] font-bold backdrop-blur-md">
+                  1d ago
+                </span>
               </div>
 
-              <div className="relative w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden shrink-0 border border-stone-200 bg-stone-100">
+              <div className="absolute inset-0 z-0 opacity-80">
                 <SafeImage
-                  src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=400&auto=format&fit=crop"
+                  src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop"
                   alt="Legend of the Iron Spear"
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
               </div>
 
-              <div className="min-w-0 flex-1 space-y-1.5">
-                <h4 className="text-base font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   Legend of the Iron Spear
                 </h4>
-                <p className="text-xs text-stone-600 font-medium">Sekou Toure • Published 1d ago</p>
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">
-                  The legacy of the blacksmith shamans who forged the celestial shields of the empire.
-                </p>
-                <div className="flex items-center space-x-3 text-xs text-stone-500 pt-1 font-medium">
+                <p className="text-[11px] text-stone-600 font-medium truncate">Sekou Toure</p>
+
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
                   <span className="flex items-center gap-1">
-                    <BookOpen className="w-3.5 h-3.5 text-[#B8860B]" />
-                    14 chapters
+                    <BookOpen className="w-3 h-3 text-[#B8860B]" />
+                    14 chs
                   </span>
                   <span className="flex items-center gap-1">
-                    <Eye className="w-3.5 h-3.5 text-stone-500" />
-                    4.8K reads
+                    <Eye className="w-3 h-3" />
+                    4.8K
                   </span>
                 </div>
               </div>
@@ -1959,282 +1473,338 @@ export default function HomePage() {
           ref={recentlyUpdatedScrollRef}
           className="flex items-stretch gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 pt-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none"
         >
-          {/* Item 1 */}
-          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[270px] sm:w-[300px]">
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 hover:border-[#D4AF37]/60 transition-all shadow-sm space-y-3 flex flex-col justify-between h-full">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" /> + Ch. 18 Added
+          {/* Recently Updated Card 1: The Golden Stool of Ashanti */}
+          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-300 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                  <TrendingUp className="w-2.5 h-2.5 text-blue-600" />
+                  + CH. 18
                 </span>
-                <span className="text-[10px] text-stone-500">30m ago</span>
+                <span className="px-2 py-0.5 rounded-full bg-stone-900/70 text-white text-[9px] font-bold backdrop-blur-md">
+                  30m ago
+                </span>
               </div>
 
-              <div className="space-y-1 flex-1">
-                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="absolute inset-0 z-0 opacity-80">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=800&auto=format&fit=crop"
+                  alt="The Golden Stool of Ashanti"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   The Golden Stool of Ashanti
                 </h4>
-                <p className="text-xs text-stone-600 font-medium line-clamp-1">Akwasi Mensah</p>
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed pt-1">
-                  Chapter 18: "The Battle of the Sacred Forest" has been released with new audio narration.
-                </p>
-              </div>
+                <p className="text-[11px] text-stone-600 font-medium truncate">Akwasi Mensah</p>
 
-              <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500 font-medium">
-                <span>18 Chapters total</span>
-                <button
-                  onClick={(e) => toggleBookmark("ru-1", e)}
-                  className={`p-1 rounded-lg transition-colors ${
-                    bookmarked["ru-1"] ? "text-[#B8860B]" : "hover:text-stone-900"
-                  }`}
-                  aria-label="Bookmark"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked["ru-1"] ? "fill-[#B8860B]" : ""}`} />
-                </button>
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3 text-[#B8860B]" />
+                    18 chs
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    5.2K
+                  </span>
+                </div>
               </div>
             </div>
           </Link>
 
-          {/* Item 2 */}
-          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[270px] sm:w-[300px]">
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 hover:border-[#D4AF37]/60 transition-all shadow-sm space-y-3 flex flex-col justify-between h-full">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" /> + Ch. 24 Added
+          {/* Recently Updated Card 2: Sundiata: Lion King of Mali */}
+          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-300 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                  <TrendingUp className="w-2.5 h-2.5 text-blue-600" />
+                  + CH. 24
                 </span>
-                <span className="text-[10px] text-stone-500">1h ago</span>
+                <span className="px-2 py-0.5 rounded-full bg-stone-900/70 text-white text-[9px] font-bold backdrop-blur-md">
+                  1h ago
+                </span>
               </div>
 
-              <div className="space-y-1 flex-1">
-                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="absolute inset-0 z-0 opacity-80">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?q=80&w=800&auto=format&fit=crop"
+                  alt="Sundiata: Lion King of Mali"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   Sundiata: Lion King of Mali
                 </h4>
-                <p className="text-xs text-stone-600 font-medium line-clamp-1">Mariama Ba</p>
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed pt-1">
-                  Chapter 24: "Coronation of the Great Empire" is now available for readers.
-                </p>
-              </div>
+                <p className="text-[11px] text-stone-600 font-medium truncate">Mariama Ba</p>
 
-              <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500 font-medium">
-                <span>24 Chapters total</span>
-                <button
-                  onClick={(e) => toggleBookmark("ru-2", e)}
-                  className={`p-1 rounded-lg transition-colors ${
-                    bookmarked["ru-2"] ? "text-[#B8860B]" : "hover:text-stone-900"
-                  }`}
-                  aria-label="Bookmark"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked["ru-2"] ? "fill-[#B8860B]" : ""}`} />
-                </button>
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3 text-[#B8860B]" />
+                    24 chs
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    42.1K
+                  </span>
+                </div>
               </div>
             </div>
           </Link>
 
-          {/* Item 3 */}
-          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[270px] sm:w-[300px]">
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 hover:border-[#D4AF37]/60 transition-all shadow-sm space-y-3 flex flex-col justify-between h-full">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" /> + Ch. 7 Added
+          {/* Recently Updated Card 3: Daughter of the Ocean Spirit */}
+          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-300 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                  <TrendingUp className="w-2.5 h-2.5 text-blue-600" />
+                  + CH. 7
                 </span>
-                <span className="text-[10px] text-stone-500">3h ago</span>
+                <span className="px-2 py-0.5 rounded-full bg-stone-900/70 text-white text-[9px] font-bold backdrop-blur-md">
+                  3h ago
+                </span>
               </div>
 
-              <div className="space-y-1 flex-1">
-                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="absolute inset-0 z-0 opacity-80">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop"
+                  alt="Daughter of the Ocean Spirit"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   Daughter of the Ocean Spirit
                 </h4>
-                <p className="text-xs text-stone-600 font-medium line-clamp-1">Folake Adeyemi</p>
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed pt-1">
-                  Chapter 7: "The Song of Yemoja" released with interactive choice branch nodes.
-                </p>
-              </div>
+                <p className="text-[11px] text-stone-600 font-medium truncate">Folake Adeyemi</p>
 
-              <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500 font-medium">
-                <span>7 Chapters total</span>
-                <button
-                  onClick={(e) => toggleBookmark("ru-3", e)}
-                  className={`p-1 rounded-lg transition-colors ${
-                    bookmarked["ru-3"] ? "text-[#B8860B]" : "hover:text-stone-900"
-                  }`}
-                  aria-label="Bookmark"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked["ru-3"] ? "fill-[#B8860B]" : ""}`} />
-                </button>
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3 text-[#B8860B]" />
+                    7 chs
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    14.6K
+                  </span>
+                </div>
               </div>
             </div>
           </Link>
 
-          {/* Item 4 */}
-          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[270px] sm:w-[300px]">
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 hover:border-[#D4AF37]/60 transition-all shadow-sm space-y-3 flex flex-col justify-between h-full">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" /> + Ch. 14 Added
+          {/* Recently Updated Card 4: The Mask of Oya */}
+          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-300 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                  <TrendingUp className="w-2.5 h-2.5 text-blue-600" />
+                  + CH. 14
                 </span>
-                <span className="text-[10px] text-stone-500">5h ago</span>
+                <span className="px-2 py-0.5 rounded-full bg-stone-900/70 text-white text-[9px] font-bold backdrop-blur-md">
+                  5h ago
+                </span>
               </div>
 
-              <div className="space-y-1 flex-1">
-                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="absolute inset-0 z-0 opacity-80">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=800&auto=format&fit=crop"
+                  alt="The Mask of Oya"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   The Mask of Oya
                 </h4>
-                <p className="text-xs text-stone-600 font-medium line-clamp-1">Babatunde Lawal</p>
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed pt-1">
-                  Chapter 14: "The Winds of Change" drops with full illustrated artwork.
-                </p>
-              </div>
+                <p className="text-[11px] text-stone-600 font-medium truncate">Babatunde Lawal</p>
 
-              <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500 font-medium">
-                <span>14 Chapters total</span>
-                <button
-                  onClick={(e) => toggleBookmark("ru-4", e)}
-                  className={`p-1 rounded-lg transition-colors ${
-                    bookmarked["ru-4"] ? "text-[#B8860B]" : "hover:text-stone-900"
-                  }`}
-                  aria-label="Bookmark"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked["ru-4"] ? "fill-[#B8860B]" : ""}`} />
-                </button>
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3 text-[#B8860B]" />
+                    14 chs
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    19.3K
+                  </span>
+                </div>
               </div>
             </div>
           </Link>
 
-          {/* Item 5 */}
-          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[270px] sm:w-[300px]">
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 hover:border-[#D4AF37]/60 transition-all shadow-sm space-y-3 flex flex-col justify-between h-full">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" /> + Ch. 9 Added
+          {/* Recently Updated Card 5: The Calabash of Star Dust */}
+          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-300 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                  <TrendingUp className="w-2.5 h-2.5 text-blue-600" />
+                  + CH. 9
                 </span>
-                <span className="text-[10px] text-stone-500">8h ago</span>
+                <span className="px-2 py-0.5 rounded-full bg-stone-900/70 text-white text-[9px] font-bold backdrop-blur-md">
+                  8h ago
+                </span>
               </div>
 
-              <div className="space-y-1 flex-1">
-                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="absolute inset-0 z-0 opacity-80">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=800&auto=format&fit=crop"
+                  alt="The Calabash of Star Dust"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   The Calabash of Star Dust
                 </h4>
-                <p className="text-xs text-stone-600 font-medium line-clamp-1">Amadou Diallo</p>
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed pt-1">
-                  Chapter 9: "Constellations over the Cliff" released with musical accompaniment.
-                </p>
-              </div>
+                <p className="text-[11px] text-stone-600 font-medium truncate">Amadou Diallo</p>
 
-              <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500 font-medium">
-                <span>9 Chapters total</span>
-                <button
-                  onClick={(e) => toggleBookmark("ru-5", e)}
-                  className={`p-1 rounded-lg transition-colors ${
-                    bookmarked["ru-5"] ? "text-[#B8860B]" : "hover:text-stone-900"
-                  }`}
-                  aria-label="Bookmark"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked["ru-5"] ? "fill-[#B8860B]" : ""}`} />
-                </button>
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3 text-[#B8860B]" />
+                    9 chs
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    8.9K
+                  </span>
+                </div>
               </div>
             </div>
           </Link>
 
-          {/* Item 6 */}
-          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[270px] sm:w-[300px]">
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 hover:border-[#D4AF37]/60 transition-all shadow-sm space-y-3 flex flex-col justify-between h-full">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" /> + Ch. 31 Added
+          {/* Recently Updated Card 6: The Warrior Queen of Zaria */}
+          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-300 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                  <TrendingUp className="w-2.5 h-2.5 text-blue-600" />
+                  + CH. 31
                 </span>
-                <span className="text-[10px] text-stone-500">12h ago</span>
+                <span className="px-2 py-0.5 rounded-full bg-stone-900/70 text-white text-[9px] font-bold backdrop-blur-md">
+                  12h ago
+                </span>
               </div>
 
-              <div className="space-y-1 flex-1">
-                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="absolute inset-0 z-0 opacity-80">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop"
+                  alt="The Warrior Queen of Zaria"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   The Warrior Queen of Zaria
                 </h4>
-                <p className="text-xs text-stone-600 font-medium line-clamp-1">Khadija Bello</p>
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed pt-1">
-                  Chapter 31: "The Fortresses of Earth" now updated with enhanced combat branches.
-                </p>
-              </div>
+                <p className="text-[11px] text-stone-600 font-medium truncate">Khadija Bello</p>
 
-              <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500 font-medium">
-                <span>31 Chapters total</span>
-                <button
-                  onClick={(e) => toggleBookmark("ru-6", e)}
-                  className={`p-1 rounded-lg transition-colors ${
-                    bookmarked["ru-6"] ? "text-[#B8860B]" : "hover:text-stone-900"
-                  }`}
-                  aria-label="Bookmark"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked["ru-6"] ? "fill-[#B8860B]" : ""}`} />
-                </button>
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3 text-[#B8860B]" />
+                    31 chs
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    35.2K
+                  </span>
+                </div>
               </div>
             </div>
           </Link>
 
-          {/* Item 7 */}
-          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[270px] sm:w-[300px]">
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 hover:border-[#D4AF37]/60 transition-all shadow-sm space-y-3 flex flex-col justify-between h-full">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" /> + Ch. 11 Added
+          {/* Recently Updated Card 7: The River Maiden's Vow */}
+          <Link href="/story/sundiata-the-lion-king-of-mali" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-300 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                  <TrendingUp className="w-2.5 h-2.5 text-blue-600" />
+                  + CH. 11
                 </span>
-                <span className="text-[10px] text-stone-500">1d ago</span>
+                <span className="px-2 py-0.5 rounded-full bg-stone-900/70 text-white text-[9px] font-bold backdrop-blur-md">
+                  1d ago
+                </span>
               </div>
 
-              <div className="space-y-1 flex-1">
-                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="absolute inset-0 z-0 opacity-80">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=800&auto=format&fit=crop"
+                  alt="The River Maiden's Vow"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   The River Maiden's Vow
                 </h4>
-                <p className="text-xs text-stone-600 font-medium line-clamp-1">Tendai Moyo</p>
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed pt-1">
-                  Chapter 11: "Zambezi Depths" drops with authentic Shona praise chants.
-                </p>
-              </div>
+                <p className="text-[11px] text-stone-600 font-medium truncate">Tendai Moyo</p>
 
-              <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500 font-medium">
-                <span>11 Chapters total</span>
-                <button
-                  onClick={(e) => toggleBookmark("ru-7", e)}
-                  className={`p-1 rounded-lg transition-colors ${
-                    bookmarked["ru-7"] ? "text-[#B8860B]" : "hover:text-stone-900"
-                  }`}
-                  aria-label="Bookmark"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked["ru-7"] ? "fill-[#B8860B]" : ""}`} />
-                </button>
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3 text-[#B8860B]" />
+                    11 chs
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    11.7K
+                  </span>
+                </div>
               </div>
             </div>
           </Link>
 
-          {/* Item 8 */}
-          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[270px] sm:w-[300px]">
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 hover:border-[#D4AF37]/60 transition-all shadow-sm space-y-3 flex flex-col justify-between h-full">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" /> + Ch. 16 Added
+          {/* Recently Updated Card 8: Spirits of the Sacred Grove */}
+          <Link href="/story/anansi-and-the-pot-of-wisdom" className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-300 text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                  <TrendingUp className="w-2.5 h-2.5 text-blue-600" />
+                  + CH. 16
                 </span>
-                <span className="text-[10px] text-stone-500">1d ago</span>
+                <span className="px-2 py-0.5 rounded-full bg-stone-900/70 text-white text-[9px] font-bold backdrop-blur-md">
+                  1d ago
+                </span>
               </div>
 
-              <div className="space-y-1 flex-1">
-                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors line-clamp-1">
+              <div className="absolute inset-0 z-0 opacity-80">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop"
+                  alt="Spirits of the Sacred Grove"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <h4 className="text-sm font-bold text-stone-900 group-hover:text-[#B8860B] transition-colors truncate">
                   Spirits of the Sacred Grove
                 </h4>
-                <p className="text-xs text-stone-600 font-medium line-clamp-1">Esi Sutherland</p>
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed pt-1">
-                  Chapter 16: "The Council of Tree Spirits" now live with full audio commentary.
-                </p>
-              </div>
+                <p className="text-[11px] text-stone-600 font-medium truncate">Esi Sutherland</p>
 
-              <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500 font-medium">
-                <span>16 Chapters total</span>
-                <button
-                  onClick={(e) => toggleBookmark("ru-8", e)}
-                  className={`p-1 rounded-lg transition-colors ${
-                    bookmarked["ru-8"] ? "text-[#B8860B]" : "hover:text-stone-900"
-                  }`}
-                  aria-label="Bookmark"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked["ru-8"] ? "fill-[#B8860B]" : ""}`} />
-                </button>
+                <div className="flex items-center space-x-3 pt-1 text-[10px] text-stone-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3 text-[#B8860B]" />
+                    16 chs
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    17.4K
+                  </span>
+                </div>
               </div>
             </div>
           </Link>
@@ -2257,176 +1827,468 @@ export default function HomePage() {
               <p className="text-xs text-stone-600 font-medium">Spotlighting master storytellers captivating our community</p>
             </div>
           </div>
-          <Link
-            href="/explore?sort=top_authors"
-            className="text-xs sm:text-sm font-semibold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-1 transition-colors"
-          >
-            <span>View all</span>
-            <ChevronRight className="w-4 h-4" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => scrollRow(topAuthorsScrollRef, "left")}
+                className="p-1.5 sm:p-2 rounded-xl border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 hover:border-[#D4AF37]/60 transition-all shadow-xs active:scale-95"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollRow(topAuthorsScrollRef, "right")}
+                className="p-1.5 sm:p-2 rounded-xl border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 hover:border-[#D4AF37]/60 transition-all shadow-xs active:scale-95"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+            <Link
+              href="/explore?sort=top_authors"
+              className="text-xs sm:text-sm font-semibold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-1 transition-colors ml-1"
+            >
+              <span>View all</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
 
-        {/* Top Author Container */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Main Spotlight Card (#1 Author) */}
-          <div className="lg:col-span-8 bg-white border-2 border-[#D4AF37]/40 rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden flex flex-col justify-between">
-            {/* Background Glow */}
-            <div className="absolute top-0 right-0 w-80 h-80 bg-[#D4AF37]/10 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="relative z-10 space-y-6">
-              {/* Rank & Specialty Header */}
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <span className="px-3.5 py-1 rounded-full bg-[#D4AF37] text-stone-950 text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-md">
-                  👑 #1 Author of the Week
+        {/* Top Authors Horizontal Carousel */}
+        <div
+          ref={topAuthorsScrollRef}
+          className="flex items-stretch gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 pt-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none"
+        >
+          {/* Card 1: Nia Okonkwo */}
+          <div className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[9px] font-extrabold uppercase tracking-wider">
+                  👑 #1 AUTHOR
                 </span>
-                <span className="text-xs font-semibold text-[#B8860B] bg-[#D4AF37]/15 px-3 py-1 rounded-full border border-[#D4AF37]/30">
-                  Yoruba &amp; Pan-African Lore
-                </span>
+                <button
+                  type="button"
+                  onClick={(e) => toggleFollow("author-1", e)}
+                  className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all shadow-xs ${
+                    followedAuthors["author-1"]
+                      ? "bg-stone-900 text-white"
+                      : "bg-[#D4AF37] text-stone-950 hover:bg-[#c49f27]"
+                  }`}
+                >
+                  {followedAuthors["author-1"] ? "Following" : "+ Follow"}
+                </button>
               </div>
 
-              {/* Author Bio & Details */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-                <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-[#D4AF37] p-1 shrink-0 bg-stone-100 shadow-md overflow-hidden">
-                  <SafeImage
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop"
-                    alt="Nia Okonkwo"
-                    fill
-                    className="object-cover rounded-full"
-                  />
-                </div>
+              <div className="absolute inset-0 z-0 opacity-80">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop"
+                  alt="Nia Okonkwo"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
 
-                <div className="space-y-2 min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-2xl sm:text-3xl font-black text-stone-950 tracking-tight">Nia Okonkwo</h3>
-                    <CheckCircle2 className="w-5 h-5 text-[#B8860B] fill-[#D4AF37]/20" />
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <Link href="/profile/nia_lore" className="block group-hover:text-[#B8860B] transition-colors">
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="text-sm font-bold text-stone-900 truncate group-hover:text-[#B8860B] transition-colors">
+                      Nia Okonkwo
+                    </h4>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#B8860B] fill-[#D4AF37]/20 shrink-0" />
                   </div>
-                  <p className="text-xs sm:text-sm text-stone-600 font-medium">@nia_lore • Lagos, Nigeria</p>
-                  <p className="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-xl">
-                    Elder storyteller and author of over 24 folklore series on Inkoma. Winner of the 2026 African Lore Fellowship.
-                  </p>
+                  <p className="text-[11px] text-stone-600 font-medium truncate">Yoruba Lore • 312K Reads</p>
+                </Link>
+
+                <div className="flex items-center justify-between pt-1 text-[10px] text-stone-500 font-medium border-t border-stone-100">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3" />
+                    24 stories
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Users className="w-3 h-3" />
+                    18.5K
+                  </span>
                 </div>
               </div>
-
-              {/* Stats Bar */}
-              <div className="grid grid-cols-3 gap-3 p-4 bg-[#FAF8F5] rounded-2xl border border-stone-200 text-center">
-                <div>
-                  <span className="block text-lg sm:text-xl font-black text-stone-900">312K</span>
-                  <span className="text-[11px] text-stone-500 font-medium">Total Reads</span>
-                </div>
-                <div>
-                  <span className="block text-lg sm:text-xl font-black text-stone-900">24</span>
-                  <span className="text-[11px] text-stone-500 font-medium">Published Stories</span>
-                </div>
-                <div>
-                  <span className="block text-lg sm:text-xl font-black text-stone-900">18.5K</span>
-                  <span className="text-[11px] text-stone-500 font-medium">Followers</span>
-                </div>
-              </div>
-            </div>
-
-            {/* CTAs */}
-            <div className="relative z-10 pt-6 flex flex-wrap items-center gap-3">
-              <Button
-                onClick={(e) => toggleFollow("author-1", e)}
-                className={`px-6 py-5 rounded-full text-xs sm:text-sm font-bold shadow-md gap-2 transition-all ${
-                  followedAuthors["author-1"]
-                    ? "bg-stone-200 text-stone-800 hover:bg-stone-300 border border-stone-300"
-                    : "bg-[#D4AF37] hover:bg-[#c49f27] text-stone-950"
-                }`}
-              >
-                <UserPlus className="w-4 h-4" />
-                <span>{followedAuthors["author-1"] ? "Following" : "Follow Author"}</span>
-              </Button>
-
-              <Link href="/profile/nia_lore">
-                <Button variant="outline" className="border-stone-300 text-stone-800 hover:bg-stone-100 px-6 py-5 rounded-full text-xs sm:text-sm font-semibold">
-                  View Full Profile
-                </Button>
-              </Link>
             </div>
           </div>
 
-          {/* Runners Up Side Column (#2 & #3 Authors) */}
-          <div className="lg:col-span-4 flex flex-col justify-between space-y-4">
-            {/* #2 Author */}
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 sm:p-5 hover:border-[#D4AF37]/60 transition-all shadow-sm space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full bg-stone-100 text-[#B8860B] border border-stone-200 text-[10px] font-bold uppercase tracking-wider">
-                  🥈 #2 Author this Week
+          {/* Card 2: Lebo Mokoena */}
+          <div className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-800 border border-stone-300 text-[9px] font-extrabold uppercase tracking-wider">
+                  🥈 #2 AUTHOR
                 </span>
-                <span className="text-[11px] text-stone-500">245K Reads</span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="relative w-12 h-12 rounded-full overflow-hidden border border-[#D4AF37]/50 shrink-0 bg-stone-100">
-                  <SafeImage
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=300&auto=format&fit=crop"
-                    alt="Lebo Mokoena"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h4 className="text-sm font-bold text-stone-900 truncate">Lebo Mokoena</h4>
-                  <p className="text-xs text-stone-500 truncate">Zulu Mythos &amp; Urban Legends</p>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-1">
-                <span className="text-xs text-stone-500">18 Stories published</span>
-                <Button
+                <button
+                  type="button"
                   onClick={(e) => toggleFollow("author-2", e)}
-                  size="sm"
-                  variant="outline"
-                  className={`text-xs font-semibold rounded-full px-4 h-8 ${
+                  className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all shadow-xs ${
                     followedAuthors["author-2"]
-                      ? "border-stone-300 bg-stone-100 text-stone-700"
-                      : "border-[#D4AF37] text-[#B8860B] hover:bg-[#D4AF37]/15"
+                      ? "bg-stone-900 text-white"
+                      : "bg-[#D4AF37] text-stone-950 hover:bg-[#c49f27]"
                   }`}
                 >
-                  {followedAuthors["author-2"] ? "Following" : "Follow"}
-                </Button>
+                  {followedAuthors["author-2"] ? "Following" : "+ Follow"}
+                </button>
+              </div>
+
+              <div className="absolute inset-0 z-0 opacity-80">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop"
+                  alt="Lebo Mokoena"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <Link href="/profile/lebo_mokoena" className="block group-hover:text-[#B8860B] transition-colors">
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="text-sm font-bold text-stone-900 truncate group-hover:text-[#B8860B] transition-colors">
+                      Lebo Mokoena
+                    </h4>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#B8860B] fill-[#D4AF37]/20 shrink-0" />
+                  </div>
+                  <p className="text-[11px] text-stone-600 font-medium truncate">Zulu Mythos • 245K Reads</p>
+                </Link>
+
+                <div className="flex items-center justify-between pt-1 text-[10px] text-stone-500 font-medium border-t border-stone-100">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3" />
+                    18 stories
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Users className="w-3 h-3" />
+                    14.2K
+                  </span>
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* #3 Author */}
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 sm:p-5 hover:border-[#D4AF37]/60 transition-all shadow-sm space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full bg-stone-100 text-[#B8860B] border border-stone-200 text-[10px] font-bold uppercase tracking-wider">
-                  🥉 #3 Author this Week
+          {/* Card 3: Chinedu Eze */}
+          <div className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-900 border border-orange-300 text-[9px] font-extrabold uppercase tracking-wider">
+                  🥉 #3 AUTHOR
                 </span>
-                <span className="text-[11px] text-stone-500">198K Reads</span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="relative w-12 h-12 rounded-full overflow-hidden border border-[#D4AF37]/50 shrink-0 bg-stone-100">
-                  <SafeImage
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop"
-                    alt="Chinedu Eze"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h4 className="text-sm font-bold text-stone-900 truncate">Chinedu Eze</h4>
-                  <p className="text-xs text-stone-500 truncate">Historical Fiction &amp; Battles</p>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-1">
-                <span className="text-xs text-stone-500">12 Stories published</span>
-                <Button
+                <button
+                  type="button"
                   onClick={(e) => toggleFollow("author-3", e)}
-                  size="sm"
-                  variant="outline"
-                  className={`text-xs font-semibold rounded-full px-4 h-8 ${
+                  className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all shadow-xs ${
                     followedAuthors["author-3"]
-                      ? "border-stone-300 bg-stone-100 text-stone-700"
-                      : "border-[#D4AF37] text-[#B8860B] hover:bg-[#D4AF37]/15"
+                      ? "bg-stone-900 text-white"
+                      : "bg-[#D4AF37] text-stone-950 hover:bg-[#c49f27]"
                   }`}
                 >
-                  {followedAuthors["author-3"] ? "Following" : "Follow"}
-                </Button>
+                  {followedAuthors["author-3"] ? "Following" : "+ Follow"}
+                </button>
+              </div>
+
+              <div className="absolute inset-0 z-0 opacity-80">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=800&auto=format&fit=crop"
+                  alt="Chinedu Eze"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <Link href="/profile/chinedu_eze" className="block group-hover:text-[#B8860B] transition-colors">
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="text-sm font-bold text-stone-900 truncate group-hover:text-[#B8860B] transition-colors">
+                      Chinedu Eze
+                    </h4>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#B8860B] fill-[#D4AF37]/20 shrink-0" />
+                  </div>
+                  <p className="text-[11px] text-stone-600 font-medium truncate">Historical Epics • 198K Reads</p>
+                </Link>
+
+                <div className="flex items-center justify-between pt-1 text-[10px] text-stone-500 font-medium border-t border-stone-100">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3" />
+                    12 stories
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Users className="w-3 h-3" />
+                    11.8K
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 4: Tobi Adebayo */}
+          <div className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-900 border border-blue-300 text-[9px] font-extrabold uppercase tracking-wider">
+                  #4 AUTHOR
+                </span>
+                <button
+                  type="button"
+                  onClick={(e) => toggleFollow("author-4", e)}
+                  className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all shadow-xs ${
+                    followedAuthors["author-4"]
+                      ? "bg-stone-900 text-white"
+                      : "bg-[#D4AF37] text-stone-950 hover:bg-[#c49f27]"
+                  }`}
+                >
+                  {followedAuthors["author-4"] ? "Following" : "+ Follow"}
+                </button>
+              </div>
+
+              <div className="absolute inset-0 z-0 opacity-80">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=800&auto=format&fit=crop"
+                  alt="Tobi Adebayo"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <Link href="/profile/tobi_adebayo" className="block group-hover:text-[#B8860B] transition-colors">
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="text-sm font-bold text-stone-900 truncate group-hover:text-[#B8860B] transition-colors">
+                      Tobi Adebayo
+                    </h4>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#B8860B] fill-[#D4AF37]/20 shrink-0" />
+                  </div>
+                  <p className="text-[11px] text-stone-600 font-medium truncate">Afrofuturism • 176K Reads</p>
+                </Link>
+
+                <div className="flex items-center justify-between pt-1 text-[10px] text-stone-500 font-medium border-t border-stone-100">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3" />
+                    15 stories
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Users className="w-3 h-3" />
+                    9.4K
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 5: Mariama Ba */}
+          <div className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300 text-[9px] font-extrabold uppercase tracking-wider">
+                  #5 AUTHOR
+                </span>
+                <button
+                  type="button"
+                  onClick={(e) => toggleFollow("author-5", e)}
+                  className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all shadow-xs ${
+                    followedAuthors["author-5"]
+                      ? "bg-stone-900 text-white"
+                      : "bg-[#D4AF37] text-stone-950 hover:bg-[#c49f27]"
+                  }`}
+                >
+                  {followedAuthors["author-5"] ? "Following" : "+ Follow"}
+                </button>
+              </div>
+
+              <div className="absolute inset-0 z-0 opacity-80">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=800&auto=format&fit=crop"
+                  alt="Mariama Ba"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <Link href="/profile/mariama_ba" className="block group-hover:text-[#B8860B] transition-colors">
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="text-sm font-bold text-stone-900 truncate group-hover:text-[#B8860B] transition-colors">
+                      Mariama Ba
+                    </h4>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#B8860B] fill-[#D4AF37]/20 shrink-0" />
+                  </div>
+                  <p className="text-[11px] text-stone-600 font-medium truncate">Manden Epics • 164K Reads</p>
+                </Link>
+
+                <div className="flex items-center justify-between pt-1 text-[10px] text-stone-500 font-medium border-t border-stone-100">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3" />
+                    10 stories
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Users className="w-3 h-3" />
+                    8.7K
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 6: Akwasi Mensah */}
+          <div className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 text-[9px] font-extrabold uppercase tracking-wider">
+                  #6 AUTHOR
+                </span>
+                <button
+                  type="button"
+                  onClick={(e) => toggleFollow("author-6", e)}
+                  className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all shadow-xs ${
+                    followedAuthors["author-6"]
+                      ? "bg-stone-900 text-white"
+                      : "bg-[#D4AF37] text-stone-950 hover:bg-[#c49f27]"
+                  }`}
+                >
+                  {followedAuthors["author-6"] ? "Following" : "+ Follow"}
+                </button>
+              </div>
+
+              <div className="absolute inset-0 z-0 opacity-80">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=800&auto=format&fit=crop"
+                  alt="Akwasi Mensah"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <Link href="/profile/akwasi_mensah" className="block group-hover:text-[#B8860B] transition-colors">
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="text-sm font-bold text-stone-900 truncate group-hover:text-[#B8860B] transition-colors">
+                      Akwasi Mensah
+                    </h4>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#B8860B] fill-[#D4AF37]/20 shrink-0" />
+                  </div>
+                  <p className="text-[11px] text-stone-600 font-medium truncate">Ashanti Myths • 152K Reads</p>
+                </Link>
+
+                <div className="flex items-center justify-between pt-1 text-[10px] text-stone-500 font-medium border-t border-stone-100">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3" />
+                    14 stories
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Users className="w-3 h-3" />
+                    8.1K
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 7: Khadija Bello */}
+          <div className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-900 border border-rose-300 text-[9px] font-extrabold uppercase tracking-wider">
+                  #7 AUTHOR
+                </span>
+                <button
+                  type="button"
+                  onClick={(e) => toggleFollow("author-7", e)}
+                  className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all shadow-xs ${
+                    followedAuthors["author-7"]
+                      ? "bg-stone-900 text-white"
+                      : "bg-[#D4AF37] text-stone-950 hover:bg-[#c49f27]"
+                  }`}
+                >
+                  {followedAuthors["author-7"] ? "Following" : "+ Follow"}
+                </button>
+              </div>
+
+              <div className="absolute inset-0 z-0 opacity-80">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800&auto=format&fit=crop"
+                  alt="Khadija Bello"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <Link href="/profile/khadija_bello" className="block group-hover:text-[#B8860B] transition-colors">
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="text-sm font-bold text-stone-900 truncate group-hover:text-[#B8860B] transition-colors">
+                      Khadija Bello
+                    </h4>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#B8860B] fill-[#D4AF37]/20 shrink-0" />
+                  </div>
+                  <p className="text-[11px] text-stone-600 font-medium truncate">Hausa Lore • 138K Reads</p>
+                </Link>
+
+                <div className="flex items-center justify-between pt-1 text-[10px] text-stone-500 font-medium border-t border-stone-100">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3" />
+                    9 stories
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Users className="w-3 h-3" />
+                    7.5K
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 8: Folake Adeyemi */}
+          <div className="group block shrink-0 snap-start w-[220px] sm:w-[250px]">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-stone-200 group-hover:border-[#D4AF37]/60 transition-all duration-300 shadow-sm flex flex-col justify-between p-3 h-full">
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-900 border border-teal-300 text-[9px] font-extrabold uppercase tracking-wider">
+                  #8 AUTHOR
+                </span>
+                <button
+                  type="button"
+                  onClick={(e) => toggleFollow("author-8", e)}
+                  className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all shadow-xs ${
+                    followedAuthors["author-8"]
+                      ? "bg-stone-900 text-white"
+                      : "bg-[#D4AF37] text-stone-950 hover:bg-[#c49f27]"
+                  }`}
+                >
+                  {followedAuthors["author-8"] ? "Following" : "+ Follow"}
+                </button>
+              </div>
+
+              <div className="absolute inset-0 z-0 opacity-80">
+                <SafeImage
+                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop"
+                  alt="Folake Adeyemi"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+
+              <div className="relative z-10 mt-auto pt-4 space-y-1 bg-white/95 p-2.5 rounded-xl border border-stone-200/80 backdrop-blur-md shadow-md">
+                <Link href="/profile/folake_adeyemi" className="block group-hover:text-[#B8860B] transition-colors">
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="text-sm font-bold text-stone-900 truncate group-hover:text-[#B8860B] transition-colors">
+                      Folake Adeyemi
+                    </h4>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#B8860B] fill-[#D4AF37]/20 shrink-0" />
+                  </div>
+                  <p className="text-[11px] text-stone-600 font-medium truncate">Coastal Lore • 126K Reads</p>
+                </Link>
+
+                <div className="flex items-center justify-between pt-1 text-[10px] text-stone-500 font-medium border-t border-stone-100">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3" />
+                    11 stories
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Users className="w-3 h-3" />
+                    6.9K
+                  </span>
+                </div>
               </div>
             </div>
           </div>
