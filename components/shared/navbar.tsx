@@ -105,7 +105,7 @@ export function Navbar() {
               className="border-[#D4AF37] text-[#B8860B] hover:bg-[#D4AF37]/15 hover:text-[#B8860B] rounded-full px-4 font-semibold gap-1.5 bg-transparent"
             >
               <Heart className="h-4 w-4 fill-none text-[#B8860B]" />
-              <span className="hidden sm:inline">Support</span>
+              <span className="inline text-xs font-semibold">Support</span>
             </Button>
           </Link>
 
