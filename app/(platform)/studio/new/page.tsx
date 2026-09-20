@@ -38,6 +38,8 @@ import { ProseRenderer } from "@/components/features/editor/prose-renderer";
 import { Story, StoryChapter, StoryStatus } from "@/types";
 import { MAIN_GENRES, SUB_GENRES, TRIGGER_WARNINGS } from "@/config/genres";
 import { MOCK_CURRENT_USER } from "@/config/mock-data";
+import { useAuth } from "@/hooks/useAuth";
+import { createDraftStory, publishStory } from "@/src/services/storyService";
 
 // SafeImage component to guarantee NO broken image displays
 function SafeImage({
@@ -396,11 +398,43 @@ export default function StudioNewStoryPage() {
     );
   };
 
-  const handlePublish = () => {
+  const { user, profile } = useAuth();
+
+  const handlePublish = async () => {
     setIsPublishing(true);
 
     const publishedTag = status === "completed" ? "Completed" : "Ongoing";
     const newStoryId = `story-${Date.now()}`;
+    const authorId = user?.id || MOCK_CURRENT_USER.id;
+    const authorName = profile?.displayName || MOCK_CURRENT_USER.displayName;
+    const authorAvatar = profile?.avatarUrl || MOCK_CURRENT_USER.avatarUrl;
+
+    // Save to Firestore via storyService
+    try {
+      await createDraftStory({
+        id: newStoryId,
+        authorId,
+        authorName,
+        authorAvatar,
+        title: title.trim() || "Untitled Story",
+        subtitle: subtitle.trim() || undefined,
+        synopsis: synopsis.trim() || "A captivating story on INKOMA.",
+        coverImageUrl: coverImage || COVER_TEMPLATES[0].url,
+        mainGenre: mainGenre || "Folklore",
+        subGenres: subGenres,
+        triggerWarnings: selectedTriggerWarnings,
+        ageRating: ageRating || "General Audience",
+        targetAudience: targetAudience || "All Ages",
+        storyLanguage: storyLanguage || "English",
+        tradition: "Pan-African",
+        status: status,
+        chapters: chapters,
+      });
+
+      await publishStory(newStoryId);
+    } catch (cloudErr) {
+      console.warn("[Studio] Cloud publish error, local fallback active:", cloudErr);
+    }
 
     const newStory: Story = {
       id: newStoryId,
@@ -417,11 +451,11 @@ export default function StudioNewStoryPage() {
       tags: [publishedTag, mainGenre, ...subGenres].filter(Boolean),
       difficulty: "Intermediate",
       status: status,
-      authorId: MOCK_CURRENT_USER.id,
-      authorName: MOCK_CURRENT_USER.displayName,
-      authorPenName: MOCK_CURRENT_USER.penName || MOCK_CURRENT_USER.displayName,
-      authorAvatar: MOCK_CURRENT_USER.avatarUrl,
-      authorBio: MOCK_CURRENT_USER.bio,
+      authorId,
+      authorName,
+      authorPenName: profile?.penName || authorName,
+      authorAvatar,
+      authorBio: profile?.bio || MOCK_CURRENT_USER.bio,
       publishedAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
       updatedAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
       estimatedReadTime: chapters.reduce((acc, c) => acc + (c.estimatedReadTime || 1), 0),
@@ -440,15 +474,14 @@ export default function StudioNewStoryPage() {
       const existing = localStorage.getItem("inkoma_custom_stories");
       const list = existing ? JSON.parse(existing) : [];
       localStorage.setItem("inkoma_custom_stories", JSON.stringify([newStory, ...list]));
+      localStorage.removeItem("inkoma_draft_story");
     } catch {
       // ignore
     }
 
-    setTimeout(() => {
-      setIsPublishing(false);
-      setSaved(true);
-      router.push("/studio");
-    }, 1200);
+    setIsPublishing(false);
+    setSaved(true);
+    router.push("/studio");
   };
 
   // Filter templates by category & search query

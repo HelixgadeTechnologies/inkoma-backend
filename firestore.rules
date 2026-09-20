@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isStoryAuthor(storyData) {
+      return isAuthenticated() && request.auth.uid == storyData.authorId;
+    }
+
+    // =========================================================================
+    // 1. USERS COLLECTION
+    // =========================================================================
+    match /users/{userId} {
+      // Anyone can view basic public storyteller profiles
+      allow read: if true;
+
+      // Users can only create and update their own document
+      allow create: if isOwner(userId) 
+        && request.resource.data.uid == userId
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() <= 100;
+
+      allow update: if isOwner(userId)
+        && request.resource.data.uid == resource.data.uid // UID immutable
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['createdAt']));
+
+      allow delete: if isOwner(userId);
+
+      // Bookmarks sub-collection: private to the user
+      match /bookmarks/{storyId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Likes sub-collection: private to the user
+      match /likes/{storyId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // =========================================================================
+    // 2. STORIES COLLECTION
+    // =========================================================================
+    match /stories/{storyId} {
+      // Public can read published stories; authors can read their own drafts
+      allow read: if resource.data.status == 'published' || isStoryAuthor(resource.data);
+
+      // Only authenticated authors can create stories
+      allow create: if isAuthenticated()
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 200
+        && request.resource.data.status in ['draft', 'published', 'ongoing', 'completed'];
+
+      // Only the story author can update or delete
+      allow update: if isStoryAuthor(resource.data)
+        && request.resource.data.authorId == resource.data.authorId // authorId is immutable
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['createdAt']));
+
+      allow delete: if isStoryAuthor(resource.data);
+
+      // =======================================================================
+      // 3. CHAPTERS SUB-COLLECTION: stories/{storyId}/chapters/{chapterId}
+      // =======================================================================
+      match /chapters/{chapterId} {
+        // Read if parent story is published, or if user is author of the parent story
+        allow read: if get(/databases/$(database)/documents/stories/$(storyId)).data.status == 'published'
+          || isStoryAuthor(get(/databases/$(database)/documents/stories/$(storyId)).data);
+
+        // Only author of the parent story can create, update, or delete chapters
+        allow create, update, delete: if isStoryAuthor(get(/databases/$(database)/documents/stories/$(storyId)).data);
+      }
+    }
+  }
+}

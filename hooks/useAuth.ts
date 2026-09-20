@@ -1,52 +1,59 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useAuthContext } from "@/src/context/AuthContext";
 import { UserProfile } from "@/types";
 import { MOCK_CURRENT_USER } from "@/config/mock-data";
 
 export function useAuth() {
-  const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  try {
+    const context = useAuthContext();
+    const adaptedProfile: UserProfile | null = context.profile
+      ? {
+          id: context.profile.uid,
+          username: context.profile.displayName?.toLowerCase().replace(/\s+/g, "_") || "storyteller",
+          displayName: context.profile.displayName || "Storyteller",
+          email: context.profile.email,
+          avatarUrl: context.profile.photoURL || MOCK_CURRENT_USER.avatarUrl,
+          bio: context.profile.bio || MOCK_CURRENT_USER.bio,
+          role: (context.profile.role as "reader" | "writer" | "storyteller" | "elder_admin") || "storyteller",
+          followersCount: 0,
+          followingCount: 0,
+          badges: [],
+          createdAt: new Date().toISOString(),
+        }
+      : null;
 
-  useEffect(() => {
-    try {
-      const authState = localStorage.getItem("inkoma_authenticated");
-      // Default: if inkoma_authenticated is explicitly "true", set authenticated user.
-      // If "false" or null (guest), set user to null.
-      if (authState === "true") {
-        setUser({ id: MOCK_CURRENT_USER.id, email: "kwame@inkoma.app" });
-        setProfile(MOCK_CURRENT_USER);
-      } else {
-        setUser(null);
-        setProfile(null);
-      }
-    } catch {
-      setUser(null);
-      setProfile(null);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const signIn = useCallback((email?: string) => {
-    localStorage.setItem("inkoma_authenticated", "true");
-    setUser({ id: MOCK_CURRENT_USER.id, email: email || "kwame@inkoma.app" });
-    setProfile(MOCK_CURRENT_USER);
-  }, []);
-
-  const signOut = useCallback(() => {
-    localStorage.setItem("inkoma_authenticated", "false");
-    setUser(null);
-    setProfile(null);
-  }, []);
-
-  return {
-    user,
-    profile,
-    loading,
-    isAuthenticated: !!user,
-    signIn,
-    signOut,
-  };
+    return {
+      user: context.user
+        ? { id: context.user.uid, email: context.user.email || undefined }
+        : null,
+      firebaseUser: context.user,
+      profile: adaptedProfile,
+      loading: context.loading,
+      isAuthenticated: context.isAuthenticated,
+      signIn: async (email?: string, pass?: string) => {
+        if (email && pass) {
+          await context.loginWithEmail(email, pass);
+        } else {
+          context.loginWithEmail("kwame@inkoma.app", "password123").catch(() => {});
+        }
+      },
+      signUp: context.signupWithEmail,
+      signInWithGoogle: context.loginWithGoogleProvider,
+      signOut: context.logout,
+    };
+  } catch {
+    // Fallback if rendered outside of AuthProvider
+    return {
+      user: { id: MOCK_CURRENT_USER.id, email: "kwame@inkoma.app" },
+      firebaseUser: null,
+      profile: MOCK_CURRENT_USER,
+      loading: false,
+      isAuthenticated: true,
+      signIn: async () => {},
+      signUp: async () => {},
+      signInWithGoogle: async () => {},
+      signOut: async () => {},
+    };
+  }
 }

@@ -8,26 +8,37 @@ import { SocialAuth } from "@/components/features/auth/social-auth";
 import { PasswordInput } from "@/components/features/auth/password-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function SignupPage() {
   const router = useRouter();
+  const { signUp } = useAuth();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [penName, setPenName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Persist session upon registration
-    localStorage.setItem("inkoma_authenticated", "true");
-    setTimeout(() => {
-      setIsLoading(false);
+    setErrorMessage("");
+
+    try {
+      const displayName = penName.trim() || `${firstName} ${lastName}`.trim() || "Storyteller";
+      await signUp(email, password, displayName, "author");
       router.push("/onboarding");
-    }, 800);
+    } catch (err: unknown) {
+      console.error("[SignupPage] Registration error:", err);
+      const message =
+        err instanceof Error ? err.message : "Failed to create account. Please try again.";
+      setErrorMessage(message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -35,6 +46,13 @@ export default function SignupPage() {
       title="Join the Inkoma Circle"
       description="Begin your journey as a reader or traditional storyteller in our digital folklore archive."
     >
+      {errorMessage && (
+        <div className="mb-4 p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 text-xs text-rose-700 dark:text-rose-300 flex items-start gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-1.5">
@@ -112,7 +130,7 @@ export default function SignupPage() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold shadow-md py-5"
+          className="w-full bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold shadow-md py-5 cursor-pointer"
         >
           {isLoading ? (
             <Loader2 className="w-4 h-4 animate-spin mr-2" />

@@ -1,0 +1,40 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Story Covers: /covers/{authorId}/{storyId}/{fileName}
+    match /covers/{authorId}/{storyId}/{fileName} {
+      // Public read access for all uploaded covers
+      allow read: if true;
+
+      // Only the author can upload or update cover image
+      // Size limit: 5MB, MIME type: image/*
+      allow write: if request.auth != null
+        && request.auth.uid == authorId
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+
+      allow delete: if request.auth != null && request.auth.uid == authorId;
+    }
+
+    // Author Profile Avatars: /avatars/{authorId}/{fileName}
+    match /avatars/{authorId}/{fileName} {
+      // Public read access for profile avatars
+      allow read: if true;
+
+      // Only the author can upload their own avatar
+      // Size limit: 2MB, MIME type: image/*
+      allow write: if request.auth != null
+        && request.auth.uid == authorId
+        && request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+
+      allow delete: if request.auth != null && request.auth.uid == authorId;
+    }
+
+    // Default deny for all other paths
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
