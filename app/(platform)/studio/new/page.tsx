@@ -26,6 +26,8 @@ import {
   Heart,
   Bookmark,
   Sparkles,
+  ShieldAlert,
+  Globe,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -459,6 +461,11 @@ export default function StudioNewStoryPage() {
   const activeContent = activeChapter?.content || "";
   const activeWordCount = activeContent.trim().split(/\s+/).filter(Boolean).length;
   const activeReadTime = calculateReadTime(activeContent);
+  const totalEstimatedReadTime = chapters.reduce((acc, c) => acc + (c.estimatedReadTime || 1), 0);
+  const totalWords = chapters.reduce(
+    (acc, c) => acc + (c.content ? c.content.trim().split(/\s+/).filter(Boolean).length : 0),
+    0
+  );
 
   return (
     <div className="space-y-6 pb-24 w-full text-stone-900 dark:text-stone-100 font-sans">
@@ -1179,189 +1186,459 @@ export default function StudioNewStoryPage() {
         </div>
       )}
 
-      {/* STEP 4: READER PREVIEW (View story from a reader's point of view) */}
+      {/* STEP 4: COMPREHENSIVE STORY & READER PREVIEW */}
       {activeStep === 4 && (
-        <div className="space-y-6 max-w-4xl mx-auto animate-in fade-in duration-200">
-          {/* Preview Banner & Header */}
+        <div className="space-y-8 max-w-5xl mx-auto animate-in fade-in duration-200">
+          {/* Top Banner & Mode Summary */}
           <div className="bg-[#FAF6EE] dark:bg-[#19171d] border border-[#D4AF37]/40 rounded-3xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#D4AF37] text-stone-950">
-                  <Eye className="w-3.5 h-3.5" /> Reader Point of View
+                  <Eye className="w-3.5 h-3.5" /> Full Story Preview
                 </span>
-                <span className="text-xs font-mono text-stone-500">Live Preview</span>
+                <span className="text-xs font-mono text-stone-500">Pre-Publishing Review</span>
               </div>
               <h2 className="text-xl sm:text-2xl font-bold font-serif text-stone-900 dark:text-white">
                 {title || "Untitled Story"}
               </h2>
               <p className="text-xs text-stone-500 dark:text-stone-400">
-                This is how your readers will experience your chapters, formatting, and cultural lore on INKOMA.
+                Review how your story appears on the For You page (FYP) and reader discovery feeds, verify all metadata &amp; warnings, and preview your written chapters.
               </p>
             </div>
 
-            {/* Reading Theme & Font Size Controls */}
-            <div className="flex flex-wrap items-center gap-2 bg-white dark:bg-[#121115] p-2 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-2xs">
-              <div className="flex items-center gap-1">
-                <span className="text-[10px] uppercase font-bold text-stone-400 px-1">Theme:</span>
-                {(["paper", "sandstone", "night"] as const).map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => setPreviewTheme(t)}
-                    className={`px-2.5 py-1 rounded-xl text-xs font-bold capitalize transition-all ${
-                      previewTheme === t
-                        ? "bg-[#D4AF37] text-stone-950 shadow-2xs"
-                        : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white"
-                    }`}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
-
-              <div className="h-4 w-[1px] bg-stone-300 dark:bg-stone-700 mx-1 hidden sm:block" />
-
-              <div className="flex items-center gap-1">
-                <span className="text-[10px] uppercase font-bold text-stone-400 px-1">Font:</span>
-                {(["sm", "md", "lg"] as const).map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => setPreviewFontSize(s)}
-                    className={`w-7 h-7 rounded-xl text-xs font-bold transition-all flex items-center justify-center ${
-                      previewFontSize === s
-                        ? "bg-[#D4AF37] text-stone-950 shadow-2xs"
-                        : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white"
-                    }`}
-                  >
-                    {s === "sm" ? "A-" : s === "md" ? "A" : "A+"}
-                  </button>
-                ))}
-              </div>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setActiveStep(3)}
+                className="text-xs rounded-xl border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 gap-1 px-3.5 py-2.5"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" /> Edit Chapters
+              </Button>
+              <Button
+                type="button"
+                onClick={() => setActiveStep(5)}
+                className="bg-[#D4AF37] hover:bg-[#c49f27] text-black text-xs font-extrabold rounded-xl gap-1.5 px-5 py-2.5 shadow-sm"
+              >
+                <span>Continue to Publish</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Button>
             </div>
           </div>
 
-          {/* Chapter Navigation Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            {chapters.map((chap) => (
-              <button
-                key={chap.id}
-                type="button"
-                onClick={() => setSelectedChapterId(chap.id)}
-                className={`px-4 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2 ${
-                  chap.id === activeChapter.id
-                    ? "bg-[#D4AF37] text-stone-950 shadow-sm"
-                    : "bg-white dark:bg-[#141318] border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:border-stone-300"
-                }`}
-              >
-                <span>Ch. {chap.chapterNumber || chap.number}</span>
-                <span className="opacity-85 font-normal max-w-[140px] truncate">{chap.title}</span>
-              </button>
-            ))}
-          </div>
+          {/* DUAL PANE: (1) FYP Card Preview & (2) Full Story Metadata Representation */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            {/* LEFT: For You Page (FYP) Card Mockup */}
+            <div className="lg:col-span-5 space-y-3">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#D4AF37] flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" /> For You Page (FYP) Card
+                </span>
+                <span className="text-[10px] text-stone-500 dark:text-stone-400 font-mono">
+                  Live Feed Appearance
+                </span>
+              </div>
 
-          {/* Reader Canvas Card */}
-          <article
-            className={`rounded-3xl p-6 sm:p-12 space-y-8 transition-colors duration-300 border ${
-              previewTheme === "night"
-                ? "bg-[#121110] text-[#E6E1D5] border-[#2D2A26] shadow-2xl"
-                : previewTheme === "sandstone"
-                ? "bg-[#F4ECD8] text-[#3D2612] border-[#E2D2B8] shadow-sm"
-                : "bg-white text-stone-900 border-[#E8DFD1] shadow-sm"
-            }`}
-          >
-            {/* Reader Story Header */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 border-b border-stone-200/50 dark:border-stone-800/50 pb-6">
-              {coverImage && (
-                <div className="relative w-16 h-22 sm:w-20 sm:h-28 rounded-xl overflow-hidden shrink-0 border border-stone-300 dark:border-stone-700 shadow-md">
-                  <SafeImage src={coverImage} alt={title} fill className="object-cover" />
-                </div>
-              )}
+              {/* Realistic FYP Card */}
+              <div className="relative aspect-[3/4.4] w-full max-w-[320px] mx-auto rounded-3xl overflow-hidden border border-stone-200 dark:border-stone-800 shadow-xl bg-stone-950 group">
+                <SafeImage
+                  src={coverImage}
+                  alt={title || "Book Cover"}
+                  fill
+                  className="object-cover"
+                />
 
-              <div className="space-y-1.5 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#D4AF37]">
+                {/* Top Badges */}
+                <div className="absolute top-3 inset-x-3 flex items-center justify-between z-10">
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-black/75 text-[#E5C158] border border-[#D4AF37]/50 backdrop-blur-md shadow-sm">
                     {mainGenre || "Folklore"}
                   </span>
-                  {subGenres.map((sg) => (
-                    <span
-                      key={sg}
-                      className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#D4AF37]/15 text-[#B8860B] dark:text-[#E5C158] border border-[#D4AF37]/30"
-                    >
-                      {sg}
-                    </span>
-                  ))}
                   {status === "completed" ? (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-950/85 text-emerald-300 border border-emerald-500/50 backdrop-blur-md shadow-sm">
                       Completed
                     </span>
                   ) : (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#D4AF37]/20 text-[#B8860B] dark:text-[#E5C158] border border-[#D4AF37]/40">
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#D4AF37]/90 text-stone-950 border border-[#D4AF37] backdrop-blur-md shadow-sm">
                       Ongoing
-                    </span>
-                  )}
-                  {ageRating && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
-                      {ageRating}
                     </span>
                   )}
                 </div>
 
-                <h1 className="text-2xl sm:text-3xl font-extrabold font-serif tracking-tight">
+                {/* Bottom Dark Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent z-0" />
+
+                {/* Card Content Overlay */}
+                <div className="absolute inset-x-0 bottom-0 p-4 z-10 space-y-2">
+                  {/* Sub-genre tags on card */}
+                  {subGenres.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {subGenres.slice(0, 3).map((sg) => (
+                        <span
+                          key={sg}
+                          className="text-[9px] px-2 py-0.5 rounded-full bg-white/20 text-stone-200 backdrop-blur-xs font-medium"
+                        >
+                          {sg}
+                        </span>
+                      ))}
+                      {subGenres.length > 3 && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/10 text-stone-300">
+                          +{subGenres.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  <h3 className="text-base sm:text-lg font-extrabold text-white font-serif leading-snug line-clamp-2 drop-shadow-sm">
+                    {title || "Untitled Story"}
+                  </h3>
+
+                  {subtitle && (
+                    <p className="text-[11px] text-stone-300 font-serif italic line-clamp-1">
+                      {subtitle}
+                    </p>
+                  )}
+
+                  <div className="flex items-center justify-between text-[11px] text-stone-300 pt-0.5">
+                    <span className="font-medium">By {MOCK_CURRENT_USER.displayName}</span>
+                    {ageRating && (
+                      <span className="px-1.5 py-0.5 rounded bg-stone-800/80 text-[10px] text-stone-300 border border-stone-700">
+                        {ageRating}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Card Stats Bar */}
+                  <div className="flex items-center justify-between pt-2 border-t border-white/15 text-[10px] text-stone-300 font-medium">
+                    <span className="flex items-center gap-1">
+                      <BookOpen className="w-3 h-3 text-[#D4AF37]" />
+                      {chapters.length} {chapters.length === 1 ? "Chapter" : "Chapters"}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-[#D4AF37]" />
+                      ~{totalEstimatedReadTime}m
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Heart className="w-3 h-3 text-rose-400" />
+                      0 Reads
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-center text-stone-500 dark:text-stone-400 italic">
+                Readers discover and open your story from cards formatted exactly like this.
+              </p>
+            </div>
+
+            {/* RIGHT: Complete Story Overview & All Metadata Fields */}
+            <div className="lg:col-span-7 bg-white dark:bg-[#141318] rounded-3xl border border-stone-200 dark:border-stone-800 p-5 sm:p-7 shadow-sm space-y-6">
+              {/* Header Details */}
+              <div className="space-y-2 border-b border-stone-100 dark:border-stone-800 pb-5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#D4AF37]/15 text-[#B8860B] dark:text-[#E5C158] border border-[#D4AF37]/30">
+                    {mainGenre || "Folklore"}
+                  </span>
+                  {status === "completed" ? (
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                      Completed Story
+                    </span>
+                  ) : (
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#D4AF37]/20 text-[#B8860B] dark:text-[#E5C158] border border-[#D4AF37]/40">
+                      Ongoing Manuscript
+                    </span>
+                  )}
+                  {storyLanguage && (
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-700 flex items-center gap-1">
+                      <Globe className="w-3 h-3 text-stone-400" /> {storyLanguage}
+                    </span>
+                  )}
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-700 flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-stone-400" /> ~{totalEstimatedReadTime} min total
+                  </span>
+                </div>
+
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-white font-serif tracking-tight">
                   {title || "Untitled Story"}
                 </h1>
                 {subtitle && (
-                  <p className="text-xs sm:text-sm font-serif italic text-stone-500 dark:text-stone-400">
+                  <p className="text-sm text-stone-500 dark:text-stone-400 font-serif italic">
                     {subtitle}
                   </p>
                 )}
 
-                <div className="text-xs text-stone-500 dark:text-stone-400 pt-1 flex items-center gap-2">
-                  <span>By <strong>{MOCK_CURRENT_USER.displayName}</strong></span>
-                  <span>•</span>
-                  <span>Chapter {activeChapter.chapterNumber || activeChapter.number} of {chapters.length}</span>
-                  <span>•</span>
-                  <span>~{activeReadTime} min read</span>
+                {/* Author attribution row */}
+                <div className="flex items-center gap-3 pt-2">
+                  <div className="relative w-8 h-8 rounded-full overflow-hidden border border-[#D4AF37]/40">
+                    <SafeImage
+                      src={MOCK_CURRENT_USER.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"}
+                      alt={MOCK_CURRENT_USER.displayName}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="text-xs">
+                    <span className="font-bold text-stone-900 dark:text-white">
+                      {MOCK_CURRENT_USER.displayName}
+                    </span>
+                    <span className="text-stone-400 ml-1.5">• Storyteller &amp; Lore Archivist</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sub-genres Section */}
+              <div className="space-y-1.5">
+                <span className="text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 block">
+                  Sub-Genres &amp; Themes
+                </span>
+                {subGenres.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {subGenres.map((sg) => (
+                      <span
+                        key={sg}
+                        className="px-2.5 py-1 rounded-full text-xs font-medium bg-[#D4AF37]/15 text-[#B8860B] dark:text-[#E5C158] border border-[#D4AF37]/30"
+                      >
+                        {sg}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-stone-400 italic">No sub-genres selected.</p>
+                )}
+              </div>
+
+              {/* Content Suitability: Age Rating & Target Audience */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div className="p-3 bg-stone-50 dark:bg-[#1a1921] rounded-2xl border border-stone-200/80 dark:border-stone-800 space-y-1">
+                  <span className="text-[10px] font-bold uppercase text-stone-400 tracking-wider block">
+                    Age Rating
+                  </span>
+                  <span className="text-xs font-bold text-stone-900 dark:text-stone-200">
+                    {ageRating || "General Audience (Everyone)"}
+                  </span>
+                </div>
+
+                <div className="p-3 bg-stone-50 dark:bg-[#1a1921] rounded-2xl border border-stone-200/80 dark:border-stone-800 space-y-1">
+                  <span className="text-[10px] font-bold uppercase text-stone-400 tracking-wider block">
+                    Target Audience
+                  </span>
+                  <span className="text-xs font-bold text-stone-900 dark:text-stone-200">
+                    {targetAudience || "All Readers"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Trigger Warnings Section */}
+              <div className="space-y-2 p-3.5 rounded-2xl border border-amber-500/20 bg-amber-50/50 dark:bg-amber-950/15">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wider">
+                  <ShieldAlert className="w-4 h-4" />
+                  <span>Content &amp; Trigger Warnings</span>
+                </div>
+                {selectedTriggerWarnings.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {selectedTriggerWarnings.map((tw) => (
+                      <span
+                        key={tw}
+                        className="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 dark:bg-amber-900/50 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-800"
+                      >
+                        {tw}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-stone-500 dark:text-stone-400">
+                    No trigger warnings flagged. Appropriate for general readership.
+                  </p>
+                )}
+              </div>
+
+              {/* Full Synopsis */}
+              <div className="space-y-1.5 pt-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 block">
+                  Story Synopsis
+                </span>
+                <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-line bg-stone-50/70 dark:bg-[#1a1921]/70 p-4 rounded-2xl border border-stone-200/60 dark:border-stone-800">
+                  {synopsis || "No synopsis written yet."}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* TABLE OF CONTENTS: Total Number of Written Chapters */}
+          <div className="bg-white dark:bg-[#141318] rounded-3xl border border-stone-200 dark:border-stone-800 p-6 sm:p-8 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 dark:border-stone-800 pb-4">
+              <div>
+                <h3 className="text-lg sm:text-xl font-bold font-serif text-stone-900 dark:text-white flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-[#D4AF37]" />
+                  <span>Chapters &amp; Table of Contents ({chapters.length})</span>
+                </h3>
+                <p className="text-xs text-stone-500 dark:text-stone-400">
+                  Review all chapters created so far. Click on any chapter to load and preview its prose in the reader canvas below.
+                </p>
+              </div>
+              <span className="text-xs font-mono text-[#B8860B] dark:text-[#E5C158] font-bold self-start sm:self-auto">
+                Total Words: ~{totalWords.toLocaleString()}
+              </span>
+            </div>
+
+            {/* Chapters Grid / List */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {chapters.map((chap) => {
+                const isSelected = chap.id === activeChapter.id;
+                const chapWords = chap.content ? chap.content.trim().split(/\s+/).filter(Boolean).length : 0;
+                return (
+                  <div
+                    key={chap.id}
+                    onClick={() => setSelectedChapterId(chap.id)}
+                    className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2.5 ${
+                      isSelected
+                        ? "bg-[#D4AF37]/10 border-[#D4AF37] shadow-xs"
+                        : "bg-stone-50/60 dark:bg-[#1a1921]/60 border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-[#D4AF37] text-stone-950">
+                        Chapter {chap.chapterNumber || chap.number}
+                      </span>
+                      <div className="flex items-center gap-2 text-[11px] text-stone-500 dark:text-stone-400">
+                        <span>~{chap.estimatedReadTime} min read</span>
+                        <span>•</span>
+                        <span>{chapWords} words</span>
+                      </div>
+                    </div>
+
+                    <h4 className="text-sm font-bold text-stone-900 dark:text-white font-serif line-clamp-1">
+                      {chap.title}
+                    </h4>
+
+                    {chap.synopsis && (
+                      <p className="text-xs text-stone-500 dark:text-stone-400 line-clamp-2 italic">
+                        {chap.synopsis}
+                      </p>
+                    )}
+
+                    <div className="flex items-center justify-between pt-1 text-xs">
+                      {isSelected ? (
+                        <span className="text-[11px] font-bold text-[#B8860B] dark:text-[#E5C158] flex items-center gap-1">
+                          <Check className="w-3.5 h-3.5" /> Now Previewing in Reader
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-stone-500 hover:text-stone-900 dark:hover:text-white">
+                          Click to preview prose →
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* CHAPTER PROSE READER CANVAS */}
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
+              <div className="space-y-0.5">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#D4AF37] block">
+                  Prose Reading Canvas
+                </span>
+                <h3 className="text-lg font-bold font-serif text-stone-900 dark:text-white">
+                  Chapter {activeChapter.chapterNumber || activeChapter.number}: {activeChapter.title}
+                </h3>
+              </div>
+
+              {/* Reader Theme & Font Sizing */}
+              <div className="flex flex-wrap items-center gap-2 bg-white dark:bg-[#141318] p-2 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-2xs self-start sm:self-auto">
+                <div className="flex items-center gap-1">
+                  <span className="text-[10px] uppercase font-bold text-stone-400 px-1">Theme:</span>
+                  {(["paper", "sandstone", "night"] as const).map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setPreviewTheme(t)}
+                      className={`px-2.5 py-1 rounded-xl text-xs font-bold capitalize transition-all ${
+                        previewTheme === t
+                          ? "bg-[#D4AF37] text-stone-950 shadow-2xs"
+                          : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white"
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="h-4 w-[1px] bg-stone-300 dark:bg-stone-700 mx-1 hidden sm:block" />
+
+                <div className="flex items-center gap-1">
+                  <span className="text-[10px] uppercase font-bold text-stone-400 px-1">Font:</span>
+                  {(["sm", "md", "lg"] as const).map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setPreviewFontSize(s)}
+                      className={`w-7 h-7 rounded-xl text-xs font-bold transition-all flex items-center justify-center ${
+                        previewFontSize === s
+                          ? "bg-[#D4AF37] text-stone-950 shadow-2xs"
+                          : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white"
+                      }`}
+                    >
+                      {s === "sm" ? "A-" : s === "md" ? "A" : "A+"}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
 
-            {/* Chapter Header */}
-            <div className="space-y-2 border-b border-stone-200/40 dark:border-stone-800/40 pb-4">
-              <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
-                Chapter {activeChapter.chapterNumber || activeChapter.number}
-              </span>
-              <h2 className="text-xl sm:text-2xl font-bold font-serif">
-                {activeChapter.title}
-              </h2>
-              {activeChapter.synopsis && (
-                <p className="text-xs italic text-stone-500 dark:text-stone-400 font-serif">
-                  {activeChapter.synopsis}
-                </p>
-              )}
-            </div>
-
-            {/* Chapter Formatted Prose Content */}
-            <div className="py-2">
-              <ProseRenderer content={activeContent} fontSize={previewFontSize} />
-            </div>
-
-            {/* Reader Engagement Footer Preview */}
-            <div className="border-t border-stone-200/50 dark:border-stone-800/50 pt-6 flex flex-wrap items-center justify-between gap-3 text-xs opacity-80">
-              <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/50">
-                  <Heart className="w-3.5 h-3.5 text-[#D4AF37]" /> 0 Readers Liked
-                </span>
-                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/50">
-                  <Bookmark className="w-3.5 h-3.5 text-[#D4AF37]" /> Add to Library
-                </span>
+            {/* Reader Canvas Card */}
+            <article
+              className={`rounded-3xl p-6 sm:p-12 space-y-8 transition-colors duration-300 border ${
+                previewTheme === "night"
+                  ? "bg-[#121110] text-[#E6E1D5] border-[#2D2A26] shadow-2xl"
+                  : previewTheme === "sandstone"
+                  ? "bg-[#F4ECD8] text-[#3D2612] border-[#E2D2B8] shadow-sm"
+                  : "bg-white text-stone-900 border-[#E8DFD1] shadow-sm"
+              }`}
+            >
+              {/* Chapter Header */}
+              <div className="space-y-2 border-b border-stone-200/40 dark:border-stone-800/40 pb-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
+                    Chapter {activeChapter.chapterNumber || activeChapter.number} of {chapters.length}
+                  </span>
+                  <span className="text-xs text-stone-400">
+                    ~{activeReadTime} min read
+                  </span>
+                </div>
+                <h2 className="text-xl sm:text-2xl font-bold font-serif">
+                  {activeChapter.title}
+                </h2>
+                {activeChapter.synopsis && (
+                  <p className="text-xs italic text-stone-500 dark:text-stone-400 font-serif">
+                    {activeChapter.synopsis}
+                  </p>
+                )}
               </div>
 
-              <span className="text-[11px] text-stone-400 italic">
-                Interactive reader reactions active once published
-              </span>
-            </div>
-          </article>
+              {/* Chapter Formatted Prose Content */}
+              <div className="py-2">
+                <ProseRenderer content={activeContent} fontSize={previewFontSize} />
+              </div>
+
+              {/* Reader Engagement Footer Preview */}
+              <div className="border-t border-stone-200/50 dark:border-stone-800/50 pt-6 flex flex-wrap items-center justify-between gap-3 text-xs opacity-80">
+                <div className="flex items-center gap-3">
+                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/50">
+                    <Heart className="w-3.5 h-3.5 text-[#D4AF37]" /> 0 Readers Liked
+                  </span>
+                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/50">
+                    <Bookmark className="w-3.5 h-3.5 text-[#D4AF37]" /> Add to Library
+                  </span>
+                </div>
+
+                <span className="text-[11px] text-stone-400 italic">
+                  Interactive reader reactions active once published
+                </span>
+              </div>
+            </article>
+          </div>
 
           {/* Navigation Action Buttons */}
           <div className="flex items-center justify-between pt-2">
