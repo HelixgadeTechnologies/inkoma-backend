@@ -746,105 +746,6 @@ export default function StudioNewStoryPage() {
               />
             </div>
 
-            {/* Story Status Selection (Ongoing vs Completed) */}
-            <div className="space-y-2.5 pt-1">
-              <div className="flex items-center justify-between text-xs">
-                <label className="font-semibold text-stone-800 dark:text-stone-200 flex items-center gap-1.5">
-                  Story Status <span className="text-[#D4AF37]">*</span>
-                </label>
-                <span className="text-[11px] text-stone-500 dark:text-stone-400">
-                  Select whether you are still writing or finished
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* Ongoing Option */}
-                <button
-                  type="button"
-                  onClick={() => setStatus("ongoing")}
-                  className={`flex items-start gap-3.5 p-4 rounded-2xl border text-left transition-all cursor-pointer relative ${
-                    status === "ongoing"
-                      ? "border-[#D4AF37] bg-[#D4AF37]/10 ring-2 ring-[#D4AF37]/30 shadow-sm"
-                      : "border-stone-200 dark:border-stone-800 bg-[#faf8f5] dark:bg-[#1c1b22] hover:border-stone-300 dark:hover:border-stone-700"
-                  }`}
-                >
-                  <div
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
-                      status === "ongoing"
-                        ? "bg-[#D4AF37] text-stone-950 font-bold shadow-xs"
-                        : "bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-400"
-                    }`}
-                  >
-                    <Clock className="w-4 h-4" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs font-bold text-stone-900 dark:text-white">
-                        Ongoing Story
-                      </span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#D4AF37]/20 text-[#B8860B] dark:text-[#E5C158] border border-[#D4AF37]/40">
-                        Ongoing Tag
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">
-                      Still writing. New chapters will be published progressively.
-                    </p>
-                  </div>
-                </button>
-
-                {/* Completed Option */}
-                <button
-                  type="button"
-                  onClick={() => setStatus("completed")}
-                  className={`flex items-start gap-3.5 p-4 rounded-2xl border text-left transition-all cursor-pointer relative ${
-                    status === "completed"
-                      ? "border-emerald-500 bg-emerald-500/10 ring-2 ring-emerald-500/30 shadow-sm"
-                      : "border-stone-200 dark:border-stone-800 bg-[#faf8f5] dark:bg-[#1c1b22] hover:border-stone-300 dark:hover:border-stone-700"
-                  }`}
-                >
-                  <div
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
-                      status === "completed"
-                        ? "bg-emerald-600 text-white font-bold shadow-xs"
-                        : "bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-400"
-                    }`}
-                  >
-                    <CheckCircle2 className="w-4 h-4" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs font-bold text-stone-900 dark:text-white">
-                        Completed Story
-                      </span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                        Completed Tag
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">
-                      Finished manuscript. All chapters are ready for readers to binge.
-                    </p>
-                  </div>
-                </button>
-              </div>
-
-              {/* Tag preview indicator */}
-              <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-stone-50 dark:bg-[#18171e] border border-stone-200 dark:border-stone-800 text-xs text-stone-600 dark:text-stone-300">
-                <span className="text-stone-400 font-medium text-[11px]">Platform Tag Preview:</span>
-                {status === "completed" ? (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Completed
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#D4AF37]/15 text-[#B8860B] dark:text-[#E5C158] border border-[#D4AF37]/40">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span> Ongoing
-                  </span>
-                )}
-                <span className="text-[11px] text-stone-500 ml-auto hidden sm:inline">
-                  Shown on story cards across Explore &amp; Library
-                </span>
-              </div>
-            </div>
-
             {/* Trigger Warnings */}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
@@ -1464,54 +1365,102 @@ export default function StudioNewStoryPage() {
             </h3>
 
             <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider block">
-                  Story Publication Status Tag
-                </label>
+              {/* Story Status Selection (Ongoing vs Completed) */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between text-xs">
+                  <label className="font-semibold text-stone-800 dark:text-stone-200 flex items-center gap-1.5">
+                    Story Status Tag <span className="text-[#D4AF37]">*</span>
+                  </label>
+                  <span className="text-[11px] text-stone-500 dark:text-stone-400">
+                    Select whether you are still writing or finished
+                  </span>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Ongoing Option */}
                   <button
                     type="button"
                     onClick={() => setStatus("ongoing")}
-                    className={`flex items-center gap-3 p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                    className={`flex items-start gap-3.5 p-4 rounded-2xl border text-left transition-all cursor-pointer relative ${
                       status === "ongoing"
-                        ? "border-[#D4AF37] bg-[#D4AF37]/10 ring-2 ring-[#D4AF37]/30"
+                        ? "border-[#D4AF37] bg-[#D4AF37]/10 ring-2 ring-[#D4AF37]/30 shadow-sm"
                         : "border-stone-200 dark:border-stone-800 bg-[#faf8f5] dark:bg-[#1c1b22] hover:border-stone-300 dark:hover:border-stone-700"
                     }`}
                   >
                     <div
-                      className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
-                        status === "ongoing" ? "bg-[#D4AF37] text-stone-950 font-bold" : "bg-stone-200 dark:bg-stone-800 text-stone-500"
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                        status === "ongoing"
+                          ? "bg-[#D4AF37] text-stone-950 font-bold shadow-xs"
+                          : "bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-400"
                       }`}
                     >
                       <Clock className="w-4 h-4" />
                     </div>
-                    <div>
-                      <div className="text-xs font-bold text-stone-900 dark:text-white">Ongoing Story</div>
-                      <div className="text-[11px] text-stone-500 dark:text-stone-400">Publishing chapters progressively</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold text-stone-900 dark:text-white">
+                          Ongoing Story
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#D4AF37]/20 text-[#B8860B] dark:text-[#E5C158] border border-[#D4AF37]/40">
+                          Ongoing Tag
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">
+                        Still writing. New chapters will be published progressively.
+                      </p>
                     </div>
                   </button>
 
+                  {/* Completed Option */}
                   <button
                     type="button"
                     onClick={() => setStatus("completed")}
-                    className={`flex items-center gap-3 p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                    className={`flex items-start gap-3.5 p-4 rounded-2xl border text-left transition-all cursor-pointer relative ${
                       status === "completed"
-                        ? "border-emerald-500 bg-emerald-500/10 ring-2 ring-emerald-500/30"
+                        ? "border-emerald-500 bg-emerald-500/10 ring-2 ring-emerald-500/30 shadow-sm"
                         : "border-stone-200 dark:border-stone-800 bg-[#faf8f5] dark:bg-[#1c1b22] hover:border-stone-300 dark:hover:border-stone-700"
                     }`}
                   >
                     <div
-                      className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
-                        status === "completed" ? "bg-emerald-600 text-white font-bold" : "bg-stone-200 dark:bg-stone-800 text-stone-500"
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                        status === "completed"
+                          ? "bg-emerald-600 text-white font-bold shadow-xs"
+                          : "bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-400"
                       }`}
                     >
                       <CheckCircle2 className="w-4 h-4" />
                     </div>
-                    <div>
-                      <div className="text-xs font-bold text-stone-900 dark:text-white">Completed Story</div>
-                      <div className="text-[11px] text-stone-500 dark:text-stone-400">All chapters finished &amp; ready</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold text-stone-900 dark:text-white">
+                          Completed Story
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                          Completed Tag
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">
+                        Finished manuscript. All chapters are ready for readers to binge.
+                      </p>
                     </div>
                   </button>
+                </div>
+
+                {/* Tag preview indicator */}
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-stone-50 dark:bg-[#18171e] border border-stone-200 dark:border-stone-800 text-xs text-stone-600 dark:text-stone-300">
+                  <span className="text-stone-400 font-medium text-[11px]">Platform Tag Preview:</span>
+                  {status === "completed" ? (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Completed
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#D4AF37]/15 text-[#B8860B] dark:text-[#E5C158] border border-[#D4AF37]/40">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span> Ongoing
+                    </span>
+                  )}
+                  <span className="text-[11px] text-stone-500 ml-auto hidden sm:inline">
+                    Shown on story cards across Explore &amp; Library
+                  </span>
                 </div>
               </div>
 
