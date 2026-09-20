@@ -343,6 +343,14 @@ export default function StudioNewStoryPage() {
     }
   };
 
+  const toggleSubGenre = (sg: string) => {
+    if (subGenres.includes(sg)) {
+      setSubGenres(subGenres.filter((s) => s !== sg));
+    } else {
+      setSubGenres([...subGenres, sg]);
+    }
+  };
+
   const handleAddNewChapter = () => {
     const nextNum = chapters.length + 1;
     const newChap: StoryChapter = {
@@ -657,9 +665,12 @@ export default function StudioNewStoryPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-stone-800 dark:text-stone-200 block">
-                  Sub-Genres (Optional)
-                </label>
+                <div className="flex items-center justify-between text-xs">
+                  <label className="font-semibold text-stone-800 dark:text-stone-200 block">
+                    Sub-Genres (Optional)
+                  </label>
+                  <Info className="w-3.5 h-3.5 text-stone-400 dark:text-stone-500 cursor-pointer" />
+                </div>
                 <Select
                   value=""
                   onChange={(val) => {
@@ -673,6 +684,28 @@ export default function StudioNewStoryPage() {
                   ]}
                   className="bg-[#faf8f5] dark:bg-[#1c1b22] border-stone-300 dark:border-stone-800 text-stone-900 dark:text-stone-200 rounded-xl text-xs py-2.5"
                 />
+
+                {/* Selected Sub-Genre Badges */}
+                {subGenres.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {subGenres.map((genre) => (
+                      <span
+                        key={genre}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#D4AF37]/15 text-[#B8860B] dark:text-[#E5C158] border border-[#D4AF37]/30"
+                      >
+                        <span>{genre}</span>
+                        <button
+                          type="button"
+                          onClick={() => toggleSubGenre(genre)}
+                          className="hover:text-stone-950 dark:hover:text-white font-bold ml-0.5 text-xs cursor-pointer"
+                          aria-label={`Remove ${genre}`}
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1250,6 +1283,14 @@ export default function StudioNewStoryPage() {
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[#D4AF37]">
                     {mainGenre || "Folklore"}
                   </span>
+                  {subGenres.map((sg) => (
+                    <span
+                      key={sg}
+                      className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#D4AF37]/15 text-[#B8860B] dark:text-[#E5C158] border border-[#D4AF37]/30"
+                    >
+                      {sg}
+                    </span>
+                  ))}
                   {status === "completed" ? (
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
                       Completed
@@ -1477,6 +1518,12 @@ export default function StudioNewStoryPage() {
                     <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                     <span>Main Genre: <strong>{mainGenre || "Not set"}</strong></span>
                   </li>
+                  {subGenres.length > 0 && (
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                      <span>Sub-Genres: <strong>{subGenres.join(", ")}</strong></span>
+                    </li>
+                  )}
                   <li className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                     <span className="flex items-center gap-1.5">
