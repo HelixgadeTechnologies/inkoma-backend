@@ -12,6 +12,7 @@ import {
   Heart,
   Eye,
   Bookmark,
+  ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -55,7 +56,7 @@ function SafeImage({
 }
 
 // ---------------------------------------------------------------------------
-// DATA STRUCTURES MATCHING THE EXACT SCREENSHOT
+// DATA STRUCTURES (EXPANDED SO EVERY SECTION ALWAYS SCROLLS SIDEWAYS)
 // ---------------------------------------------------------------------------
 
 const FEATURED_STORIES = [
@@ -97,6 +98,19 @@ const FEATURED_STORIES = [
     views: "38.2K",
     likes: "2.3K",
     cover: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=800&auto=format&fit=crop",
+  },
+  {
+    id: "featured-4",
+    slug: "song-of-the-baobab",
+    title: "Song of the Baobab",
+    genre: "FOLKLORE",
+    badgeColor: "bg-[#B45309] text-white",
+    author: "Kofi Mensah",
+    authorAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop",
+    blurb: "Whispers of the old kingdom carry secrets across generations.",
+    views: "19.8K",
+    likes: "1.8K",
+    cover: "https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=800&auto=format&fit=crop",
   },
 ];
 
@@ -156,6 +170,39 @@ const RECOMMENDED_STORIES = [
     likes: "920",
     cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop",
   },
+  {
+    id: "rec-6",
+    slug: "echoes-of-the-savannah",
+    title: "Echoes of the Savannah",
+    author: "Folake Adeyemi",
+    genre: "DRAMA",
+    badgeColor: "bg-[#B54A62]/90 text-white",
+    views: "13.9K",
+    likes: "940",
+    cover: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800&auto=format&fit=crop",
+  },
+  {
+    id: "rec-7",
+    slug: "daughters-of-the-rain-queen",
+    title: "Daughters of the Rain Queen",
+    author: "Modupe Adeleke",
+    genre: "FANTASY",
+    badgeColor: "bg-[#1E6852]/90 text-white",
+    views: "15.2K",
+    likes: "1.2K",
+    cover: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?q=80&w=800&auto=format&fit=crop",
+  },
+  {
+    id: "rec-8",
+    slug: "tales-of-kalahari-sands",
+    title: "Tales of Kalahari Sands",
+    author: "Kagiso Molefe",
+    genre: "ADVENTURE",
+    badgeColor: "bg-[#A35922]/90 text-white",
+    views: "16.7K",
+    likes: "1.3K",
+    cover: "https://images.unsplash.com/photo-1509099836639-18ba1795216d?q=80&w=800&auto=format&fit=crop",
+  },
 ];
 
 const NEW_RELEASES = [
@@ -213,6 +260,39 @@ const NEW_RELEASES = [
     views: "8.4K",
     likes: "600",
     cover: "https://images.unsplash.com/photo-1511497584788-876761c119ef?q=80&w=800&auto=format&fit=crop",
+  },
+  {
+    id: "new-6",
+    slug: "mami-wata-currents",
+    title: "Mami Wata: Currents",
+    author: "Nia Okonkwo",
+    genre: "MYTHOLOGY",
+    badgeColor: "bg-[#0E7490]/90 text-white",
+    views: "10.1K",
+    likes: "820",
+    cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop",
+  },
+  {
+    id: "new-7",
+    slug: "queen-moremi-oath",
+    title: "Queen Moremi's Oath",
+    author: "Folake Adeyemi",
+    genre: "LEGEND",
+    badgeColor: "bg-[#6B3254]/90 text-white",
+    views: "11.4K",
+    likes: "890",
+    cover: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=800&auto=format&fit=crop",
+  },
+  {
+    id: "new-8",
+    slug: "dogon-star-dancers",
+    title: "Dogon: Star Dancers",
+    author: "Oumar Sangare",
+    genre: "COSMOLOGY",
+    badgeColor: "bg-[#1D4ED8]/90 text-white",
+    views: "9.5K",
+    likes: "740",
+    cover: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=800&auto=format&fit=crop",
   },
 ];
 
@@ -277,6 +357,42 @@ const RECENTLY_UPDATED = [
     likes: "690",
     cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=400&auto=format&fit=crop",
   },
+  {
+    id: "recent-6",
+    slug: "the-shadow-throne",
+    title: "The Shadow Throne",
+    author: "K. Mensah",
+    genre: "FANTASY",
+    badgeColor: "bg-[#D1FAE5] text-[#047857]",
+    cardTheme: "dark",
+    views: "10.4K",
+    likes: "720",
+    cover: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400&auto=format&fit=crop",
+  },
+  {
+    id: "recent-7",
+    slug: "veils-of-lagos",
+    title: "Veils of Lagos",
+    author: "S. Adeleke",
+    genre: "DRAMA",
+    badgeColor: "bg-[#F3E8FF] text-[#7E22CE]",
+    cardTheme: "light",
+    views: "8.7K",
+    likes: "590",
+    cover: "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=400&auto=format&fit=crop",
+  },
+  {
+    id: "recent-8",
+    slug: "the-python-covenant",
+    title: "The Python Covenant",
+    author: "B. Lawal",
+    genre: "MYSTERY",
+    badgeColor: "bg-[#DBEAFE] text-[#1D4ED8]",
+    cardTheme: "light",
+    views: "11.0K",
+    likes: "790",
+    cover: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?q=80&w=400&auto=format&fit=crop",
+  },
 ];
 
 const TOP_AUTHORS = [
@@ -294,6 +410,27 @@ const TOP_AUTHORS = [
     followers: "1.8K Followers",
     stories: "9 Stories",
   },
+  {
+    id: "author-3",
+    name: "Amara Diallo",
+    avatar: "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=300&auto=format&fit=crop",
+    followers: "3.1K Followers",
+    stories: "15 Stories",
+  },
+  {
+    id: "author-4",
+    name: "Kwame Nkrumah",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop",
+    followers: "2.9K Followers",
+    stories: "11 Stories",
+  },
+  {
+    id: "author-5",
+    name: "Zoe Adeyemi",
+    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=300&auto=format&fit=crop",
+    followers: "4.2K Followers",
+    stories: "18 Stories",
+  },
 ];
 
 export default function HomePage() {
@@ -301,7 +438,24 @@ export default function HomePage() {
   const [followedAuthors, setFollowedAuthors] = React.useState<Record<string, boolean>>({
     "author-1": false,
     "author-2": false,
+    "author-3": false,
+    "author-4": false,
+    "author-5": false,
   });
+
+  // Section Refs for smooth sideways scrolling on click
+  const featuredRef = React.useRef<HTMLDivElement>(null);
+  const recommendedRef = React.useRef<HTMLDivElement>(null);
+  const newReleasesRef = React.useRef<HTMLDivElement>(null);
+  const recentlyUpdatedRef = React.useRef<HTMLDivElement>(null);
+  const topAuthorsRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollRow = (ref: React.RefObject<HTMLDivElement | null>, direction: "left" | "right") => {
+    if (ref.current) {
+      const offset = direction === "left" ? -340 : 340;
+      ref.current.scrollBy({ left: offset, behavior: "smooth" });
+    }
+  };
 
   const toggleBookmark = (id: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -416,31 +570,54 @@ export default function HomePage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. FEATURED STORIES */}
+      {/* 3. FEATURED STORIES (Always sideways scrollable) */}
       {/* ========================================================================= */}
       <section className="space-y-3.5">
         <div className="flex items-center justify-between">
           <h2 className="text-xl sm:text-2xl font-bold font-serif tracking-tight text-stone-900">
             Featured Stories
           </h2>
-          <Link
-            href="/explore?sort=featured"
-            className="text-xs sm:text-sm font-semibold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-0.5"
-          >
-            <span>View all</span>
-            <ChevronRight className="w-4 h-4" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => scrollRow(featuredRef, "left")}
+                className="p-1.5 rounded-lg border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 transition-colors shadow-2xs active:scale-95"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollRow(featuredRef, "right")}
+                className="p-1.5 rounded-lg border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 transition-colors shadow-2xs active:scale-95"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <Link
+              href="/explore?sort=featured"
+              className="text-xs sm:text-sm font-semibold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-0.5"
+            >
+              <span>View all</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
 
-        {/* Horizontal scroll track for wide featured cards */}
-        <div className="flex items-stretch gap-4 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0">
+        {/* Horizontal sideways scroll track */}
+        <div
+          ref={featuredRef}
+          className="flex items-stretch gap-4 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x snap-mandatory scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
+        >
           {FEATURED_STORIES.map((story) => {
             const isBookmarked = bookmarked[story.id];
             return (
               <Link
                 key={story.id}
                 href={`/story/${story.slug}`}
-                className="group block shrink-0 snap-start w-[88vw] sm:w-[620px] rounded-2xl overflow-hidden border border-stone-200 bg-white shadow-xs hover:border-[#D4AF37]/60 hover:shadow-md transition-all"
+                className="group block shrink-0 snap-start w-[88vw] sm:w-[580px] md:w-[620px] rounded-2xl overflow-hidden border border-stone-200 bg-white shadow-xs hover:border-[#D4AF37]/60 hover:shadow-md transition-all"
               >
                 <div className="flex flex-col sm:flex-row h-full">
                   {/* Left: Cover Image */}
@@ -518,29 +695,52 @@ export default function HomePage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 4. RECOMMENDED FOR YOU */}
+      {/* 4. RECOMMENDED FOR YOU (Always sideways scrollable) */}
       {/* ========================================================================= */}
       <section className="space-y-3.5">
         <div className="flex items-center justify-between">
           <h2 className="text-xl sm:text-2xl font-bold font-serif tracking-tight text-stone-900">
             Recommended For You
           </h2>
-          <Link
-            href="/explore?sort=recommended"
-            className="text-xs sm:text-sm font-semibold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-0.5"
-          >
-            <span>View all</span>
-            <ChevronRight className="w-4 h-4" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => scrollRow(recommendedRef, "left")}
+                className="p-1.5 rounded-lg border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 transition-colors shadow-2xs active:scale-95"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollRow(recommendedRef, "right")}
+                className="p-1.5 rounded-lg border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 transition-colors shadow-2xs active:scale-95"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <Link
+              href="/explore?sort=recommended"
+              className="text-xs sm:text-sm font-semibold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-0.5"
+            >
+              <span>View all</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
 
-        {/* 5 portrait full-bleed cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-3.5 overflow-x-auto pb-1 scrollbar-none">
+        {/* Sideways scroll row */}
+        <div
+          ref={recommendedRef}
+          className="flex items-stretch gap-3 sm:gap-3.5 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x snap-mandatory scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
+        >
           {RECOMMENDED_STORIES.map((story) => (
             <Link
               key={story.id}
               href={`/story/${story.slug}`}
-              className="group relative aspect-[3/4.4] rounded-2xl overflow-hidden border border-stone-200/80 shadow-xs hover:border-[#D4AF37] hover:shadow-md transition-all"
+              className="group relative w-[150px] sm:w-[175px] md:w-[195px] aspect-[3/4.4] shrink-0 snap-start rounded-2xl overflow-hidden border border-stone-200/80 shadow-xs hover:border-[#D4AF37] hover:shadow-md transition-all"
             >
               <SafeImage
                 src={story.cover}
@@ -585,29 +785,52 @@ export default function HomePage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 5. NEW RELEASES */}
+      {/* 5. NEW RELEASES (Always sideways scrollable) */}
       {/* ========================================================================= */}
       <section className="space-y-3.5">
         <div className="flex items-center justify-between">
           <h2 className="text-xl sm:text-2xl font-bold font-serif tracking-tight text-stone-900">
             New Releases
           </h2>
-          <Link
-            href="/explore?sort=newest"
-            className="text-xs sm:text-sm font-semibold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-0.5"
-          >
-            <span>View all</span>
-            <ChevronRight className="w-4 h-4" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => scrollRow(newReleasesRef, "left")}
+                className="p-1.5 rounded-lg border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 transition-colors shadow-2xs active:scale-95"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollRow(newReleasesRef, "right")}
+                className="p-1.5 rounded-lg border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 transition-colors shadow-2xs active:scale-95"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <Link
+              href="/explore?sort=newest"
+              className="text-xs sm:text-sm font-semibold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-0.5"
+            >
+              <span>View all</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
 
-        {/* 5 portrait full-bleed cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-3.5 overflow-x-auto pb-1 scrollbar-none">
+        {/* Sideways scroll row */}
+        <div
+          ref={newReleasesRef}
+          className="flex items-stretch gap-3 sm:gap-3.5 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x snap-mandatory scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
+        >
           {NEW_RELEASES.map((story) => (
             <Link
               key={story.id}
               href={`/story/${story.slug}`}
-              className="group relative aspect-[3/4.4] rounded-2xl overflow-hidden border border-stone-200/80 shadow-xs hover:border-[#D4AF37] hover:shadow-md transition-all"
+              className="group relative w-[150px] sm:w-[175px] md:w-[195px] aspect-[3/4.4] shrink-0 snap-start rounded-2xl overflow-hidden border border-stone-200/80 shadow-xs hover:border-[#D4AF37] hover:shadow-md transition-all"
             >
               <SafeImage
                 src={story.cover}
@@ -652,31 +875,54 @@ export default function HomePage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 6. RECENTLY UPDATED */}
+      {/* 6. RECENTLY UPDATED (Always sideways scrollable) */}
       {/* ========================================================================= */}
       <section className="space-y-3.5">
         <div className="flex items-center justify-between">
           <h2 className="text-xl sm:text-2xl font-bold font-serif tracking-tight text-stone-900">
             Recently Updated
           </h2>
-          <Link
-            href="/explore?sort=recently_updated"
-            className="text-xs sm:text-sm font-semibold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-0.5"
-          >
-            <span>View all</span>
-            <ChevronRight className="w-4 h-4" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => scrollRow(recentlyUpdatedRef, "left")}
+                className="p-1.5 rounded-lg border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 transition-colors shadow-2xs active:scale-95"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollRow(recentlyUpdatedRef, "right")}
+                className="p-1.5 rounded-lg border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 transition-colors shadow-2xs active:scale-95"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <Link
+              href="/explore?sort=recently_updated"
+              className="text-xs sm:text-sm font-semibold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-0.5"
+            >
+              <span>View all</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
 
-        {/* 5 horizontal split cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-3.5 overflow-x-auto pb-1 scrollbar-none">
+        {/* Sideways scroll row */}
+        <div
+          ref={recentlyUpdatedRef}
+          className="flex items-stretch gap-3 sm:gap-3.5 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x snap-mandatory scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
+        >
           {RECENTLY_UPDATED.map((story) => {
             const isDark = story.cardTheme === "dark";
             return (
               <Link
                 key={story.id}
                 href={`/story/${story.slug}`}
-                className={`group rounded-2xl overflow-hidden border transition-all flex items-stretch h-[116px] shadow-2xs hover:shadow-md ${
+                className={`group w-[230px] sm:w-[260px] md:w-[275px] shrink-0 snap-start rounded-2xl overflow-hidden border transition-all flex items-stretch h-[116px] shadow-2xs hover:shadow-md ${
                   isDark
                     ? "bg-[#141318] border-stone-800 hover:border-[#D4AF37]"
                     : "bg-white border-stone-200 hover:border-[#D4AF37]"
@@ -740,30 +986,53 @@ export default function HomePage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 7. TOP AUTHORS */}
+      {/* 7. TOP AUTHORS (Always sideways scrollable) */}
       {/* ========================================================================= */}
       <section className="space-y-3.5">
         <div className="flex items-center justify-between">
           <h2 className="text-xl sm:text-2xl font-bold font-serif tracking-tight text-stone-900">
             Top Authors
           </h2>
-          <Link
-            href="/explore?tab=authors"
-            className="text-xs sm:text-sm font-semibold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-0.5"
-          >
-            <span>View all</span>
-            <ChevronRight className="w-4 h-4" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => scrollRow(topAuthorsRef, "left")}
+                className="p-1.5 rounded-lg border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 transition-colors shadow-2xs active:scale-95"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollRow(topAuthorsRef, "right")}
+                className="p-1.5 rounded-lg border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 transition-colors shadow-2xs active:scale-95"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <Link
+              href="/explore?tab=authors"
+              className="text-xs sm:text-sm font-semibold text-[#B8860B] hover:text-[#9A7B0C] flex items-center gap-0.5"
+            >
+              <span>View all</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
 
-        {/* 2 Author Cards in a Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        {/* Sideways scroll track for author cards */}
+        <div
+          ref={topAuthorsRef}
+          className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x snap-mandatory scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
+        >
           {TOP_AUTHORS.map((author) => {
             const isFollowing = followedAuthors[author.id];
             return (
               <div
                 key={author.id}
-                className="bg-white border border-stone-200 rounded-2xl p-3.5 sm:p-4 flex items-center justify-between gap-3 shadow-xs hover:border-[#D4AF37]/50 transition-all"
+                className="w-[270px] sm:w-[310px] shrink-0 snap-start bg-white border border-stone-200 rounded-2xl p-3.5 sm:p-4 flex items-center justify-between gap-3 shadow-xs hover:border-[#D4AF37]/50 transition-all"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0 border border-stone-200">
