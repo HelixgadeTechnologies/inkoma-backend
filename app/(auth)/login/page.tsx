@@ -26,7 +26,11 @@ export default function LoginPage() {
     setErrorMessage("");
 
     try {
-      await signIn(email, password);
+      const result = await signIn(email, password);
+      if (result?.user && !result.user.emailVerified) {
+        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+        return;
+      }
       router.push("/explore");
     } catch (err: unknown) {
       console.error("[LoginPage] Sign in error:", err);

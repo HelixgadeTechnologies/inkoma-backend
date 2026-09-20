@@ -5,6 +5,9 @@ import {
   signOut,
   updateProfile,
   onAuthStateChanged,
+  sendEmailVerification,
+  reload,
+  ActionCodeSettings,
   GoogleAuthProvider,
   User as FirebaseUser,
   NextOrObserver,
@@ -26,12 +29,67 @@ export interface FirestoreUserData {
   photoURL?: string;
   bio?: string;
   role: "author" | "reader" | "writer" | "storyteller";
+  favoriteGenres?: string[];
+  emailVerified?: boolean;
   createdAt?: unknown;
   updatedAt?: unknown;
 }
 
 /**
- * Sign up a new user with Email and Password
+ * Send email verification link to user via Firebase
+ */
+export async function sendVerificationEmail(targetUser?: FirebaseUser | null): Promise<void> {
+  if (!isFirebaseConfigured() || !auth) {
+    console.info("[AuthService] Firebase offline; simulated email verification sent.");
+    return;
+  }
+
+  const currentUser = targetUser || auth.currentUser;
+  if (!currentUser) {
+    throw new Error("No authenticated user to send verification email to.");
+  }
+
+  const continueUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/onboarding`
+      : (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000") + "/onboarding";
+
+  const actionCodeSettings: ActionCodeSettings = {
+    url: continueUrl,
+    handleCodeInApp: false,
+  };
+
+  try {
+    await sendEmailVerification(currentUser, actionCodeSettings);
+  } catch (err: unknown) {
+    console.warn("[AuthService] Error with ActionCodeSettings; retrying default:", err);
+    await sendEmailVerification(currentUser);
+  }
+}
+
+/**
+ * Check if current user's email has been verified
+ */
+export async function checkEmailVerification(targetUser?: FirebaseUser | null): Promise<boolean> {
+  if (!isFirebaseConfigured() || !auth) {
+    return true;
+  }
+
+  const currentUser = targetUser || auth.currentUser;
+  if (!currentUser) return false;
+
+  await reload(currentUser);
+  if (currentUser.emailVerified && db) {
+    await updateUserProfileDoc(currentUser.uid, {
+      emailVerified: true,
+    }).catch((err) => console.warn("[AuthService] Failed to sync emailVerified:", err));
+  }
+
+  return currentUser.emailVerified;
+}
+
+/**
+ * Sign up a new user with Email and Password and dispatch verification email
  */
 export async function signUpUser(
   email: string,
@@ -48,6 +106,7 @@ export async function signUpUser(
       photoURL: MOCK_CURRENT_USER.avatarUrl,
       bio: MOCK_CURRENT_USER.bio,
       role,
+      emailVerified: true,
     };
     if (typeof window !== "undefined") {
       localStorage.setItem("inkoma_authenticated", "true");
@@ -71,11 +130,20 @@ export async function signUpUser(
     photoURL: user.photoURL || "",
     bio: "",
     role,
+    emailVerified: false,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   };
 
   await setDoc(userDocRef, newProfile);
+
+  // Automatically trigger Firebase verification email
+  try {
+    await sendVerificationEmail(user);
+  } catch (verifyErr) {
+    console.warn("[AuthService] Warning: Failed to send initial verification email:", verifyErr);
+  }
+
   return { user, profile: newProfile };
 }
 

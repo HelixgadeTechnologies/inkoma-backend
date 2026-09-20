@@ -10,6 +10,8 @@ import {
   getUserProfile,
   updateUserProfileDoc,
   onAuthChange,
+  sendVerificationEmail,
+  checkEmailVerification,
   FirestoreUserData,
 } from "@/src/services/authService";
 import { isFirebaseConfigured } from "@/src/firebase/config";
@@ -20,7 +22,11 @@ export interface AuthContextType {
   profile: FirestoreUserData | null;
   loading: boolean;
   isAuthenticated: boolean;
-  loginWithEmail: (email: string, pass: string) => Promise<void>;
+  emailVerified: boolean;
+  loginWithEmail: (
+    email: string,
+    pass: string
+  ) => Promise<{ user: FirebaseUser | null; profile: FirestoreUserData | null }>;
   signupWithEmail: (
     email: string,
     pass: string,
@@ -30,6 +36,8 @@ export interface AuthContextType {
   loginWithGoogleProvider: () => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (data: Partial<FirestoreUserData>) => Promise<void>;
+  sendVerification: () => Promise<void>;
+  checkVerification: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -98,6 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const result = await loginUser(email, pass);
       if (result.user) setUser(result.user);
       if (result.profile) setProfile(result.profile);
+      return result;
     } finally {
       setLoading(false);
     }
@@ -154,6 +163,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [profile]
   );
 
+  const sendVerification = useCallback(async () => {
+    if (user) {
+      await sendVerificationEmail(user);
+    }
+  }, [user]);
+
+  const checkVerification = useCallback(async () => {
+    if (!user) return false;
+    const isVerified = await checkEmailVerification(user);
+    if (isVerified) {
+      // Force update user state
+      setUser((prev) => (prev ? ({ ...prev, emailVerified: true } as FirebaseUser) : null));
+      setProfile((prev) => (prev ? { ...prev, emailVerified: true } : null));
+    }
+    return isVerified;
+  }, [user]);
+
+  const isVerified = !isFirebaseConfigured() || !!user?.emailVerified || !!profile?.emailVerified;
+
   return (
     <AuthContext.Provider
       value={{
@@ -161,11 +189,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         profile,
         loading,
         isAuthenticated: !!user || !!profile,
+        emailVerified: isVerified,
         loginWithEmail,
         signupWithEmail,
         loginWithGoogleProvider,
         logout,
         updateProfile,
+        sendVerification,
+        checkVerification,
       }}
     >
       {children}

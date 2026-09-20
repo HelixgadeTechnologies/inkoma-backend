@@ -30,7 +30,7 @@ export default function SignupPage() {
     try {
       const displayName = penName.trim() || `${firstName} ${lastName}`.trim() || "Storyteller";
       await signUp(email, password, displayName, "author");
-      router.push("/onboarding");
+      router.push(`/verify-email?email=${encodeURIComponent(email)}`);
     } catch (err: unknown) {
       console.error("[SignupPage] Registration error:", err);
       const message =

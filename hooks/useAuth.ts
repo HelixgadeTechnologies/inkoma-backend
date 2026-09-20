@@ -25,35 +25,45 @@ export function useAuth() {
 
     return {
       user: context.user
-        ? { id: context.user.uid, email: context.user.email || undefined }
+        ? {
+            id: context.user.uid,
+            email: context.user.email || undefined,
+            emailVerified: context.user.emailVerified,
+          }
         : null,
       firebaseUser: context.user,
       profile: adaptedProfile,
       loading: context.loading,
       isAuthenticated: context.isAuthenticated,
+      emailVerified: context.emailVerified,
       signIn: async (email?: string, pass?: string) => {
         if (email && pass) {
-          await context.loginWithEmail(email, pass);
+          return await context.loginWithEmail(email, pass);
         } else {
-          context.loginWithEmail("kwame@inkoma.app", "password123").catch(() => {});
+          return await context.loginWithEmail("kwame@inkoma.app", "password123");
         }
       },
       signUp: context.signupWithEmail,
       signInWithGoogle: context.loginWithGoogleProvider,
       signOut: context.logout,
+      sendVerification: context.sendVerification,
+      checkVerification: context.checkVerification,
     };
   } catch {
     // Fallback if rendered outside of AuthProvider
     return {
-      user: { id: MOCK_CURRENT_USER.id, email: "kwame@inkoma.app" },
+      user: { id: MOCK_CURRENT_USER.id, email: "kwame@inkoma.app", emailVerified: true },
       firebaseUser: null,
       profile: MOCK_CURRENT_USER,
       loading: false,
       isAuthenticated: true,
+      emailVerified: true,
       signIn: async () => {},
       signUp: async () => {},
       signInWithGoogle: async () => {},
       signOut: async () => {},
+      sendVerification: async () => {},
+      checkVerification: async () => true,
     };
   }
 }

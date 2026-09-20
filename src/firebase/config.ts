@@ -71,8 +71,14 @@ if (typeof window !== "undefined" || isFirebaseConfigured()) {
             appId: "1:123456789:web:abcdef",
           }
     );
+    const firestoreDatabaseId =
+      process.env.NEXT_PUBLIC_FIREBASE_DATABASE_ID ||
+      process.env.REACT_APP_FIREBASE_DATABASE_ID ||
+      process.env.VITE_FIREBASE_DATABASE_ID ||
+      "default";
+
     auth = getAuth(app);
-    db = getFirestore(app);
+    db = getFirestore(app, firestoreDatabaseId);
     storage = getStorage(app);
   } catch (err) {
     console.warn("[Firebase] Initialization warning:", err);
