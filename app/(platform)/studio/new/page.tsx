@@ -40,6 +40,7 @@ import { MAIN_GENRES, SUB_GENRES, TRIGGER_WARNINGS } from "@/config/genres";
 import { MOCK_CURRENT_USER } from "@/config/mock-data";
 import { useAuth } from "@/hooks/useAuth";
 import { createDraftStory, publishStory } from "@/src/services/storyService";
+import { AuthGuard } from "@/components/shared/auth-guard";
 
 // SafeImage component to guarantee NO broken image displays
 function SafeImage({
@@ -247,6 +248,7 @@ export default function StudioNewStoryPage() {
 
   const [saved, setSaved] = React.useState(false);
   const [isPublishing, setIsPublishing] = React.useState(false);
+  const [coverFile, setCoverFile] = React.useState<File | null>(null);
 
   // Save draft state to localStorage
   const saveDraftToStorage = (stepToSave: number = activeStep) => {
@@ -313,6 +315,7 @@ export default function StudioNewStoryPage() {
   const processFile = (file: File) => {
     if (!file.type.startsWith("image/")) return;
     setUploadedFileName(file.name);
+    setCoverFile(file);
     const reader = new FileReader();
     reader.onload = (e) => {
       const dataUrl = e.target?.result as string;
@@ -411,25 +414,28 @@ export default function StudioNewStoryPage() {
 
     // Save to Firestore via storyService
     try {
-      await createDraftStory({
-        id: newStoryId,
-        authorId,
-        authorName,
-        authorAvatar,
-        title: title.trim() || "Untitled Story",
-        subtitle: subtitle.trim() || undefined,
-        synopsis: synopsis.trim() || "A captivating story on INKOMA.",
-        coverImageUrl: coverImage || COVER_TEMPLATES[0].url,
-        mainGenre: mainGenre || "Folklore",
-        subGenres: subGenres,
-        triggerWarnings: selectedTriggerWarnings,
-        ageRating: ageRating || "General Audience",
-        targetAudience: targetAudience || "All Ages",
-        storyLanguage: storyLanguage || "English",
-        tradition: "Pan-African",
-        status: status,
-        chapters: chapters,
-      });
+      await createDraftStory(
+        {
+          id: newStoryId,
+          authorId,
+          authorName,
+          authorAvatar,
+          title: title.trim() || "Untitled Story",
+          subtitle: subtitle.trim() || undefined,
+          synopsis: synopsis.trim() || "A captivating story on INKOMA.",
+          coverImageUrl: coverImage || COVER_TEMPLATES[0].url,
+          mainGenre: mainGenre || "Folklore",
+          subGenres: subGenres,
+          triggerWarnings: selectedTriggerWarnings,
+          ageRating: ageRating || "General Audience",
+          targetAudience: targetAudience || "All Ages",
+          storyLanguage: storyLanguage || "English",
+          tradition: "Pan-African",
+          status: status,
+          chapters: chapters,
+        },
+        coverFile || undefined
+      );
 
       await publishStory(newStoryId);
     } catch (cloudErr) {
@@ -501,7 +507,8 @@ export default function StudioNewStoryPage() {
   );
 
   return (
-    <div className="space-y-6 pb-24 w-full text-stone-900 dark:text-stone-100 font-sans">
+    <AuthGuard featureName="Story Creation Studio">
+      <div className="space-y-6 pb-24 w-full text-stone-900 dark:text-stone-100 font-sans">
       {/* STEPPER BAR (1 - Details, 2 - Cover, 3 - Chapters, 4 - Preview, 5 - Publish) */}
       <div className="space-y-4">
         <div className="flex items-center justify-between max-w-2xl mx-auto py-3">
@@ -1881,5 +1888,6 @@ export default function StudioNewStoryPage() {
         </div>
       )}
     </div>
+    </AuthGuard>
   );
 }

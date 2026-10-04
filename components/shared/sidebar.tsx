@@ -22,10 +22,15 @@ import {
 import { platformSidebarNav } from "@/config/nav";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/hooks/useAuth";
+
+const PROTECTED_HREFS = ["/explore", "/library", "/studio", "/profile", "/settings"];
 
 export function Sidebar() {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const { isAuthenticated, profile } = useAuth();
+  const profileHref = profile?.username ? `/profile/${profile.username}` : "/profile";
 
   const iconMap: Record<string, React.ReactNode> = {
     Home: <Home className="h-4 w-4" />,
@@ -39,6 +44,10 @@ export function Sidebar() {
     HelpCircle: <HelpCircle className="h-4 w-4" />,
     Heart: <Heart className="h-4 w-4 fill-none text-[#B8860B]" />,
   };
+
+  const visibleNav = platformSidebarNav.filter(
+    (item) => isAuthenticated || !PROTECTED_HREFS.some((p) => item.href.startsWith(p))
+  );
 
   return (
     <aside
@@ -59,16 +68,16 @@ export function Sidebar() {
 
       {/* Quick Action Button */}
       <div className="mb-6 w-full">
-        <Link href="/studio/new">
+        <Link href={isAuthenticated ? "/studio/new" : "/signup?redirect=/studio/new"}>
           <button
             className={cn(
               "flex w-full items-center justify-center rounded-xl bg-[#D4AF37] hover:bg-[#c49f27] text-stone-950 font-bold shadow-md hover:scale-[1.02] transition-all py-2.5",
               isCollapsed ? "px-2" : "gap-2 px-4 text-sm"
             )}
-            title="Create Story"
+            title={isAuthenticated ? "Create Story" : "Register to Create"}
           >
             <PlusCircle className="h-4 w-4 shrink-0 text-stone-950" />
-            {!isCollapsed && <span>Create Story</span>}
+            {!isCollapsed && <span>{isAuthenticated ? "Create Story" : "Register to Write"}</span>}
           </button>
         </Link>
       </div>
@@ -82,16 +91,17 @@ export function Sidebar() {
         )}
 
         <div className="mt-2 space-y-1">
-          {platformSidebarNav.map((item) => {
+          {visibleNav.map((item) => {
+            const targetHref = item.href === "/profile" ? profileHref : item.href;
             const isActive =
-              item.href === "/"
+              targetHref === "/"
                 ? pathname === "/"
-                : pathname.startsWith(item.href);
+                : pathname.startsWith(targetHref);
 
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={targetHref}
                 title={item.title}
                 className={cn(
                   "flex items-center rounded-xl transition-all",
@@ -116,9 +126,24 @@ export function Sidebar() {
         </div>
       </div>
 
+      {/* Guest Membership Prompt */}
+      {!isAuthenticated && !isCollapsed && (
+        <div className="mt-auto mb-3 p-3 rounded-2xl bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-center space-y-2">
+          <p className="text-xs font-bold text-stone-900 font-serif">Join the Circle</p>
+          <p className="text-[11px] text-stone-600 leading-tight">
+            Register to unlock Explore, Library, Studio & your Storyteller Profile.
+          </p>
+          <Link href="/signup" className="block">
+            <button className="w-full py-1.5 px-3 rounded-xl bg-[#D4AF37] hover:bg-[#c49f27] text-stone-950 text-xs font-bold transition-all shadow-xs">
+              Register Free
+            </button>
+          </Link>
+        </div>
+      )}
+
       {/* App Footer Quote */}
       {!isCollapsed && (
-        <div className="mt-auto pt-4 border-t border-stone-200 text-[11px] text-stone-500 space-y-2">
+        <div className={cn("pt-4 border-t border-stone-200 text-[11px] text-stone-500 space-y-2", isAuthenticated ? "mt-auto" : "")}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5 font-semibold text-stone-700">
               <Sparkles className="h-3.5 w-3.5 text-[#B8860B]" />

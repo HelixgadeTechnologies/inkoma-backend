@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AuthCard } from "@/components/features/auth/auth-card";
 import { SocialAuth } from "@/components/features/auth/social-auth";
 import { PasswordInput } from "@/components/features/auth/password-input";
@@ -12,7 +12,24 @@ import { ArrowRight, Loader2, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function SignupPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[50vh] items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-[#D4AF37]" />
+        </div>
+      }
+    >
+      <SignupForm />
+    </Suspense>
+  );
+}
+
+function SignupForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTarget = searchParams.get("redirect") || "/explore";
+
   const { signUp } = useAuth();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -30,7 +47,9 @@ export default function SignupPage() {
     try {
       const displayName = penName.trim() || `${firstName} ${lastName}`.trim() || "Storyteller";
       await signUp(email, password, displayName, "author");
-      router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+      router.push(
+        `/verify-email?email=${encodeURIComponent(email)}&redirect=${encodeURIComponent(redirectTarget)}`
+      );
     } catch (err: unknown) {
       console.error("[SignupPage] Registration error:", err);
       const message =
@@ -74,7 +93,7 @@ export default function SignupPage() {
             </label>
             <Input
               type="text"
-              placeholder="Asante"
+              placeholder="Mensah"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               required
@@ -84,12 +103,15 @@ export default function SignupPage() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold uppercase tracking-wider text-stone-700">
-            Pen Name <span className="text-stone-400 font-normal">(Optional)</span>
-          </label>
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-semibold uppercase tracking-wider text-stone-700">
+              Author Pen Name <span className="text-stone-400 font-normal">(Optional)</span>
+            </label>
+            <span className="text-[10px] text-stone-600">Displayed on stories</span>
+          </div>
           <Input
             type="text"
-            placeholder="Storyteller Kwame"
+            placeholder="e.g. Nana Kwaku"
             value={penName}
             onChange={(e) => setPenName(e.target.value)}
             className="bg-white border-stone-300 text-stone-900 placeholder:text-stone-400"
@@ -115,28 +137,27 @@ export default function SignupPage() {
             Password
           </label>
           <PasswordInput
-            placeholder="At least 8 characters"
+            placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            minLength={8}
           />
         </div>
 
-        <p className="text-[11px] text-stone-500 leading-tight">
-          By continuing, you agree to Inkoma&apos;s Terms of Lore Preservation and Privacy Policy.
-        </p>
+        <div className="pt-2 text-[11px] text-stone-700 leading-tight">
+          By signing up, you agree to our Terms of Service and acknowledge that you are entering a community of oral tradition and literature.
+        </div>
 
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold shadow-md py-5 cursor-pointer"
+          className="w-full bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold shadow-md py-5 cursor-pointer mt-2"
         >
           {isLoading ? (
             <Loader2 className="w-4 h-4 animate-spin mr-2" />
           ) : (
             <>
-              Create Account
+              Create Storyteller Account
               <ArrowRight className="w-4 h-4 ml-2" />
             </>
           )}
@@ -157,7 +178,7 @@ export default function SignupPage() {
       <p className="text-center text-xs text-stone-600 mt-6">
         Already have an account?{" "}
         <Link
-          href="/login"
+          href={`/login${redirectTarget ? `?redirect=${encodeURIComponent(redirectTarget)}` : ""}`}
           className="text-[#D4AF37] hover:underline font-semibold underline-offset-4"
         >
           Sign in

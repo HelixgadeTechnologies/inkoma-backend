@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { AudioPlayer } from "@/components/features/reader/audio-player";
 import { TypographyCustomizer } from "@/components/features/reader/typography-customizer";
 import { ChapterNavigator } from "@/components/features/reader/chapter-navigator";
+import { AuthGuard } from "@/components/shared/auth-guard";
 
 export default function ChapterReaderPage() {
   const params = useParams();
@@ -272,7 +273,8 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
       : "text-base sm:text-lg leading-relaxed sm:leading-loose";
 
   return (
-    <div className={`min-h-screen ${themePageBg} pb-24 relative transition-colors duration-300 px-3 sm:px-6 lg:px-8`}>
+    <AuthGuard featureName="Interactive Folklore Reader" redirectTo="/signup">
+      <div className={`min-h-screen ${themePageBg} pb-24 relative transition-colors duration-300 px-3 sm:px-6 lg:px-8`}>
       {/* Top Floating Reading Progress Bar */}
       <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-stone-300/30">
         <div
@@ -621,12 +623,13 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
         </div>
       )}
 
-      {showShareToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-stone-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 text-xs animate-in slide-in-from-bottom-2">
-          <Check className="w-4 h-4 text-emerald-400 stroke-[3]" />
-          <span>Chapter link copied to clipboard!</span>
-        </div>
-      )}
-    </div>
+        {showShareToast && (
+          <div className="fixed bottom-6 right-6 z-50 bg-stone-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 text-xs animate-in slide-in-from-bottom-2">
+            <Check className="w-4 h-4 text-emerald-400 stroke-[3]" />
+            <span>Chapter link copied to clipboard!</span>
+          </div>
+        )}
+      </div>
+    </AuthGuard>
   );
 }

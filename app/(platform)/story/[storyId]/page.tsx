@@ -27,9 +27,12 @@ import {
   UserPlus,
   ShieldCheck,
   Check,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/hooks/useAuth";
+import { StoryReadingAuthDialog } from "@/components/features/story-details/story-reading-auth-dialog";
 
 export default function StoryDetailsPage() {
   const params = useParams();
@@ -37,11 +40,22 @@ export default function StoryDetailsPage() {
   const { currentStory } = useStory(storyId);
   const { isBookmarked, toggleBookmark, isFavorited, toggleFavorite } = useLibrary();
 
+  const { isAuthenticated } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(currentStory?.likesCount || 0);
   const [isFollowing, setIsFollowing] = useState(false);
   const [showSupportModal, setShowSupportModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [selectedChapterNumber, setSelectedChapterNumber] = useState(1);
   const [isCopied, setIsCopied] = useState(false);
+
+  const handleReadClick = (e: React.MouseEvent, chapterNum: number = 1) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      setSelectedChapterNumber(chapterNum);
+      setShowAuthModal(true);
+    }
+  };
 
   if (!currentStory) {
     return (
@@ -125,12 +139,22 @@ export default function StoryDetailsPage() {
             </div>
 
             {/* Read CTA button under cover */}
-            <Link href={`/story/${currentStory.id}/read`} className="block">
-              <Button className="w-full bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold py-6 text-sm rounded-xl shadow-md">
-                <Play className="w-4 h-4 fill-stone-950 mr-2" />
+            {isAuthenticated ? (
+              <Link href={`/story/${currentStory.id}/read`} className="block">
+                <Button className="w-full bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold py-6 text-sm rounded-xl shadow-md cursor-pointer">
+                  <Play className="w-4 h-4 fill-stone-950 mr-2" />
+                  Start Reading (Chap 1)
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                onClick={(e) => handleReadClick(e, 1)}
+                className="w-full bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold py-6 text-sm rounded-xl shadow-md gap-2 cursor-pointer"
+              >
+                <Lock className="w-4 h-4 text-stone-950" />
                 Start Reading (Chap 1)
               </Button>
-            </Link>
+            )}
           </div>
 
           {/* Details & Metadata */}
@@ -352,11 +376,22 @@ export default function StoryDetailsPage() {
               Select any chapter to begin or resume your interactive narrative.
             </p>
           </div>
-          <Link href={`/story/${currentStory.id}/read`}>
-            <Button size="sm" className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold rounded-xl">
+          {isAuthenticated ? (
+            <Link href={`/story/${currentStory.id}/read`}>
+              <Button size="sm" className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold rounded-xl cursor-pointer">
+                Read Chapter 1
+              </Button>
+            </Link>
+          ) : (
+            <Button
+              size="sm"
+              onClick={(e) => handleReadClick(e, 1)}
+              className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold rounded-xl gap-1.5 cursor-pointer"
+            >
+              <Lock className="w-3.5 h-3.5" />
               Read Chapter 1
             </Button>
-          </Link>
+          )}
         </div>
 
         <div className="divide-y divide-stone-100">
@@ -364,6 +399,7 @@ export default function StoryDetailsPage() {
             <Link
               key={chapter.id}
               href={`/story/${currentStory.id}/read`}
+              onClick={(e) => handleReadClick(e, chapter.number)}
               className="flex items-center justify-between p-4 hover:bg-stone-50 rounded-2xl transition-all group"
             >
               <div className="flex items-center gap-4 min-w-0">
@@ -371,9 +407,17 @@ export default function StoryDetailsPage() {
                   {chapter.number}
                 </div>
                 <div className="space-y-1 min-w-0">
-                  <h3 className="text-sm font-bold text-stone-900 group-hover:text-[#D4AF37] transition-colors truncate">
-                    {chapter.title}
-                  </h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-stone-900 group-hover:text-[#D4AF37] transition-colors truncate">
+                      {chapter.title}
+                    </h3>
+                    {!isAuthenticated && (
+                      <Badge className="bg-stone-100 hover:bg-stone-100 text-stone-600 border border-stone-200 text-[10px] font-semibold py-0 px-1.5 gap-1 shrink-0">
+                        <Lock className="w-2.5 h-2.5 text-[#B8860B]" />
+                        Member
+                      </Badge>
+                    )}
+                  </div>
                   <p className="text-xs text-stone-500 truncate max-w-xl">
                     {chapter.summary}
                   </p>
@@ -387,7 +431,13 @@ export default function StoryDetailsPage() {
                 <span className="flex items-center gap-1">
                   <Heart className="w-3.5 h-3.5 text-stone-300 group-hover:text-[#D4AF37]" /> {chapter.likesCount}
                 </span>
-                <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-[#D4AF37] group-hover:translate-x-1 transition-all" />
+                {!isAuthenticated ? (
+                  <span className="text-xs font-bold text-[#B8860B] group-hover:underline flex items-center gap-1">
+                    Unlock <Lock className="w-3 h-3" />
+                  </span>
+                ) : (
+                  <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-[#D4AF37] group-hover:translate-x-1 transition-all" />
+                )}
               </div>
             </Link>
           ))}
@@ -413,6 +463,14 @@ export default function StoryDetailsPage() {
         story={currentStory}
         isOpen={showSupportModal}
         onClose={() => setShowSupportModal(false)}
+      />
+
+      {/* Story Reading Authentication Gate Dialog */}
+      <StoryReadingAuthDialog
+        story={currentStory}
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        selectedChapterNumber={selectedChapterNumber}
       />
     </div>
   );

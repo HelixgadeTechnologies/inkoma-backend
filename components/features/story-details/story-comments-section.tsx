@@ -289,6 +289,7 @@ export function StoryCommentsSection({
               }
               alt={MOCK_CURRENT_USER.displayName}
               fill
+              unoptimized
               className="object-cover"
             />
           </div>
@@ -359,6 +360,7 @@ export function StoryCommentsSection({
                       }
                       alt={comment.authorName}
                       fill
+                      unoptimized
                       className="object-cover"
                     />
                   </div>
@@ -469,6 +471,7 @@ export function StoryCommentsSection({
                               }
                               alt={reply.authorName}
                               fill
+                              unoptimized
                               className="object-cover"
                             />
                           </div>

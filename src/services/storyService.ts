@@ -70,9 +70,20 @@ export async function createDraftStory(
   let finalCoverUrl = metadata.coverImageUrl || "";
   if (coverFile) {
     finalCoverUrl = await uploadCoverImage(coverFile, metadata.authorId, storyId);
+  } else if (finalCoverUrl.startsWith("data:image/")) {
+    try {
+      const res = await fetch(finalCoverUrl);
+      const blob = await res.blob();
+      finalCoverUrl = await uploadCoverImage(blob, metadata.authorId, storyId);
+    } catch (e) {
+      console.warn("[StoryService] Failed to upload base64 cover to Cloud Storage:", e);
+    }
   }
 
   const storyDocRef = doc(db, "stories", storyId);
+  const existingSnap = await getDoc(storyDocRef);
+  const isNew = !existingSnap.exists();
+
   const storyPayload: Record<string, unknown> = {
     id: storyId,
     authorId: metadata.authorId,
@@ -93,11 +104,15 @@ export async function createDraftStory(
     tradition: metadata.tradition || "Pan-African",
     totalChapters: metadata.chapters?.length || 1,
     status: metadata.status || "draft",
-    readsCount: 0,
-    likesCount: 0,
-    bookmarksCount: 0,
-    createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
+    ...(isNew
+      ? {
+          readsCount: 0,
+          likesCount: 0,
+          bookmarksCount: 0,
+          createdAt: serverTimestamp(),
+        }
+      : {}),
   };
 
   await setDoc(storyDocRef, storyPayload, { merge: true });
@@ -296,6 +311,61 @@ export async function getStoryById(storyId: string): Promise<Story | null> {
   } catch (error) {
     console.error("[StoryService] Error fetching story by ID:", error);
     return MOCK_STORIES.find((s) => s.id === storyId) || null;
+  }
+}
+
+/**
+ * Fetches stories created by a specific author
+ */
+export async function getStoriesByAuthor(authorId: string): Promise<Story[]> {
+  const localCustom: Story[] = typeof window !== "undefined"
+    ? (() => {
+        try {
+          const raw = localStorage.getItem("inkoma_custom_stories");
+          return raw ? JSON.parse(raw) : [];
+        } catch {
+          return [];
+        }
+      })()
+    : [];
+
+  if (!isFirebaseConfigured() || !db) {
+    return localCustom.filter((s: Story) => s.authorId === authorId || !s.authorId);
+  }
+
+  try {
+    const storiesRef = collection(db, "stories");
+    const q = query(storiesRef, where("authorId", "==", authorId));
+    const snapshot = await getDocs(q);
+
+    const stories: Story[] = [];
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      stories.push({
+        id: docSnap.id,
+        ...data,
+        coverImage: data.coverImageUrl || data.coverImage,
+        publishedAt:
+          data.publishedAt instanceof Timestamp
+            ? data.publishedAt.toDate().toISOString()
+            : data.publishedAt || new Date().toISOString(),
+        updatedAt:
+          data.updatedAt instanceof Timestamp
+            ? data.updatedAt.toDate().toISOString()
+            : data.updatedAt || new Date().toISOString(),
+      } as Story);
+    });
+
+    for (const ls of localCustom) {
+      if (!stories.some((s) => s.id === ls.id)) {
+        stories.push(ls);
+      }
+    }
+
+    return stories;
+  } catch (error) {
+    console.warn("[StoryService] Error fetching author stories:", error);
+    return localCustom;
   }
 }
 

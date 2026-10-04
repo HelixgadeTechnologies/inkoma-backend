@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 import {
   ArrowLeft,
   UserPlus,
@@ -14,10 +14,13 @@ import {
   Sparkles,
   Users,
   User,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { AuthGuard } from "@/components/shared/auth-guard";
+import { useAuth } from "@/hooks/useAuth";
 
 interface NetworkUser {
   id: string;
@@ -146,14 +149,51 @@ const MOCK_FOLLOWING: NetworkUser[] = [
   },
 ];
 
-export default function UserNetworkPage() {
-  const params = useParams();
-  const username = (params?.username as string) || "kwame_asante";
+function NetworkLoadingSkeleton() {
+  return (
+    <div className="space-y-8 pb-20 max-w-5xl mx-auto animate-pulse">
+      <div className="h-6 w-36 bg-stone-200 dark:bg-stone-800 rounded-lg" />
+      <div className="space-y-2">
+        <div className="h-8 w-64 bg-stone-200 dark:bg-stone-800 rounded-lg" />
+        <div className="h-4 w-96 bg-stone-200 dark:bg-stone-800 rounded-lg" />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="h-40 rounded-3xl bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800" />
+        ))}
+      </div>
+    </div>
+  );
+}
 
-  const [activeTab, setActiveTab] = useState<"followers" | "following">("followers");
+function UserNetworkContent() {
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { profile: authProfile } = useAuth();
+
+  const rawParamUsername = params?.username as string;
+  const username = rawParamUsername || authProfile?.username || "storyteller";
+
+  const tabParam = searchParams?.get("tab");
+  const initialTab = tabParam === "following" ? "following" : "followers";
+  const [activeTab, setActiveTab] = useState<"followers" | "following">(initialTab);
   const [searchQuery, setSearchQuery] = useState("");
   const [followersList, setFollowersList] = useState<NetworkUser[]>(MOCK_FOLLOWERS);
   const [followingList, setFollowingList] = useState<NetworkUser[]>(MOCK_FOLLOWING);
+
+  // Sync activeTab when query param changes
+  useEffect(() => {
+    if (tabParam === "following" || tabParam === "followers") {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
+
+  const handleTabChange = (tab: "followers" | "following") => {
+    setActiveTab(tab);
+    const basePath = rawParamUsername ? `/profile/${rawParamUsername}/network` : "/profile/network";
+    router.replace(`${basePath}?tab=${tab}`, { scroll: false });
+  };
 
   const toggleFollow = (userId: string, isFollowingTab: boolean) => {
     if (isFollowingTab) {
@@ -181,11 +221,11 @@ export default function UserNetworkPage() {
       {/* Top Header Navigation */}
       <div className="flex items-center justify-between border-b border-stone-200 dark:border-stone-800 pb-4">
         <Link
-          href={`/profile/${username}`}
+          href={rawParamUsername ? `/profile/${rawParamUsername}` : "/profile"}
           className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 dark:text-stone-400 hover:text-[#D4AF37] dark:hover:text-[#D4AF37] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to @{username}&apos;s Profile</span>
+          <span>Back to {rawParamUsername ? `@${rawParamUsername}'s` : "Your"} Profile</span>
         </Link>
       </div>
 
@@ -208,7 +248,7 @@ export default function UserNetworkPage() {
         <div className="flex items-center gap-2 bg-stone-100 dark:bg-stone-900 p-1.5 rounded-2xl border border-stone-200 dark:border-stone-800">
           <button
             type="button"
-            onClick={() => setActiveTab("followers")}
+            onClick={() => handleTabChange("followers")}
             className={`flex items-center justify-center gap-2 py-2 px-5 rounded-xl text-xs font-bold transition-all ${
               activeTab === "followers"
                 ? "bg-[#D4AF37] dark:bg-[#D4AF37] text-stone-950 font-bold shadow-sm"
@@ -223,7 +263,7 @@ export default function UserNetworkPage() {
 
           <button
             type="button"
-            onClick={() => setActiveTab("following")}
+            onClick={() => handleTabChange("following")}
             className={`flex items-center justify-center gap-2 py-2 px-5 rounded-xl text-xs font-bold transition-all ${
               activeTab === "following"
                 ? "bg-[#D4AF37] dark:bg-[#D4AF37] text-stone-950 font-bold shadow-sm"
@@ -262,18 +302,19 @@ export default function UserNetworkPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredList.map((user) => (
+          {filteredList.map((netUser) => (
             <div
-              key={user.id}
+              key={netUser.id}
               className="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 p-5 shadow-xs hover:border-stone-300 dark:hover:border-stone-700 transition-all flex flex-col justify-between space-y-4"
             >
               <div className="flex items-start gap-4">
-                <Link href={`/profile/${user.username}`} className="shrink-0">
+                <Link href={`/profile/${netUser.username}`} className="shrink-0">
                   <div className="relative w-14 h-14 rounded-full overflow-hidden border border-stone-200 dark:border-stone-700 bg-stone-100 dark:bg-stone-800">
                     <Image
-                      src={user.avatarUrl}
-                      alt={user.displayName}
+                      src={netUser.avatarUrl}
+                      alt={netUser.displayName}
                       fill
+                      unoptimized
                       className="object-cover"
                     />
                   </div>
@@ -282,13 +323,13 @@ export default function UserNetworkPage() {
                 <div className="flex-1 min-w-0 space-y-1">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <Link
-                      href={`/profile/${user.username}`}
+                      href={`/profile/${netUser.username}`}
                       className="font-bold text-stone-900 dark:text-stone-100 hover:text-[#D4AF37] dark:hover:text-[#D4AF37] text-sm font-serif truncate"
                     >
-                      {user.penName || user.displayName}
+                      {netUser.penName || netUser.displayName}
                     </Link>
 
-                    {user.isVerified && (
+                    {netUser.isVerified && (
                       <Badge className="bg-emerald-600 dark:bg-emerald-700 text-white text-[10px] py-0 px-1.5 font-bold flex items-center gap-0.5">
                         <ShieldCheck className="w-3 h-3 fill-white text-emerald-600" />
                         Verified
@@ -297,29 +338,29 @@ export default function UserNetworkPage() {
                   </div>
 
                   <p className="text-xs font-mono text-stone-500 dark:text-stone-400">
-                    @{user.username}
+                    @{netUser.username}
                   </p>
 
                   <p className="text-xs text-stone-600 dark:text-stone-300 line-clamp-2 pt-0.5">
-                    {user.bio}
+                    {netUser.bio}
                   </p>
                 </div>
               </div>
 
               {/* Bottom Meta & Follow Toggle */}
               <div className="flex items-center justify-between pt-3 border-t border-stone-100 dark:border-stone-800 text-xs">
-                {user.specialty ? (
+                {netUser.specialty ? (
                   <span className="text-[11px] font-semibold text-[#D4AF37] dark:text-[#D4AF37] bg-[#D4AF37]/10 dark:bg-[#D4AF37]/20 px-2.5 py-0.5 rounded-full border border-[#D4AF37]/20 dark:border-[#D4AF37]/30">
-                    {user.specialty}
+                    {netUser.specialty}
                   </span>
                 ) : (
                   <span className="text-[11px] text-stone-400 font-medium">
-                    {user.followersCount.toLocaleString()} followers
+                    {netUser.followersCount.toLocaleString()} followers
                   </span>
                 )}
 
                 <div className="flex items-center gap-2">
-                  <Link href={`/profile/${user.username}`}>
+                  <Link href={`/profile/${netUser.username}`}>
                     <Button
                       variant="outline"
                       size="sm"
@@ -331,14 +372,14 @@ export default function UserNetworkPage() {
 
                   <Button
                     size="sm"
-                    onClick={() => toggleFollow(user.id, activeTab === "following")}
+                    onClick={() => toggleFollow(netUser.id, activeTab === "following")}
                     className={`text-xs font-bold rounded-xl gap-1.5 px-3.5 ${
-                      user.isFollowing
+                      netUser.isFollowing
                         ? "bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border border-stone-300 dark:border-stone-700 hover:bg-stone-200"
                         : "bg-[#D4AF37] hover:bg-[#B89628] dark:bg-[#D4AF37] dark:hover:bg-[#B89628] text-stone-950 font-bold"
                     }`}
                   >
-                    {user.isFollowing ? (
+                    {netUser.isFollowing ? (
                       <>
                         <UserCheck className="w-3.5 h-3.5 text-stone-600 dark:text-stone-300" /> Following
                       </>
@@ -355,5 +396,15 @@ export default function UserNetworkPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function UserNetworkPage() {
+  return (
+    <AuthGuard featureName="Storyteller Network">
+      <Suspense fallback={<NetworkLoadingSkeleton />}>
+        <UserNetworkContent />
+      </Suspense>
+    </AuthGuard>
   );
 }

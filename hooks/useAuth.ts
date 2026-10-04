@@ -7,19 +7,49 @@ import { MOCK_CURRENT_USER } from "@/config/mock-data";
 export function useAuth() {
   try {
     const context = useAuthContext();
-    const adaptedProfile: UserProfile | null = context.profile
+    const rawCreated = context.profile?.createdAt;
+    let creationDateStr: string = new Date().toISOString();
+    if (rawCreated) {
+      if (typeof rawCreated === "object" && rawCreated !== null && "toDate" in (rawCreated as Record<string, unknown>)) {
+        creationDateStr = ((rawCreated as { toDate: () => Date }).toDate()).toISOString();
+      } else if (typeof rawCreated === "string") {
+        creationDateStr = rawCreated;
+      }
+    } else if (context.user?.metadata?.creationTime) {
+      creationDateStr = new Date(context.user.metadata.creationTime).toISOString();
+    }
+
+    const effectiveDisplayName =
+      context.profile?.displayName ||
+      context.user?.displayName ||
+      (context.user?.email ? context.user.email.split("@")[0] : "Storyteller");
+
+    const effectiveEmail = context.profile?.email || context.user?.email || undefined;
+    const effectivePhoto = context.profile?.photoURL || context.user?.photoURL || "";
+    const effectiveUid = context.profile?.uid || context.user?.uid || "";
+
+    const rawUsername =
+      (context.profile as any)?.username ||
+      (effectiveDisplayName
+        ? effectiveDisplayName.toLowerCase().replace(/\s+/g, "_")
+        : (effectiveEmail ? effectiveEmail.split("@")[0].toLowerCase() : "storyteller"));
+
+    const adaptedProfile: UserProfile | null = (context.profile || context.user)
       ? {
-          id: context.profile.uid,
-          username: context.profile.displayName?.toLowerCase().replace(/\s+/g, "_") || "storyteller",
-          displayName: context.profile.displayName || "Storyteller",
-          email: context.profile.email,
-          avatarUrl: context.profile.photoURL || MOCK_CURRENT_USER.avatarUrl,
-          bio: context.profile.bio || MOCK_CURRENT_USER.bio,
-          role: (context.profile.role as "reader" | "writer" | "storyteller" | "elder_admin") || "storyteller",
-          followersCount: 0,
-          followingCount: 0,
-          badges: [],
-          createdAt: new Date().toISOString(),
+          id: effectiveUid,
+          username: rawUsername,
+          displayName: effectiveDisplayName,
+          penName: context.profile?.penName || effectiveDisplayName,
+          email: effectiveEmail,
+          avatarUrl: effectivePhoto,
+          bio: context.profile?.bio || "Preserving ancestral lore through interactive storytelling.",
+          country: context.profile?.country || "Pan-African",
+          traditionSpecialty: context.profile?.traditionSpecialty || "Pan-African Folklore",
+          role: ((context.profile?.role || "storyteller") as "reader" | "writer" | "storyteller" | "elder_admin"),
+          followersCount: (context.profile as any)?.followersCount ?? 0,
+          followingCount: (context.profile as any)?.followingCount ?? 0,
+          badges: (context.profile as any)?.badges || [],
+          createdAt: creationDateStr,
         }
       : null;
 
@@ -48,6 +78,7 @@ export function useAuth() {
       signOut: context.logout,
       sendVerification: context.sendVerification,
       checkVerification: context.checkVerification,
+      updateProfile: context.updateProfile,
     };
   } catch {
     // Fallback if rendered outside of AuthProvider
@@ -64,6 +95,7 @@ export function useAuth() {
       signOut: async () => {},
       sendVerification: async () => {},
       checkVerification: async () => true,
+      updateProfile: async () => {},
     };
   }
 }

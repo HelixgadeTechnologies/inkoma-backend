@@ -3,19 +3,30 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Compass, BookOpen, Feather, User } from "lucide-react";
+import { Home, Compass, BookOpen, Feather, User, Heart, HelpCircle, UserPlus, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 export function PwaBottomNav() {
   const pathname = usePathname();
+  const { isAuthenticated, profile } = useAuth();
+  const profileHref = profile?.username ? `/profile/${profile.username}` : "/profile";
 
-  const navItems = [
-    { label: "Home", href: "/", icon: Home },
-    { label: "Explore", href: "/explore", icon: Compass },
-    { label: "Library", href: "/library", icon: BookOpen },
-    { label: "Studio", href: "/studio", icon: Feather },
-    { label: "Profile", href: "/profile", icon: User },
-  ];
+  const navItems = isAuthenticated
+    ? [
+        { label: "Home", href: "/", icon: Home },
+        { label: "Explore", href: "/explore", icon: Compass },
+        { label: "Library", href: "/library", icon: BookOpen },
+        { label: "Studio", href: "/studio", icon: Feather },
+        { label: "Profile", href: profileHref, icon: User },
+      ]
+    : [
+        { label: "Home", href: "/", icon: Home },
+        { label: "Support", href: "/support", icon: Heart },
+        { label: "Help", href: "/help", icon: HelpCircle },
+        { label: "Log In", href: "/login", icon: LogIn },
+        { label: "Sign Up", href: "/signup", icon: UserPlus },
+      ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden items-center justify-around border-t border-stone-200 bg-white/95 backdrop-blur-md py-2 px-2 shadow-lg transition-colors">

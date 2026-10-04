@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { UserProfile, CreatorSupportDetails } from "@/types";
 import { MOCK_CURRENT_USER } from "@/config/mock-data";
+import { useAuth } from "@/hooks/useAuth";
 
 export interface NotificationSettings {
   emailNewChapters?: boolean;
@@ -23,7 +24,8 @@ export interface PrivacySettings {
 }
 
 export function useSettings() {
-  const [profile, setProfile] = useState<UserProfile>(MOCK_CURRENT_USER);
+  const { profile: authProfile, updateProfile: updateAuthProfile } = useAuth();
+  const [profile, setProfile] = useState<UserProfile>(authProfile || MOCK_CURRENT_USER);
   const [notifications, setNotifications] = useState<NotificationSettings>({
     emailNewChapters: true,
     emailComments: true,
@@ -48,13 +50,18 @@ export function useSettings() {
       const storedNotifs = localStorage.getItem("inkoma_notifs");
       const storedPrivacy = localStorage.getItem("inkoma_privacy");
 
-      if (storedProfile) setProfile(JSON.parse(storedProfile));
+      if (storedProfile) {
+        setProfile(JSON.parse(storedProfile));
+      } else if (authProfile) {
+        setProfile((prev) => ({ ...prev, ...authProfile }));
+      }
+
       if (storedNotifs) setNotifications((prev) => ({ ...prev, ...JSON.parse(storedNotifs) }));
       if (storedPrivacy) setPrivacy((prev) => ({ ...prev, ...JSON.parse(storedPrivacy) }));
     } catch {
       // fallback
     }
-  }, []);
+  }, [authProfile]);
 
   const updateProfile = (updates: Partial<UserProfile>) => {
     setProfile((prev) => {
@@ -64,6 +71,19 @@ export function useSettings() {
       } catch {}
       return next;
     });
+
+    if (updateAuthProfile) {
+      updateAuthProfile({
+        ...(updates.displayName && { displayName: updates.displayName }),
+        ...(updates.penName && { penName: updates.penName }),
+        ...(updates.bio !== undefined && { bio: updates.bio }),
+        ...(updates.avatarUrl && { photoURL: updates.avatarUrl }),
+        ...(updates.country && { country: updates.country }),
+      }).catch((err) => {
+        console.warn("[useSettings] Failed to sync profile to Firestore:", err);
+      });
+    }
+
     showSaveIndicator();
   };
 

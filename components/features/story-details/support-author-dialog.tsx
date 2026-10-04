@@ -71,7 +71,7 @@ export function SupportAuthorDialog({
         {/* Author Card */}
         <div className="flex items-center gap-3.5 p-3.5 bg-stone-50 rounded-2xl border border-stone-200">
           <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0 border border-[#D4AF37]/40">
-            <Image src={avatar} alt={penName} fill className="object-cover" />
+            <Image src={avatar} alt={penName} fill unoptimized className="object-cover" />
           </div>
           <div className="flex-1 min-w-0">
             <h4 className="text-sm font-bold text-stone-900 truncate font-serif">{penName}</h4>

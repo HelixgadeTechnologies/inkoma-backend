@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AuthCard } from "@/components/features/auth/auth-card";
 import { SocialAuth } from "@/components/features/auth/social-auth";
 import { PasswordInput } from "@/components/features/auth/password-input";
@@ -12,7 +12,24 @@ import { ArrowRight, Loader2, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[50vh] items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-[#D4AF37]" />
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTarget = searchParams.get("redirect") || "/explore";
+
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,10 +45,12 @@ export default function LoginPage() {
     try {
       const result = await signIn(email, password);
       if (result?.user && !result.user.emailVerified) {
-        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+        router.push(
+          `/verify-email?email=${encodeURIComponent(email)}&redirect=${encodeURIComponent(redirectTarget)}`
+        );
         return;
       }
-      router.push("/explore");
+      router.push(redirectTarget);
     } catch (err: unknown) {
       console.error("[LoginPage] Sign in error:", err);
       const message =
@@ -131,7 +150,7 @@ export default function LoginPage() {
       <p className="text-center text-xs text-stone-600 mt-6">
         Don&apos;t have an account?{" "}
         <Link
-          href="/signup"
+          href={`/signup${redirectTarget ? `?redirect=${encodeURIComponent(redirectTarget)}` : ""}`}
           className="text-[#D4AF37] hover:underline font-semibold underline-offset-4"
         >
           Sign up for free

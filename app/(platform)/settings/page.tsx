@@ -3,27 +3,33 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { useSettings } from "@/hooks/useSettings";
+import { useAuth } from "@/hooks/useAuth";
+import { uploadAvatarImage } from "@/src/services/storageService";
 import {
   User,
   Heart,
-  Shield,
   Bell,
   Check,
+  Sparkles,
+  Save,
+  Camera,
+} from "lucide-react";
+import {
+  Shield,
   Building2,
   CreditCard,
   Lock,
-  Sparkles,
-  Save,
   Key,
-  Camera,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AuthGuard } from "@/components/shared/auth-guard";
 
 type SettingsTab = "profile" | "creator_support" | "privacy" | "notifications";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
+  const { user } = useAuth();
   const {
     userProfile,
     updateProfile,
@@ -41,6 +47,7 @@ export default function SettingsPage() {
   const [penName, setPenName] = useState(userProfile.penName || "");
   const [bio, setBio] = useState(userProfile.bio || "");
   const [avatarUrl, setAvatarUrl] = useState(userProfile.avatarUrl || "");
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   // Creator Support Form State
   const [bankName, setBankName] = useState(userProfile.supportDetails?.bankName || "");
@@ -67,6 +74,7 @@ export default function SettingsPage() {
         showToast("Please select a valid image file.");
         return;
       }
+      setAvatarFile(file);
       const reader = new FileReader();
       reader.onload = () => {
         if (typeof reader.result === "string") {
@@ -78,13 +86,23 @@ export default function SettingsPage() {
     }
   };
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    let finalAvatarUrl = avatarUrl;
+    if (avatarFile && user?.id) {
+      try {
+        showToast("Uploading profile photo to Firebase Storage...");
+        finalAvatarUrl = await uploadAvatarImage(avatarFile, user.id);
+        setAvatarUrl(finalAvatarUrl);
+      } catch (err: unknown) {
+        console.warn("[Settings] Upload error:", err);
+      }
+    }
     updateProfile({
       displayName,
       penName,
       bio,
-      avatarUrl,
+      avatarUrl: finalAvatarUrl,
     });
     showToast("Profile settings saved successfully!");
   };
@@ -113,7 +131,8 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-8 pb-16">
+    <AuthGuard featureName="Account Settings">
+      <div className="space-y-8 pb-16">
       {/* Header */}
       <div className="space-y-1">
         <h1 className="text-3xl font-extrabold text-stone-900 font-serif tracking-tight">
@@ -200,6 +219,7 @@ export default function SettingsPage() {
                 src={avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"}
                 alt="Avatar"
                 fill
+                unoptimized
                 className="object-cover transition-opacity group-hover:opacity-75"
               />
               <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
@@ -487,5 +507,6 @@ export default function SettingsPage() {
         </div>
       )}
     </div>
+    </AuthGuard>
   );
 }

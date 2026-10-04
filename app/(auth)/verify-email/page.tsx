@@ -29,6 +29,10 @@ function VerifyEmailContent() {
   const [isVerified, setIsVerified] = useState(false);
 
   const displayEmail = user?.email || searchParams.get("email") || "your email";
+  const redirectTarget = searchParams.get("redirect");
+  const onboardingUrl = redirectTarget
+    ? `/onboarding?redirect=${encodeURIComponent(redirectTarget)}`
+    : "/onboarding";
 
   // Countdown timer for resend button
   useEffect(() => {
@@ -48,7 +52,7 @@ function VerifyEmailContent() {
       if (emailVerified) {
         if (isMounted) {
           setIsVerified(true);
-          setTimeout(() => router.push("/onboarding"), 1000);
+          setTimeout(() => router.push(onboardingUrl), 1000);
         }
         return;
       }
@@ -56,7 +60,7 @@ function VerifyEmailContent() {
       const verified = await checkVerification();
       if (verified && isMounted) {
         setIsVerified(true);
-        setTimeout(() => router.push("/onboarding"), 1000);
+        setTimeout(() => router.push(onboardingUrl), 1000);
       }
     };
 
@@ -67,7 +71,7 @@ function VerifyEmailContent() {
       isMounted = false;
       clearInterval(pollInterval);
     };
-  }, [checkVerification, emailVerified, router]);
+  }, [checkVerification, emailVerified, router, onboardingUrl]);
 
   const handleManualCheck = async () => {
     setChecking(true);
@@ -76,7 +80,7 @@ function VerifyEmailContent() {
       const verified = await checkVerification();
       if (verified) {
         setIsVerified(true);
-        setTimeout(() => router.push("/onboarding"), 800);
+        setTimeout(() => router.push(onboardingUrl), 800);
       } else {
         setNotice(
           "We haven't detected your verification yet. If you just clicked the link, please give it a few seconds and try again."

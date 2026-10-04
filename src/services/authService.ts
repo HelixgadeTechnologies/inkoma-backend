@@ -28,6 +28,9 @@ export interface FirestoreUserData {
   email: string;
   photoURL?: string;
   bio?: string;
+  penName?: string;
+  country?: string;
+  traditionSpecialty?: string;
   role: "author" | "reader" | "writer" | "storyteller";
   favoriteGenres?: string[];
   emailVerified?: boolean;

@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { CategoryCarousel } from "@/components/features/discovery/category-carousel";
+import { AuthGuard } from "@/components/shared/auth-guard";
 
 // SafeImage component to guarantee NO broken image displays
 function SafeImage({
@@ -351,7 +352,8 @@ export default function ExplorePage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 pb-20 text-stone-900 font-sans">
+    <AuthGuard featureName="Folklore Discovery">
+      <div className="max-w-7xl mx-auto space-y-8 pb-20 text-stone-900 font-sans">
       {/* 1. PAGE TITLE */}
       <div className="space-y-1">
         <h1 className="text-3xl sm:text-4xl font-black font-serif text-stone-950 tracking-tight">
@@ -750,5 +752,6 @@ export default function ExplorePage() {
         </div>
       </section>
     </div>
+    </AuthGuard>
   );
 }

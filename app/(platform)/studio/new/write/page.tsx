@@ -32,23 +32,27 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StoryChapter, StoryStatus } from "@/types";
+import { saveChapterDraft } from "@/src/services/storyService";
 import { ProseRenderer } from "@/components/features/editor/prose-renderer";
 import { calculateReadTime } from "@/components/features/editor/chapter-list-builder";
+import { AuthGuard } from "@/components/shared/auth-guard";
 
 export default function DedicatedChapterWriterPage() {
   return (
-    <React.Suspense
-      fallback={
-        <div className="min-h-screen bg-[#FDFBF7] dark:bg-[#0E0D12] flex items-center justify-center">
-          <div className="text-center space-y-2">
-            <div className="w-8 h-8 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-xs text-stone-500 font-serif">Opening Writing Studio...</p>
+    <AuthGuard featureName="Manuscript Editor">
+      <React.Suspense
+        fallback={
+          <div className="min-h-screen bg-[#FDFBF7] dark:bg-[#0E0D12] flex items-center justify-center">
+            <div className="text-center space-y-2">
+              <div className="w-8 h-8 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto" />
+              <p className="text-xs text-stone-500 font-serif">Opening Writing Studio...</p>
+            </div>
           </div>
-        </div>
-      }
-    >
-      <DedicatedChapterWriterContent />
-    </React.Suspense>
+        }
+      >
+        <DedicatedChapterWriterContent />
+      </React.Suspense>
+    </AuthGuard>
   );
 }
 
@@ -58,6 +62,7 @@ function DedicatedChapterWriterContent() {
   const initialChapterId = searchParams.get("chapterId");
 
   // Story & Chapters state loaded from localStorage
+  const [storyId, setStoryId] = React.useState<string>("");
   const [storyTitle, setStoryTitle] = React.useState<string>("Untitled Story");
   const [chapters, setChapters] = React.useState<StoryChapter[]>([]);
   const [selectedChapterId, setSelectedChapterId] = React.useState<string>(initialChapterId || "");
@@ -73,6 +78,7 @@ function DedicatedChapterWriterContent() {
       const stored = localStorage.getItem("inkoma_draft_story");
       if (stored) {
         const draft = JSON.parse(stored);
+        if (draft.id) setStoryId(draft.id);
         if (draft.title) setStoryTitle(draft.title);
         if (Array.isArray(draft.chapters) && draft.chapters.length > 0) {
           setChapters(draft.chapters);
@@ -133,6 +139,11 @@ function DedicatedChapterWriterContent() {
         activeStep: destinationStep !== undefined ? destinationStep : currentDraft.activeStep || 3,
       };
       localStorage.setItem("inkoma_draft_story", JSON.stringify(updatedDraft));
+      if (storyId && activeChapter) {
+        saveChapterDraft(storyId, activeChapter).catch((err) => {
+          console.warn("[DedicatedWriter] Failed to sync chapter to Firestore:", err);
+        });
+      }
       setIsSaved(true);
       setSaveToast(true);
       setTimeout(() => setSaveToast(false), 2000);

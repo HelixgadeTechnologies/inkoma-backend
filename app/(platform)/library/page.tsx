@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { AuthGuard } from "@/components/shared/auth-guard";
 
 type LibraryTab = "recently_read" | "bookmarks" | "favorites" | "quotes";
 
@@ -47,7 +48,8 @@ export default function LibraryPage() {
   const favoriteStories = MOCK_STORIES.filter((s) => favorites.includes(s.id));
 
   return (
-    <div className="space-y-8 pb-16">
+    <AuthGuard featureName="Personal Library">
+      <div className="space-y-8 pb-16">
       {/* Header */}
       <div className="space-y-1.5">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37]/10 dark:bg-[#D4AF37]/20 border border-[#D4AF37]/20 dark:border-[#D4AF37]/30 text-[#D4AF37] dark:text-[#D4AF37] text-xs font-semibold uppercase tracking-wider">
@@ -380,5 +382,6 @@ export default function LibraryPage() {
         </div>
       )}
     </div>
+    </AuthGuard>
   );
 }

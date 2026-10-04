@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useMemo, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,6 +11,7 @@ import {
   BookOpen,
   Search,
   X,
+  Loader2,
 } from "lucide-react";
 import { MAIN_GENRES } from "@/config/genres";
 import { useAuth } from "@/hooks/useAuth";
@@ -54,7 +55,24 @@ const AVAILABLE_GENRES = MAIN_GENRES.map((name) => ({
 }));
 
 export default function OnboardingPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[50vh] items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-[#D4AF37]" />
+        </div>
+      }
+    >
+      <OnboardingContent />
+    </Suspense>
+  );
+}
+
+function OnboardingContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTarget = searchParams.get("redirect") || "/explore";
+
   const { user, emailVerified, loading } = useAuth();
   const [selectedGenres, setSelectedGenres] = useState<string[]>([
     "African Mythology & Folklore",
@@ -123,7 +141,7 @@ export default function OnboardingPage() {
     }
 
     setTimeout(() => {
-      router.push("/explore");
+      router.push(redirectTarget);
     }, 400);
   };
 

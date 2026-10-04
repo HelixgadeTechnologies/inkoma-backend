@@ -23,6 +23,9 @@ import {
   BookOpen,
   Pencil,
 } from "lucide-react";
+import { AuthGuard } from "@/components/shared/auth-guard";
+import { useAuth } from "@/hooks/useAuth";
+import { getStoriesByAuthor } from "@/src/services/storyService";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
@@ -83,22 +86,46 @@ const WRITER_TOOLS = [
 export default function StudioPage() {
   const [overviewPeriod, setOverviewPeriod] = useState("This Month");
   const [showPeriodMenu, setShowPeriodMenu] = useState(false);
+  const { user: authUser } = useAuth();
 
   const [stories, setStories] = useState<Story[]>(MOCK_STORIES.slice(0, 3));
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("inkoma_custom_stories");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setStories([...parsed, ...MOCK_STORIES.slice(0, 3)]);
+    let isMounted = true;
+    async function loadStories() {
+      if (authUser?.id) {
+        try {
+          const authorStories = await getStoriesByAuthor(authUser.id);
+          if (isMounted && authorStories.length > 0) {
+            setStories(authorStories);
+            return;
+          }
+        } catch (err) {
+          console.warn("[StudioPage] Firestore load error:", err);
         }
       }
-    } catch {
-      // ignore
+
+      try {
+        const stored = localStorage.getItem("inkoma_custom_stories");
+        if (stored && isMounted) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setStories([...parsed, ...MOCK_STORIES.slice(0, 3)]);
+            return;
+          }
+        }
+      } catch {}
+
+      if (isMounted) {
+        setStories(MOCK_STORIES.slice(0, 3));
+      }
     }
-  }, []);
+
+    loadStories();
+    return () => {
+      isMounted = false;
+    };
+  }, [authUser?.id]);
 
   const user = MOCK_CURRENT_USER;
 
@@ -108,7 +135,8 @@ export default function StudioPage() {
   const statsReaders = user.followersCount ?? 152;
 
   return (
-    <div className="space-y-6 pb-20">
+    <AuthGuard featureName="Creator Studio">
+      <div className="space-y-6 pb-20">
 
       {/* ── 1. Page Header ── */}
       <div className="space-y-0.5 pt-2">
@@ -435,5 +463,6 @@ export default function StudioPage() {
       </div>
 
     </div>
+    </AuthGuard>
   );
 }

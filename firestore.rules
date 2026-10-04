@@ -60,10 +60,16 @@ service cloud.firestore {
         && request.resource.data.title.size() <= 200
         && request.resource.data.status in ['draft', 'published', 'ongoing', 'completed'];
 
-      // Only the story author can update or delete
-      allow update: if isStoryAuthor(resource.data)
-        && request.resource.data.authorId == resource.data.authorId // authorId is immutable
-        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['createdAt']));
+      // Authors can update everything except createdAt & authorId.
+      // Authenticated readers can increment interaction counters (likesCount, bookmarksCount, readsCount).
+      allow update: if (
+        isStoryAuthor(resource.data)
+        && request.resource.data.authorId == resource.data.authorId
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['createdAt']))
+      ) || (
+        isAuthenticated()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likesCount', 'bookmarksCount', 'readsCount'])
+      );
 
       allow delete: if isStoryAuthor(resource.data);
 
