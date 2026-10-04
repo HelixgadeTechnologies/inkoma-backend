@@ -37,7 +37,6 @@ import { ChapterListBuilder, calculateReadTime } from "@/components/features/edi
 import { ProseRenderer } from "@/components/features/editor/prose-renderer";
 import { Story, StoryChapter, StoryStatus } from "@/types";
 import { MAIN_GENRES, SUB_GENRES, TRIGGER_WARNINGS } from "@/config/genres";
-import { MOCK_CURRENT_USER } from "@/config/mock-data";
 import { useAuth } from "@/hooks/useAuth";
 import { createDraftStory, publishStory } from "@/src/services/storyService";
 import { AuthGuard } from "@/components/shared/auth-guard";
@@ -408,9 +407,9 @@ export default function StudioNewStoryPage() {
 
     const publishedTag = status === "completed" ? "Completed" : "Ongoing";
     const newStoryId = `story-${Date.now()}`;
-    const authorId = user?.id || MOCK_CURRENT_USER.id;
-    const authorName = profile?.displayName || MOCK_CURRENT_USER.displayName;
-    const authorAvatar = profile?.avatarUrl || MOCK_CURRENT_USER.avatarUrl;
+    const authorId = user?.id || "";
+    const authorName = profile?.displayName || user?.displayName || "Storyteller";
+    const authorAvatar = profile?.avatarUrl || "";
 
     // Save to Firestore via storyService
     try {
@@ -461,7 +460,7 @@ export default function StudioNewStoryPage() {
       authorName,
       authorPenName: profile?.penName || authorName,
       authorAvatar,
-      authorBio: profile?.bio || MOCK_CURRENT_USER.bio,
+      authorBio: profile?.bio || "",
       publishedAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
       updatedAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
       estimatedReadTime: chapters.reduce((acc, c) => acc + (c.estimatedReadTime || 1), 0),
@@ -1339,7 +1338,7 @@ export default function StudioNewStoryPage() {
                   )}
 
                   <div className="flex items-center justify-between text-[11px] text-stone-300 pt-0.5">
-                    <span className="font-medium">By {MOCK_CURRENT_USER.displayName}</span>
+                    <span className="font-medium">By {profile?.penName || profile?.displayName || user?.displayName || "Storyteller"}</span>
                     {ageRating && (
                       <span className="px-1.5 py-0.5 rounded bg-stone-800/80 text-[10px] text-stone-300 border border-stone-700">
                         {ageRating}
@@ -1408,17 +1407,23 @@ export default function StudioNewStoryPage() {
 
                 {/* Author attribution row */}
                 <div className="flex items-center gap-3 pt-2">
-                  <div className="relative w-8 h-8 rounded-full overflow-hidden border border-[#D4AF37]/40">
-                    <SafeImage
-                      src={MOCK_CURRENT_USER.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"}
-                      alt={MOCK_CURRENT_USER.displayName}
-                      fill
-                      className="object-cover"
-                    />
+                  <div className="relative w-8 h-8 rounded-full overflow-hidden border border-[#D4AF37]/40 bg-stone-200">
+                    {profile?.avatarUrl ? (
+                      <SafeImage
+                        src={profile.avatarUrl}
+                        alt={profile?.displayName || "Author"}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-xs font-bold text-stone-600">
+                        {(profile?.displayName || "S").charAt(0)}
+                      </div>
+                    )}
                   </div>
                   <div className="text-xs">
                     <span className="font-bold text-stone-900 dark:text-white">
-                      {MOCK_CURRENT_USER.displayName}
+                      {profile?.displayName || user?.displayName || "Storyteller"}
                     </span>
                     <span className="text-stone-400 ml-1.5">• Storyteller &amp; Lore Archivist</span>
                   </div>

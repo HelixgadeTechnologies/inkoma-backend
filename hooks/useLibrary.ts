@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { SavedQuote, ReadingProgress } from "@/types";
-import { MOCK_SAVED_QUOTES, MOCK_READING_PROGRESS } from "@/config/mock-data";
 
 export function useLibrary() {
   const [bookmarks, setBookmarks] = useState<string[]>([]);
@@ -20,14 +19,14 @@ export function useLibrary() {
       const storedQuotes = localStorage.getItem("inkoma_quotes");
       const storedProgress = localStorage.getItem("inkoma_progress");
 
-      setBookmarks(storedBookmarks ? JSON.parse(storedBookmarks) : ["anansi-and-the-pot-of-wisdom"]);
-      setFavorites(storedFavorites ? JSON.parse(storedFavorites) : ["anansi-and-the-pot-of-wisdom", "sundiata-the-lion-king-of-mali"]);
-      setReadingHistory(storedHistory ? JSON.parse(storedHistory) : ["anansi-and-the-pot-of-wisdom", "sundiata-the-lion-king-of-mali"]);
-      setSavedQuotes(storedQuotes ? JSON.parse(storedQuotes) : MOCK_SAVED_QUOTES);
-      setContinueReading(storedProgress ? JSON.parse(storedProgress) : MOCK_READING_PROGRESS);
+      setBookmarks(storedBookmarks ? JSON.parse(storedBookmarks) : []);
+      setFavorites(storedFavorites ? JSON.parse(storedFavorites) : []);
+      setReadingHistory(storedHistory ? JSON.parse(storedHistory) : []);
+      setSavedQuotes(storedQuotes ? JSON.parse(storedQuotes) : []);
+      setContinueReading(storedProgress ? JSON.parse(storedProgress) : []);
     } catch {
-      setSavedQuotes(MOCK_SAVED_QUOTES);
-      setContinueReading(MOCK_READING_PROGRESS);
+      setSavedQuotes([]);
+      setContinueReading([]);
     } finally {
       setIsLoaded(true);
     }

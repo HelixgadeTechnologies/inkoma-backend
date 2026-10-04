@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { StoryComment } from "@/types";
-import { MOCK_CURRENT_USER } from "@/config/mock-data";
+import { useAuth } from "@/hooks/useAuth";
 import {
   MessageSquare,
   ThumbsUp,
@@ -27,88 +27,17 @@ interface StoryCommentsSectionProps {
   initialCommentsCount?: number;
 }
 
-const INITIAL_COMMENTS_DATA: Record<string, StoryComment[]> = {
-  "sundiata-the-lion-king-of-mali": [
-    {
-      id: "comment-1",
-      storyId: "sundiata-the-lion-king-of-mali",
-      authorId: "user-amina-02",
-      authorName: "Amina Diallo (Author)",
-      authorAvatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=200&auto=format&fit=crop",
-      content: "Welcome to the Manden epic! In Chapter 1, the iron rod choice reflects historical oral accounts recorded by Mandinka griots. I would love to hear which branch path resonated most with you!",
-      upvotesCount: 42,
-      hasUpvoted: true,
-      createdAt: "3 hours ago",
-      replies: [
-        {
-          id: "reply-1-1",
-          storyId: "sundiata-the-lion-king-of-mali",
-          authorId: "user-kofi",
-          authorName: "Kofi Mensah",
-          authorAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop",
-          content: "The invocation of Sogolon's buffalo spirit was breathtaking! The sound of the iron rod bending brought cold shivers.",
-          upvotesCount: 18,
-          hasUpvoted: false,
-          createdAt: "2 hours ago",
-        },
-      ],
-    },
-    {
-      id: "comment-2",
-      storyId: "sundiata-the-lion-king-of-mali",
-      authorId: "user-zola",
-      authorName: "Zola Dlamini",
-      authorAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop",
-      content: "The imagery of uprooting the baobab tree for Sogolon is such a powerful testament to filial devotion and resilience. Magnificent writing!",
-      upvotesCount: 29,
-      hasUpvoted: false,
-      createdAt: "5 hours ago",
-    },
-    {
-      id: "comment-3",
-      storyId: "sundiata-the-lion-king-of-mali",
-      authorId: "user-tunde",
-      authorName: "Tunde Bakare",
-      authorAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&auto=format&fit=crop",
-      content: "I cannot wait for the clash against Soumaoro Kanté in the next chapter update! Does Sundiata obtain the sacred arrow in Chapter 2?",
-      upvotesCount: 14,
-      hasUpvoted: false,
-      createdAt: "1 day ago",
-    },
-  ],
-  default: [
-    {
-      id: "comment-def-1",
-      storyId: "default",
-      authorId: "user-amara",
-      authorName: "Amara Okafor",
-      authorAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
-      content: "An absolute masterpiece of traditional African lore! The moral depth and choice consequences make this manuscript unforgettable.",
-      upvotesCount: 34,
-      hasUpvoted: false,
-      createdAt: "4 hours ago",
-    },
-    {
-      id: "comment-def-2",
-      storyId: "default",
-      authorId: "user-nii",
-      authorName: "Elder Nii Armah",
-      authorAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop",
-      content: "As a preserver of oral traditions, I am deeply moved by the care taken to honor the ancestral wisdom embedded within this tale.",
-      upvotesCount: 21,
-      hasUpvoted: true,
-      createdAt: "1 day ago",
-    },
-  ],
-};
-
 export function StoryCommentsSection({
   storyId,
   storyTitle,
   initialCommentsCount = 0,
 }: StoryCommentsSectionProps) {
-  const initialList = INITIAL_COMMENTS_DATA[storyId] || INITIAL_COMMENTS_DATA.default;
-  const [comments, setComments] = useState<StoryComment[]>(initialList);
+  const { user, profile } = useAuth();
+  const currentUserId = user?.id || "";
+  const currentUserName = profile?.displayName || "Reader";
+  const currentUserAvatar = profile?.avatarUrl || "";
+
+  const [comments, setComments] = useState<StoryComment[]>([]);
   const [newCommentText, setNewCommentText] = useState("");
   const [replyingToId, setReplyingToId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
@@ -171,9 +100,9 @@ export function StoryCommentsSection({
     const newComment: StoryComment = {
       id: `comment-${Date.now()}`,
       storyId,
-      authorId: MOCK_CURRENT_USER.id,
-      authorName: `${MOCK_CURRENT_USER.displayName} (You)`,
-      authorAvatar: MOCK_CURRENT_USER.avatarUrl,
+      authorId: currentUserId || "guest",
+      authorName: currentUserName,
+      authorAvatar: currentUserAvatar,
       content: newCommentText.trim(),
       upvotesCount: 1,
       hasUpvoted: true,
@@ -194,9 +123,9 @@ export function StoryCommentsSection({
     const newReply: StoryComment = {
       id: `reply-${Date.now()}`,
       storyId,
-      authorId: MOCK_CURRENT_USER.id,
-      authorName: `${MOCK_CURRENT_USER.displayName} (You)`,
-      authorAvatar: MOCK_CURRENT_USER.avatarUrl,
+      authorId: currentUserId || "guest",
+      authorName: currentUserName,
+      authorAvatar: currentUserAvatar,
       content: replyText.trim(),
       upvotesCount: 1,
       hasUpvoted: true,
@@ -281,17 +210,20 @@ export function StoryCommentsSection({
       {/* New Comment Input Box */}
       <form onSubmit={handlePostComment} className="space-y-3 p-4 bg-stone-50/80 rounded-2xl border border-stone-200">
         <div className="flex items-start gap-3">
-          <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#D4AF37]/30 flex-shrink-0">
-            <Image
-              src={
-                MOCK_CURRENT_USER.avatarUrl ||
-                "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"
-              }
-              alt={MOCK_CURRENT_USER.displayName}
-              fill
-              unoptimized
-              className="object-cover"
-            />
+          <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#D4AF37]/30 flex-shrink-0 bg-stone-200">
+            {currentUserAvatar ? (
+              <Image
+                src={currentUserAvatar}
+                alt={currentUserName}
+                fill
+                unoptimized
+                className="object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-xs font-bold text-stone-600">
+                {currentUserName.charAt(0)}
+              </div>
+            )}
           </div>
           <div className="flex-1 space-y-2">
             <textarea
@@ -381,7 +313,7 @@ export function StoryCommentsSection({
                   </div>
                 </div>
 
-                {comment.authorId === MOCK_CURRENT_USER.id && (
+                {currentUserId && comment.authorId === currentUserId && (
                   <button
                     onClick={() => handleDeleteComment(comment.id)}
                     className="text-stone-400 hover:text-rose-600 p-1 transition-colors"
@@ -483,7 +415,7 @@ export function StoryCommentsSection({
                           </span>
                         </div>
 
-                        {reply.authorId === MOCK_CURRENT_USER.id && (
+                        {currentUserId && reply.authorId === currentUserId && (
                           <button
                             onClick={() => handleDeleteComment(reply.id, comment.id)}
                             className="text-stone-400 hover:text-rose-600 p-0.5"

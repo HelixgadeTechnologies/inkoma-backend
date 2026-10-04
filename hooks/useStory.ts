@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { create } from 'zustand';
 import { Story, StoryFilterOptions, StoryChapter, StoryNode } from '@/types';
-import { MOCK_STORIES } from '@/config/mock-data';
+import { getPublishedStories, getStoryById } from '@/src/services/storyService';
 
 interface StoryStoreState {
   activeChapterIndex: number;
@@ -28,20 +28,55 @@ export const useStoryStore = create<StoryStoreState>((set) => ({
 }));
 
 export function useStory(storyId?: string) {
-  const [stories, setStories] = useState<Story[]>(MOCK_STORIES);
+  const [stories, setStories] = useState<Story[]>([]);
+  const [fetchedSingleStory, setFetchedSingleStory] = useState<Story | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [filters, setFilters] = useState<StoryFilterOptions>({
     sortBy: 'trending',
   });
 
+  useEffect(() => {
+    let isMounted = true;
+    async function loadData() {
+      try {
+        const result = await getPublishedStories({ limitCount: 50 });
+        if (isMounted) {
+          setStories(result.stories);
+        }
+      } catch (err) {
+        console.warn("[useStory] Error loading published stories:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+
+      if (storyId) {
+        try {
+          const single = await getStoryById(storyId);
+          if (isMounted && single) {
+            setFetchedSingleStory(single);
+          }
+        } catch (err) {
+          console.warn("[useStory] Error loading single story:", err);
+        }
+      }
+    }
+
+    loadData();
+    return () => {
+      isMounted = false;
+    };
+  }, [storyId]);
+
   const currentStory = useMemo(() => {
     if (!storyId) return undefined;
-    return stories.find(
+    const foundInList = stories.find(
       (s) =>
         s.id === storyId ||
         s.slug === storyId ||
         (s.aliases && s.aliases.includes(storyId))
     );
-  }, [stories, storyId]);
+    return foundInList || fetchedSingleStory || undefined;
+  }, [stories, storyId, fetchedSingleStory]);
 
   const filteredStories = useMemo(() => {
     return stories.filter((story) => {

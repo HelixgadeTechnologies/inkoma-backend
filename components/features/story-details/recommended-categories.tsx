@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Story } from "@/types";
-import { MOCK_STORIES } from "@/config/mock-data";
+import { useStory } from "@/hooks/useStory";
 import {
   Sparkles,
   Compass,
@@ -102,8 +102,9 @@ export function RecommendedCategoriesSection({
   currentGenre,
   currentTradition,
 }: RecommendedCategoriesProps) {
+  const { stories } = useStory();
   // Filter related stories excluding the current story
-  const relatedStories = MOCK_STORIES.filter((s) => s.id !== currentStoryId).slice(0, 3);
+  const relatedStories = stories.filter((s) => s.id !== currentStoryId).slice(0, 3);
 
   return (
     <div className="space-y-10 pt-4">

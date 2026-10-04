@@ -7,45 +7,7 @@ import { Input } from "@/components/ui/input";
 import { DiscussionCard } from "@/components/features/community/discussion-card";
 import { CommunityDiscussion } from "@/types";
 
-const MOCK_DISCUSSIONS: CommunityDiscussion[] = [
-  {
-    id: "disc-1",
-    title: "Why did Anansi not share the calabash wisdom with his wife Aso first?",
-    content: "In many Ashanti variations, Aso is portrayed as the wiser strategist who bails Anansi out of his troubles with the sky god. How does this dynamic change when readers choose the humble branch?",
-    authorId: "user-amina-02",
-    authorName: "Amina Diallo",
-    traditionCategory: "Ashanti/Akan",
-    tags: ["Anansi", "CharacterAnalysis", "FolkloreEthics"],
-    repliesCount: 24,
-    upvotesCount: 89,
-    createdAt: "2026-03-01",
-    isPinned: true,
-  },
-  {
-    id: "disc-2",
-    title: "Comparing the Trickster motifs: Anansi the Spider vs. Ijapa the Tortoise",
-    content: "Both the Akan and Yoruba storytelling hubs celebrate clever tricksters who rely on intellect over physical power. What are the key philosophical divergences in how pride is punished?",
-    authorId: "user-adebayo-03",
-    authorName: "Chief Adebayo",
-    traditionCategory: "Yoruba",
-    tags: ["Yoruba", "Ashanti", "ComparativeMythology"],
-    repliesCount: 16,
-    upvotesCount: 62,
-    createdAt: "2026-03-03",
-  },
-  {
-    id: "disc-3",
-    title: "Dogon Astronomical Knowledge encoded in Oral Sirius Poetry",
-    content: "Has anyone tried weaving a speculative Afrofuturist branch tracking the Sigui ceremony cycles? Looking for collaborators for a multi-author tale.",
-    authorId: "user-oumar-04",
-    authorName: "Oumar Sangare",
-    traditionCategory: "Dogon",
-    tags: ["Dogon", "Afrofuturism", "CollabTree"],
-    repliesCount: 9,
-    upvotesCount: 41,
-    createdAt: "2026-03-04",
-  },
-];
+const MOCK_DISCUSSIONS: CommunityDiscussion[] = [];
 
 export default function CommunityPage() {
   const [discussions, setDiscussions] = React.useState<CommunityDiscussion[]>(MOCK_DISCUSSIONS);
@@ -153,11 +115,23 @@ export default function CommunityPage() {
       )}
 
       {/* Discussion List */}
-      <div className="space-y-4">
-        {discussions.map((disc) => (
-          <DiscussionCard key={disc.id} discussion={disc} />
-        ))}
-      </div>
+      {discussions.length === 0 ? (
+        <div className="bg-white rounded-3xl border border-stone-200 p-12 text-center space-y-3">
+          <div className="w-12 h-12 rounded-2xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center text-[#D4AF37] mx-auto">
+            <MessageSquare className="w-6 h-6" />
+          </div>
+          <h3 className="text-base font-bold text-stone-900 font-serif">No community discussions yet</h3>
+          <p className="text-xs text-stone-500 max-w-sm mx-auto">
+            Be the first storyteller to start an inquiry or share an ancestral interpretation.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {discussions.map((disc) => (
+            <DiscussionCard key={disc.id} discussion={disc} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

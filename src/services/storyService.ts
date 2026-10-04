@@ -20,7 +20,6 @@ import {
 import { db, isFirebaseConfigured } from "@/src/firebase/config";
 import { uploadCoverImage } from "@/src/services/storageService";
 import { Story, StoryChapter, StoryStatus } from "@/types";
-import { MOCK_STORIES } from "@/config/mock-data";
 
 export interface CreateStoryMetadata {
   id?: string;
@@ -180,10 +179,9 @@ export async function getStoryPreview(storyId: string): Promise<{
   chapters: StoryChapter[];
 }> {
   if (!isFirebaseConfigured() || !db) {
-    const mock = MOCK_STORIES.find((s) => s.id === storyId) || MOCK_STORIES[0];
     return {
-      story: mock,
-      chapters: mock.chapters || [],
+      story: null,
+      chapters: [],
     };
   }
 
@@ -233,7 +231,7 @@ export async function getPublishedStories(options: {
 
   if (!isFirebaseConfigured() || !db) {
     return {
-      stories: MOCK_STORIES,
+      stories: [],
       lastDoc: null,
       hasMore: false,
     };
@@ -274,14 +272,14 @@ export async function getPublishedStories(options: {
 
     const last = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
     return {
-      stories: stories.length > 0 ? stories : MOCK_STORIES,
+      stories,
       lastDoc: last,
       hasMore: snapshot.docs.length === limitCount,
     };
   } catch (error) {
-    console.warn("[StoryService] Falling back to mock stories due to query error:", error);
+    console.warn("[StoryService] Error fetching published stories:", error);
     return {
-      stories: MOCK_STORIES,
+      stories: [],
       lastDoc: null,
       hasMore: false,
     };
@@ -293,13 +291,13 @@ export async function getPublishedStories(options: {
  */
 export async function getStoryById(storyId: string): Promise<Story | null> {
   if (!isFirebaseConfigured() || !db) {
-    return MOCK_STORIES.find((s) => s.id === storyId) || null;
+    return null;
   }
 
   try {
     const storyDoc = await getDoc(doc(db, "stories", storyId));
     if (!storyDoc.exists()) {
-      return MOCK_STORIES.find((s) => s.id === storyId) || null;
+      return null;
     }
 
     const data = storyDoc.data();
@@ -310,7 +308,7 @@ export async function getStoryById(storyId: string): Promise<Story | null> {
     } as Story;
   } catch (error) {
     console.error("[StoryService] Error fetching story by ID:", error);
-    return MOCK_STORIES.find((s) => s.id === storyId) || null;
+    return null;
   }
 }
 
@@ -374,8 +372,7 @@ export async function getStoriesByAuthor(authorId: string): Promise<Story[]> {
  */
 export async function getStoryChapters(storyId: string): Promise<StoryChapter[]> {
   if (!isFirebaseConfigured() || !db) {
-    const story = MOCK_STORIES.find((s) => s.id === storyId);
-    return story?.chapters || [];
+    return [];
   }
 
   try {
@@ -391,8 +388,7 @@ export async function getStoryChapters(storyId: string): Promise<StoryChapter[]>
     return chapters;
   } catch (error) {
     console.error("[StoryService] Error fetching chapters:", error);
-    const story = MOCK_STORIES.find((s) => s.id === storyId);
-    return story?.chapters || [];
+    return [];
   }
 }
 
@@ -404,23 +400,17 @@ export async function getChapterContent(
   chapterNumber: number
 ): Promise<StoryChapter | null> {
   if (!isFirebaseConfigured() || !db) {
-    const story = MOCK_STORIES.find((s) => s.id === storyId);
-    return (
-      story?.chapters?.find(
-        (c) => (c.chapterNumber || c.number) === chapterNumber
-      ) || null
-    );
+    return null;
   }
 
   try {
     const chaptersRef = collection(db, "stories", storyId, "chapters");
     const q = query(chaptersRef, where("number", "==", chapterNumber), limit(1));
     const snapshot = await getDocs(q);
-
-    if (snapshot.empty) {
-      return null;
+    if (!snapshot.empty) {
+      return snapshot.docs[0].data() as StoryChapter;
     }
-    return snapshot.docs[0].data() as StoryChapter;
+    return null;
   } catch (error) {
     console.error("[StoryService] Error fetching chapter content:", error);
     return null;

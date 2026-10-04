@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useLibrary } from "@/hooks/useLibrary";
-import { MOCK_STORIES } from "@/config/mock-data";
+import { useStory } from "@/hooks/useStory";
 import {
   BookOpen,
   Bookmark,
@@ -26,6 +26,7 @@ type LibraryTab = "recently_read" | "bookmarks" | "favorites" | "quotes";
 
 export default function LibraryPage() {
   const [activeTab, setActiveTab] = useState<LibraryTab>("recently_read");
+  const { stories } = useStory();
   const {
     bookmarks,
     favorites,
@@ -44,8 +45,8 @@ export default function LibraryPage() {
     setTimeout(() => setCopiedQuoteId(null), 2500);
   };
 
-  const bookmarkedStories = MOCK_STORIES.filter((s) => bookmarks.includes(s.id));
-  const favoriteStories = MOCK_STORIES.filter((s) => favorites.includes(s.id));
+  const bookmarkedStories = stories.filter((s) => bookmarks.includes(s.id));
+  const favoriteStories = stories.filter((s) => favorites.includes(s.id));
 
   return (
     <AuthGuard featureName="Personal Library">
