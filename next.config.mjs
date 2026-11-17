@@ -33,7 +33,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'firebasestorage.googleapis.com',
+        hostname: '*.onrender.com',
       },
       {
         protocol: 'https',

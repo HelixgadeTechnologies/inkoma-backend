@@ -235,7 +235,7 @@ const CYNTHIA_STORIES = [
 ];
 
 export default function UserProfilePage() {
-  const { user, profile: authProfile, firebaseUser, loading: authLoading } = useAuth();
+  const { user, profile: authProfile, loading: authLoading } = useAuth();
   const { continueReading } = useLibrary();
 
   const params = useParams();
@@ -250,18 +250,14 @@ export default function UserProfilePage() {
     username === "self" ||
     (Boolean(authProfile?.username) && username === authProfile?.username?.toLowerCase()) ||
     (Boolean(user?.id) && username === user?.id?.toLowerCase()) ||
-    (Boolean(firebaseUser?.uid) && username === firebaseUser?.uid?.toLowerCase()) ||
     (Boolean(user?.email) && username === user?.email?.split("@")[0]?.toLowerCase()) ||
-    (Boolean(firebaseUser?.email) && username === firebaseUser?.email?.split("@")[0]?.toLowerCase()) ||
     (Boolean(authProfile?.email) && username === authProfile?.email?.split("@")[0]?.toLowerCase()) ||
     (Boolean(authProfile?.displayName) &&
       username === authProfile?.displayName?.toLowerCase().replace(/\s+/g, "_")) ||
     (Boolean(authProfile?.displayName) &&
       username === authProfile?.displayName?.toLowerCase().replace(/\s+/g, "")) ||
     (Boolean(authProfile?.displayName) &&
-      username.replace(/_/g, " ") === authProfile?.displayName?.toLowerCase()) ||
-    (Boolean(firebaseUser?.displayName) &&
-      username === firebaseUser?.displayName?.toLowerCase().replace(/\s+/g, "_"));
+      username.replace(/_/g, " ") === authProfile?.displayName?.toLowerCase());
 
   // Build the effective profile object
   const profile: UserProfile = isOwnProfile
@@ -275,7 +271,7 @@ export default function UserProfilePage() {
           (user?.email ? user.email.split("@")[0] : "Storyteller"),
         penName: authProfile?.penName || authProfile?.displayName || "Storyteller",
         bio: authProfile?.bio || "Preserving ancestral lore through interactive storytelling.",
-        avatarUrl: authProfile?.avatarUrl || firebaseUser?.photoURL || "",
+        avatarUrl: authProfile?.avatarUrl || user?.photoURL || "",
         country: authProfile?.country || "Pan-African",
         role: authProfile?.role || "storyteller",
         traditionSpecialty: authProfile?.traditionSpecialty || "Pan-African Folklore",

@@ -57,6 +57,9 @@ export function useAuth() {
       user: context.user
         ? {
             id: context.user.uid,
+            uid: context.user.uid,
+            displayName: context.user.displayName,
+            photoURL: context.user.photoURL,
             email: context.user.email || undefined,
             emailVerified: context.user.emailVerified,
           }

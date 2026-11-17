@@ -1,8 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { User as FirebaseUser } from "firebase/auth";
 import {
+  AuthUser,
+  FirestoreUserData,
   signUpUser,
   loginUser,
   loginWithGoogle,
@@ -12,13 +13,11 @@ import {
   onAuthChange,
   sendVerificationEmail,
   checkEmailVerification,
-  FirestoreUserData,
 } from "@/src/services/authService";
-import { isFirebaseConfigured } from "@/src/firebase/config";
 import { MOCK_CURRENT_USER } from "@/config/mock-data";
 
 export interface AuthContextType {
-  user: FirebaseUser | null;
+  user: AuthUser | null;
   profile: FirestoreUserData | null;
   loading: boolean;
   isAuthenticated: boolean;
@@ -26,7 +25,7 @@ export interface AuthContextType {
   loginWithEmail: (
     email: string,
     pass: string
-  ) => Promise<{ user: FirebaseUser | null; profile: FirestoreUserData | null }>;
+  ) => Promise<{ user: AuthUser | null; profile: FirestoreUserData | null }>;
   signupWithEmail: (
     email: string,
     pass: string,
@@ -43,59 +42,45 @@ export interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [profile, setProfile] = useState<FirestoreUserData | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Initialize auth listener
   useEffect(() => {
-    let unsubscribe = () => {};
-
-    if (isFirebaseConfigured()) {
-      unsubscribe = onAuthChange(async (firebaseUser) => {
-        if (firebaseUser) {
-          setUser(firebaseUser);
-          const userDoc = await getUserProfile(firebaseUser.uid);
-          setProfile(userDoc);
-          if (typeof window !== "undefined") {
-            localStorage.setItem("inkoma_authenticated", "true");
-          }
-        } else {
-          setUser(null);
-          setProfile(null);
-          if (typeof window !== "undefined") {
-            localStorage.setItem("inkoma_authenticated", "false");
-          }
-        }
-        setLoading(false);
-      });
-    } else {
-      // Offline / Local Development Fallback
-      try {
+    const unsubscribe = onAuthChange(async (authUser) => {
+      if (authUser) {
+        setUser(authUser);
+        const userDoc = await getUserProfile(authUser.uid);
+        setProfile(userDoc);
+      } else {
+        // Check local storage fallback
         if (typeof window !== "undefined") {
           const storedAuth = localStorage.getItem("inkoma_authenticated");
           if (storedAuth === "true") {
             const storedProfile = localStorage.getItem("inkoma_user_profile");
             if (storedProfile) {
-              setProfile(JSON.parse(storedProfile));
-            } else {
-              setProfile({
-                uid: MOCK_CURRENT_USER.id,
-                displayName: MOCK_CURRENT_USER.displayName,
-                email: "kwame@inkoma.app",
-                photoURL: MOCK_CURRENT_USER.avatarUrl,
-                bio: MOCK_CURRENT_USER.bio,
-                role: "author",
-              });
+              try {
+                const parsed = JSON.parse(storedProfile);
+                setProfile(parsed);
+                setUser({
+                  uid: parsed.uid || MOCK_CURRENT_USER.id,
+                  id: parsed.uid || MOCK_CURRENT_USER.id,
+                  email: parsed.email || "kwame@inkoma.app",
+                  displayName: parsed.displayName || MOCK_CURRENT_USER.displayName,
+                  photoURL: parsed.photoURL || MOCK_CURRENT_USER.avatarUrl,
+                  emailVerified: true,
+                });
+              } catch {}
             }
+          } else {
+            setUser(null);
+            setProfile(null);
           }
         }
-      } catch (err) {
-        console.warn("[AuthContext] Local fallback load error:", err);
-      } finally {
-        setLoading(false);
       }
-    }
+      setLoading(false);
+    });
 
     return () => unsubscribe();
   }, []);
@@ -173,14 +158,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!user) return false;
     const isVerified = await checkEmailVerification(user);
     if (isVerified) {
-      // Force update user state
-      setUser((prev) => (prev ? ({ ...prev, emailVerified: true } as FirebaseUser) : null));
+      setUser((prev) => (prev ? { ...prev, emailVerified: true } : null));
       setProfile((prev) => (prev ? { ...prev, emailVerified: true } : null));
     }
     return isVerified;
   }, [user]);
 
-  const isVerified = !isFirebaseConfigured() || !!user?.emailVerified || !!profile?.emailVerified;
+  const isVerified = !!user?.emailVerified || !!profile?.emailVerified;
 
   return (
     <AuthContext.Provider

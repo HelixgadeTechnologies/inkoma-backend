@@ -130,7 +130,7 @@ function OnboardingContent() {
         );
       }
 
-      // If user is signed in to Firebase, sync preferences to Firestore profile
+      // If user is signed in, sync preferences to profile
       if (user?.id && chosen.length > 0) {
         await updateUserProfileDoc(user.id, {
           favoriteGenres: chosen,

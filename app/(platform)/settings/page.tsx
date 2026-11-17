@@ -91,7 +91,7 @@ export default function SettingsPage() {
     let finalAvatarUrl = avatarUrl;
     if (avatarFile && user?.id) {
       try {
-        showToast("Uploading profile photo to Firebase Storage...");
+        showToast("Uploading profile photo...");
         finalAvatarUrl = await uploadAvatarImage(avatarFile, user.id);
         setAvatarUrl(finalAvatarUrl);
       } catch (err: unknown) {

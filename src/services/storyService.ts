@@ -1,23 +1,4 @@
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  setDoc,
-  updateDoc,
-  deleteDoc,
-  query,
-  where,
-  orderBy,
-  limit,
-  startAfter,
-  serverTimestamp,
-  increment,
-  QueryDocumentSnapshot,
-  DocumentData,
-  Timestamp,
-} from "firebase/firestore";
-import { db, isFirebaseConfigured } from "@/src/firebase/config";
+import { apiClient } from "@/src/services/api";
 import { uploadCoverImage } from "@/src/services/storageService";
 import { Story, StoryChapter, StoryStatus } from "@/types";
 
@@ -44,12 +25,12 @@ export interface CreateStoryMetadata {
 
 export interface PaginatedStoriesResult {
   stories: Story[];
-  lastDoc: QueryDocumentSnapshot<DocumentData> | null;
+  lastDoc: any | null;
   hasMore: boolean;
 }
 
 /**
- * Creates or updates a draft story with optional cover image upload
+ * Creates or updates a draft story on the Render backend (MongoDB)
  */
 export async function createDraftStory(
   metadata: CreateStoryMetadata,
@@ -57,31 +38,14 @@ export async function createDraftStory(
 ): Promise<string> {
   const storyId = metadata.id || `story-${Date.now()}`;
 
-  if (!isFirebaseConfigured() || !db) {
-    console.info("[StoryService] Firebase offline; saved to local draft storage.");
-    if (typeof window !== "undefined") {
-      const localDraft = { ...metadata, id: storyId, updatedAt: new Date().toISOString() };
-      localStorage.setItem("inkoma_draft_story", JSON.stringify(localDraft));
-    }
-    return storyId;
-  }
-
   let finalCoverUrl = metadata.coverImageUrl || "";
   if (coverFile) {
-    finalCoverUrl = await uploadCoverImage(coverFile, metadata.authorId, storyId);
-  } else if (finalCoverUrl.startsWith("data:image/")) {
     try {
-      const res = await fetch(finalCoverUrl);
-      const blob = await res.blob();
-      finalCoverUrl = await uploadCoverImage(blob, metadata.authorId, storyId);
+      finalCoverUrl = await uploadCoverImage(coverFile, metadata.authorId, storyId);
     } catch (e) {
-      console.warn("[StoryService] Failed to upload base64 cover to Cloud Storage:", e);
+      console.warn("[StoryService] Error uploading cover image:", e);
     }
   }
-
-  const storyDocRef = doc(db, "stories", storyId);
-  const existingSnap = await getDoc(storyDocRef);
-  const isNew = !existingSnap.exists();
 
   const storyPayload: Record<string, unknown> = {
     id: storyId,
@@ -103,44 +67,45 @@ export async function createDraftStory(
     tradition: metadata.tradition || "Pan-African",
     totalChapters: metadata.chapters?.length || 1,
     status: metadata.status || "draft",
-    updatedAt: serverTimestamp(),
-    ...(isNew
-      ? {
-          readsCount: 0,
-          likesCount: 0,
-          bookmarksCount: 0,
-          createdAt: serverTimestamp(),
-        }
-      : {}),
+    updatedAt: new Date().toISOString(),
   };
 
-  await setDoc(storyDocRef, storyPayload, { merge: true });
+  try {
+    const res = await apiClient.post<{ id?: string; _id?: string }>(
+      "/stories",
+      storyPayload
+    );
+    const returnedId = res.id || res._id || storyId;
 
-  // Save initial chapters if present
-  if (metadata.chapters && metadata.chapters.length > 0) {
-    for (const chap of metadata.chapters) {
-      await saveChapterDraft(storyId, chap);
+    if (metadata.chapters && metadata.chapters.length > 0) {
+      for (const chap of metadata.chapters) {
+        await saveChapterDraft(returnedId, chap);
+      }
     }
-  }
+    return returnedId;
+  } catch (err) {
+    console.warn("[StoryService] Backend offline or error; storing draft locally:", err);
+    if (typeof window !== "undefined") {
+      const localDraft = { ...storyPayload, id: storyId, chapters: metadata.chapters || [] };
+      localStorage.setItem("inkoma_draft_story", JSON.stringify(localDraft));
 
-  return storyId;
+      const rawCustom = localStorage.getItem("inkoma_custom_stories");
+      const list: Story[] = rawCustom ? JSON.parse(rawCustom) : [];
+      const updatedList = [localDraft as unknown as Story, ...list.filter((s) => s.id !== storyId)];
+      localStorage.setItem("inkoma_custom_stories", JSON.stringify(updatedList));
+    }
+    return storyId;
+  }
 }
 
 /**
- * Saves a chapter draft into sub-collection stories/{storyId}/chapters/{chapterId}
+ * Saves a chapter draft into story chapters
  */
 export async function saveChapterDraft(
   storyId: string,
   chapterData: Partial<StoryChapter>
 ): Promise<string> {
   const chapterId = chapterData.id || `chapter-${chapterData.number || Date.now()}`;
-
-  if (!isFirebaseConfigured() || !db) {
-    console.info(`[StoryService] Firebase offline; saved chapter ${chapterId} locally.`);
-    return chapterId;
-  }
-
-  const chapterDocRef = doc(db, "stories", storyId, "chapters", chapterId);
   const wordCount = chapterData.content
     ? chapterData.content.trim().split(/\s+/).filter(Boolean).length
     : 0;
@@ -157,129 +122,131 @@ export async function saveChapterDraft(
     wordCount,
     estimatedReadTime: chapterData.estimatedReadTime || Math.max(1, Math.ceil(wordCount / 200)),
     status: chapterData.status || "draft",
-    updatedAt: serverTimestamp(),
+    updatedAt: new Date().toISOString(),
   };
 
-  await setDoc(chapterDocRef, payload, { merge: true });
-
-  // Update parent story updatedAt
-  const parentStoryRef = doc(db, "stories", storyId);
-  await updateDoc(parentStoryRef, {
-    updatedAt: serverTimestamp(),
-  }).catch(() => {});
+  try {
+    await apiClient.put(`/stories/${storyId}/chapters/${chapterId}`, payload);
+  } catch (error) {
+    console.warn(`[StoryService] Backend save chapter ${chapterId} error, saving locally:`, error);
+  }
 
   return chapterId;
 }
 
 /**
- * Fetches complete story metadata and all associated chapters for preview
+ * Fetches story preview with chapters
  */
 export async function getStoryPreview(storyId: string): Promise<{
   story: Story | null;
   chapters: StoryChapter[];
 }> {
-  if (!isFirebaseConfigured() || !db) {
-    return {
-      story: null,
-      chapters: [],
-    };
+  try {
+    const res = await apiClient.get<{ story?: Story; chapters?: StoryChapter[] } | Story>(
+      `/stories/${storyId}/preview`
+    );
+    if (res && "story" in res && res.story) {
+      return {
+        story: res.story,
+        chapters: res.chapters || [],
+      };
+    }
+    if (res && "title" in res) {
+      const storyObj = res as Story;
+      const chapters = await getStoryChapters(storyId);
+      return { story: storyObj, chapters };
+    }
+  } catch (error) {
+    console.warn("[StoryService] Error fetching story preview from backend:", error);
   }
 
-  const storyDoc = await getDoc(doc(db, "stories", storyId));
-  if (!storyDoc.exists()) {
-    return { story: null, chapters: [] };
+  // Fallback to local draft
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem("inkoma_draft_story");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.id === storyId) {
+          return { story: parsed, chapters: parsed.chapters || [] };
+        }
+      }
+    } catch {}
   }
 
-  const storyData = storyDoc.data() as Story;
-  const chapters = await getStoryChapters(storyId);
-
-  return {
-    story: {
-      ...storyData,
-      totalChapters: chapters.length,
-      chapters,
-    },
-    chapters,
-  };
+  return { story: null, chapters: [] };
 }
 
 /**
  * Publishes a story by updating status to 'published'
  */
 export async function publishStory(storyId: string): Promise<void> {
-  if (!isFirebaseConfigured() || !db) {
-    console.info(`[StoryService] Firebase offline; marked story ${storyId} published locally.`);
-    return;
+  try {
+    await apiClient.patch(`/stories/${storyId}/publish`, { status: "published" });
+  } catch (error) {
+    console.warn("[StoryService] Failed to publish on backend, updating locally:", error);
   }
 
-  const storyRef = doc(db, "stories", storyId);
-  await updateDoc(storyRef, {
-    status: "published",
-    publishedAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
+  if (typeof window !== "undefined") {
+    try {
+      const rawCustom = localStorage.getItem("inkoma_custom_stories");
+      if (rawCustom) {
+        const list: Story[] = JSON.parse(rawCustom);
+        const updated = list.map((s) =>
+          s.id === storyId
+            ? { ...s, status: "published" as StoryStatus, publishedAt: new Date().toISOString() }
+            : s
+        );
+        localStorage.setItem("inkoma_custom_stories", JSON.stringify(updated));
+      }
+    } catch {}
+  }
 }
 
 /**
- * Fetches published stories for the Home / "For You" page (FYP) with pagination
+ * Fetches published stories for the Home / "For You" page (FYP)
  */
 export async function getPublishedStories(options: {
   limitCount?: number;
-  startAfterDoc?: QueryDocumentSnapshot<DocumentData> | null;
+  startAfterDoc?: any;
 } = {}): Promise<PaginatedStoriesResult> {
-  const { limitCount = 10, startAfterDoc = null } = options;
-
-  if (!isFirebaseConfigured() || !db) {
-    return {
-      stories: [],
-      lastDoc: null,
-      hasMore: false,
-    };
-  }
+  const { limitCount = 10 } = options;
 
   try {
-    const storiesRef = collection(db, "stories");
-    let q = query(
-      storiesRef,
-      where("status", "==", "published"),
-      orderBy("publishedAt", "desc"),
-      limit(limitCount)
-    );
-
-    if (startAfterDoc) {
-      q = query(
-        storiesRef,
-        where("status", "==", "published"),
-        orderBy("publishedAt", "desc"),
-        startAfter(startAfterDoc),
-        limit(limitCount)
-      );
-    }
-
-    const snapshot = await getDocs(q);
-    const stories: Story[] = [];
-
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      stories.push({
-        id: docSnap.id,
-        ...data,
-        coverImage: data.coverImageUrl || data.coverImage,
-        publishedAt: data.publishedAt instanceof Timestamp ? data.publishedAt.toDate().toISOString() : data.publishedAt || new Date().toISOString(),
-        updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate().toISOString() : data.updatedAt || new Date().toISOString(),
-      } as Story);
+    const res = await apiClient.get<{ stories: Story[]; hasMore?: boolean } | Story[]>("/stories", {
+      params: { status: "published", limit: limitCount },
     });
 
-    const last = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
+    const storiesList: Story[] = Array.isArray(res) ? res : res?.stories || [];
+    const normalized = storiesList.map((data: any) => ({
+      ...data,
+      id: data.id || data._id,
+      coverImage: data.coverImageUrl || data.coverImage,
+      publishedAt: data.publishedAt || new Date().toISOString(),
+      updatedAt: data.updatedAt || new Date().toISOString(),
+    }));
+
     return {
-      stories,
-      lastDoc: last,
-      hasMore: snapshot.docs.length === limitCount,
+      stories: normalized,
+      lastDoc: null,
+      hasMore: Array.isArray(res) ? res.length === limitCount : Boolean(res?.hasMore),
     };
   } catch (error) {
-    console.warn("[StoryService] Error fetching published stories:", error);
+    console.warn("[StoryService] Error fetching published stories from backend:", error);
+    // Return empty array or local custom stories
+    const localCustom: Story[] =
+      typeof window !== "undefined"
+        ? (() => {
+            try {
+              const raw = localStorage.getItem("inkoma_custom_stories");
+              return raw ? JSON.parse(raw) : [];
+            } catch {
+              return [];
+            }
+          })()
+        : [];
+
     return {
-      stories: [],
+      stories: localCustom.filter((s) => s.status === "published"),
       lastDoc: null,
       hasMore: false,
     };
@@ -290,106 +257,81 @@ export async function getPublishedStories(options: {
  * Fetches public story details by ID
  */
 export async function getStoryById(storyId: string): Promise<Story | null> {
-  if (!isFirebaseConfigured() || !db) {
-    return null;
-  }
-
   try {
-    const storyDoc = await getDoc(doc(db, "stories", storyId));
-    if (!storyDoc.exists()) {
-      return null;
+    const data = await apiClient.get<any>(`/stories/${storyId}`);
+    if (data) {
+      return {
+        ...data,
+        id: data.id || data._id,
+        coverImage: data.coverImageUrl || data.coverImage,
+      } as Story;
     }
-
-    const data = storyDoc.data();
-    return {
-      id: storyDoc.id,
-      ...data,
-      coverImage: data.coverImageUrl || data.coverImage,
-    } as Story;
   } catch (error) {
-    console.error("[StoryService] Error fetching story by ID:", error);
-    return null;
+    console.warn("[StoryService] Backend getStoryById error:", error);
   }
+
+  // Local storage check
+  if (typeof window !== "undefined") {
+    try {
+      const rawCustom = localStorage.getItem("inkoma_custom_stories");
+      if (rawCustom) {
+        const list: Story[] = JSON.parse(rawCustom);
+        const match = list.find((s) => s.id === storyId);
+        if (match) return match;
+      }
+    } catch {}
+  }
+
+  return null;
 }
 
 /**
  * Fetches stories created by a specific author
  */
 export async function getStoriesByAuthor(authorId: string): Promise<Story[]> {
-  const localCustom: Story[] = typeof window !== "undefined"
-    ? (() => {
-        try {
-          const raw = localStorage.getItem("inkoma_custom_stories");
-          return raw ? JSON.parse(raw) : [];
-        } catch {
-          return [];
-        }
-      })()
-    : [];
-
-  if (!isFirebaseConfigured() || !db) {
-    return localCustom.filter((s: Story) => s.authorId === authorId || !s.authorId);
-  }
+  const localCustom: Story[] =
+    typeof window !== "undefined"
+      ? (() => {
+          try {
+            const raw = localStorage.getItem("inkoma_custom_stories");
+            return raw ? JSON.parse(raw) : [];
+          } catch {
+            return [];
+          }
+        })()
+      : [];
 
   try {
-    const storiesRef = collection(db, "stories");
-    const q = query(storiesRef, where("authorId", "==", authorId));
-    const snapshot = await getDocs(q);
-
-    const stories: Story[] = [];
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      stories.push({
-        id: docSnap.id,
-        ...data,
-        coverImage: data.coverImageUrl || data.coverImage,
-        publishedAt:
-          data.publishedAt instanceof Timestamp
-            ? data.publishedAt.toDate().toISOString()
-            : data.publishedAt || new Date().toISOString(),
-        updatedAt:
-          data.updatedAt instanceof Timestamp
-            ? data.updatedAt.toDate().toISOString()
-            : data.updatedAt || new Date().toISOString(),
-      } as Story);
+    const res = await apiClient.get<any[]>("/stories", {
+      params: { authorId },
     });
-
-    for (const ls of localCustom) {
-      if (!stories.some((s) => s.id === ls.id)) {
-        stories.push(ls);
-      }
+    if (Array.isArray(res)) {
+      const fetched: Story[] = res.map((data) => ({
+        ...data,
+        id: data.id || data._id,
+        coverImage: data.coverImageUrl || data.coverImage,
+      }));
+      return fetched;
     }
-
-    return stories;
   } catch (error) {
-    console.warn("[StoryService] Error fetching author stories:", error);
-    return localCustom;
+    console.warn("[StoryService] Error fetching author stories from backend:", error);
   }
+
+  return localCustom.filter((s: Story) => s.authorId === authorId || !s.authorId);
 }
 
 /**
  * Fetches published chapter list for a story
  */
 export async function getStoryChapters(storyId: string): Promise<StoryChapter[]> {
-  if (!isFirebaseConfigured() || !db) {
-    return [];
-  }
-
   try {
-    const chaptersRef = collection(db, "stories", storyId, "chapters");
-    const q = query(chaptersRef, orderBy("number", "asc"));
-    const snapshot = await getDocs(q);
-
-    const chapters: StoryChapter[] = [];
-    snapshot.forEach((snap) => {
-      chapters.push(snap.data() as StoryChapter);
-    });
-
-    return chapters;
+    const res = await apiClient.get<StoryChapter[]>(`/stories/${storyId}/chapters`);
+    if (Array.isArray(res)) return res;
   } catch (error) {
-    console.error("[StoryService] Error fetching chapters:", error);
-    return [];
+    console.warn("[StoryService] Error fetching chapters from backend:", error);
   }
+
+  return [];
 }
 
 /**
@@ -399,22 +341,14 @@ export async function getChapterContent(
   storyId: string,
   chapterNumber: number
 ): Promise<StoryChapter | null> {
-  if (!isFirebaseConfigured() || !db) {
-    return null;
+  try {
+    const res = await apiClient.get<StoryChapter>(`/stories/${storyId}/chapters/${chapterNumber}`);
+    if (res) return res;
+  } catch (error) {
+    console.warn("[StoryService] Error fetching chapter content from backend:", error);
   }
 
-  try {
-    const chaptersRef = collection(db, "stories", storyId, "chapters");
-    const q = query(chaptersRef, where("number", "==", chapterNumber), limit(1));
-    const snapshot = await getDocs(q);
-    if (!snapshot.empty) {
-      return snapshot.docs[0].data() as StoryChapter;
-    }
-    return null;
-  } catch (error) {
-    console.error("[StoryService] Error fetching chapter content:", error);
-    return null;
-  }
+  return null;
 }
 
 /**
@@ -424,24 +358,23 @@ export async function toggleBookmark(
   userId: string,
   storyId: string
 ): Promise<{ isBookmarked: boolean }> {
-  if (!isFirebaseConfigured() || !db) {
-    return { isBookmarked: true };
-  }
-
-  const bookmarkRef = doc(db, "users", userId, "bookmarks", storyId);
-  const snap = await getDoc(bookmarkRef);
-  const storyRef = doc(db, "stories", storyId);
-
-  if (snap.exists()) {
-    await deleteDoc(bookmarkRef);
-    await updateDoc(storyRef, { bookmarksCount: increment(-1) }).catch(() => {});
-    return { isBookmarked: false };
-  } else {
-    await setDoc(bookmarkRef, {
-      storyId,
-      createdAt: serverTimestamp(),
+  try {
+    const res = await apiClient.post<{ isBookmarked: boolean }>(`/stories/${storyId}/bookmark`, {
+      userId,
     });
-    await updateDoc(storyRef, { bookmarksCount: increment(1) }).catch(() => {});
+    return res;
+  } catch {
+    // Local fallback
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("inkoma_bookmarks");
+        const list: string[] = raw ? JSON.parse(raw) : [];
+        const isBookmarked = list.includes(storyId);
+        const next = isBookmarked ? list.filter((id) => id !== storyId) : [...list, storyId];
+        localStorage.setItem("inkoma_bookmarks", JSON.stringify(next));
+        return { isBookmarked: !isBookmarked };
+      } catch {}
+    }
     return { isBookmarked: true };
   }
 }
@@ -453,24 +386,23 @@ export async function toggleLike(
   userId: string,
   storyId: string
 ): Promise<{ isLiked: boolean }> {
-  if (!isFirebaseConfigured() || !db) {
-    return { isLiked: true };
-  }
-
-  const likeRef = doc(db, "users", userId, "likes", storyId);
-  const snap = await getDoc(likeRef);
-  const storyRef = doc(db, "stories", storyId);
-
-  if (snap.exists()) {
-    await deleteDoc(likeRef);
-    await updateDoc(storyRef, { likesCount: increment(-1) }).catch(() => {});
-    return { isLiked: false };
-  } else {
-    await setDoc(likeRef, {
-      storyId,
-      createdAt: serverTimestamp(),
+  try {
+    const res = await apiClient.post<{ isLiked: boolean }>(`/stories/${storyId}/like`, {
+      userId,
     });
-    await updateDoc(storyRef, { likesCount: increment(1) }).catch(() => {});
+    return res;
+  } catch {
+    // Local fallback
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("inkoma_likes");
+        const list: string[] = raw ? JSON.parse(raw) : [];
+        const isLiked = list.includes(storyId);
+        const next = isLiked ? list.filter((id) => id !== storyId) : [...list, storyId];
+        localStorage.setItem("inkoma_likes", JSON.stringify(next));
+        return { isLiked: !isLiked };
+      } catch {}
+    }
     return { isLiked: true };
   }
 }

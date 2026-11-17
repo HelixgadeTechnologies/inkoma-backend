@@ -1,28 +1,17 @@
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
-} from "firebase/storage";
-import { storage, isFirebaseConfigured } from "@/src/firebase/config";
+import { apiClient } from "@/src/services/api";
 
 const MAX_COVER_SIZE = 5 * 1024 * 1024; // 5 MB
 const MAX_AVATAR_SIZE = 2 * 1024 * 1024; // 2 MB
 
 /**
- * Upload a story cover image to Firebase Cloud Storage
- * Target path: /covers/{authorId}/{storyId}/{fileName}
+ * Upload a story cover image to the Render backend (MongoDB/Cloud Storage)
+ * Fallback to local object URL if backend is unreachable during offline testing
  */
 export async function uploadCoverImage(
   file: File | Blob,
   authorId: string,
   storyId: string
 ): Promise<string> {
-  if (!isFirebaseConfigured() || !storage) {
-    console.info("[StorageService] Firebase Storage offline; generating local preview URL.");
-    return URL.createObjectURL(file);
-  }
-
   // Size limit validation
   if (file.size > MAX_COVER_SIZE) {
     throw new Error("Cover image exceeds maximum allowed size of 5MB.");
@@ -33,36 +22,36 @@ export async function uploadCoverImage(
     throw new Error("Invalid file type. Only image files (JPEG, PNG, WebP) are allowed.");
   }
 
-  const cleanFileName = "name" in file ? file.name.replace(/[^a-zA-Z0-9.-]/g, "_") : `cover-${Date.now()}.jpg`;
-  const storagePath = `covers/${authorId}/${storyId}/${cleanFileName}`;
-  const storageRef = ref(storage, storagePath);
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("authorId", authorId);
+  formData.append("storyId", storyId);
+  formData.append("type", "cover");
 
-  const snapshot = await uploadBytes(storageRef, file, {
-    contentType: file.type || "image/jpeg",
-    customMetadata: {
-      authorId,
-      storyId,
-      uploadedAt: new Date().toISOString(),
-    },
-  });
-
-  const downloadUrl = await getDownloadURL(snapshot.ref);
-  return downloadUrl;
+  try {
+    const res = await apiClient.upload<{ url?: string; fileUrl?: string; secure_url?: string }>(
+      "/upload",
+      formData
+    );
+    const uploadedUrl = res.url || res.fileUrl || res.secure_url;
+    if (uploadedUrl) return uploadedUrl;
+    throw new Error("Upload response did not return a valid URL");
+  } catch (error) {
+    console.warn("[StorageService] Backend upload failed, using local object URL fallback:", error);
+    if (typeof window !== "undefined") {
+      return URL.createObjectURL(file);
+    }
+    throw error;
+  }
 }
 
 /**
  * Upload an author profile avatar image
- * Target path: /avatars/{authorId}/{fileName}
  */
 export async function uploadAvatarImage(
   file: File | Blob,
   authorId: string
 ): Promise<string> {
-  if (!isFirebaseConfigured() || !storage) {
-    console.info("[StorageService] Firebase Storage offline; generating local preview URL.");
-    return URL.createObjectURL(file);
-  }
-
   if (file.size > MAX_AVATAR_SIZE) {
     throw new Error("Avatar image exceeds maximum allowed size of 2MB.");
   }
@@ -71,33 +60,36 @@ export async function uploadAvatarImage(
     throw new Error("Invalid file type. Only image files (JPEG, PNG, WebP) are allowed.");
   }
 
-  const cleanFileName = "name" in file ? file.name.replace(/[^a-zA-Z0-9.-]/g, "_") : `avatar-${Date.now()}.jpg`;
-  const storagePath = `avatars/${authorId}/${cleanFileName}`;
-  const storageRef = ref(storage, storagePath);
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("authorId", authorId);
+  formData.append("type", "avatar");
 
-  const snapshot = await uploadBytes(storageRef, file, {
-    contentType: file.type || "image/jpeg",
-    customMetadata: {
-      authorId,
-      uploadedAt: new Date().toISOString(),
-    },
-  });
-
-  const downloadUrl = await getDownloadURL(snapshot.ref);
-  return downloadUrl;
+  try {
+    const res = await apiClient.upload<{ url?: string; fileUrl?: string; secure_url?: string }>(
+      "/upload",
+      formData
+    );
+    const uploadedUrl = res.url || res.fileUrl || res.secure_url;
+    if (uploadedUrl) return uploadedUrl;
+    throw new Error("Upload response did not return a valid URL");
+  } catch (error) {
+    console.warn("[StorageService] Backend avatar upload failed, using local fallback:", error);
+    if (typeof window !== "undefined") {
+      return URL.createObjectURL(file);
+    }
+    throw error;
+  }
 }
 
 /**
- * Delete a file from Firebase Cloud Storage by full URL or path
+ * Delete an uploaded file by path or URL
  */
 export async function deleteStorageFile(storagePathOrUrl: string): Promise<void> {
-  if (!isFirebaseConfigured() || !storage) {
-    return;
-  }
-
   try {
-    const fileRef = ref(storage, storagePathOrUrl);
-    await deleteObject(fileRef);
+    await apiClient.delete("/upload", {
+      params: { url: storagePathOrUrl },
+    });
   } catch (error) {
     console.warn("[StorageService] File deletion warning:", error);
   }
