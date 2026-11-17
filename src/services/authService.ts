@@ -103,31 +103,28 @@ export async function signUpUser(
   role: "author" | "reader" = "author"
 ): Promise<{ user: AuthUser | null; profile: FirestoreUserData }> {
   try {
-    const res = await apiClient.post<{
-      token?: string;
-      accessToken?: string;
-      user?: any;
-      profile?: any;
-    }>("/auth/register", {
+    const res = await apiClient.post<any>("/auth/register", {
+      name: displayName || "Storyteller",
+      displayName: displayName || "Storyteller",
       email,
       password,
-      displayName,
       role,
     });
 
-    const token = res.token || res.accessToken || "";
-    const rawUser = res.user || res.profile || {};
+    const dataObj = res.data || res;
+    const token = dataObj.token || res.token || res.accessToken || "";
+    const rawUser = dataObj.user || res.user || res.profile || {};
     const uid = rawUser.id || rawUser._id || rawUser.uid || `user-${Date.now()}`;
 
     const authUser: AuthUser = {
       uid,
       id: uid,
-      displayName: displayName || rawUser.displayName || "Storyteller",
+      displayName: rawUser.name || displayName || rawUser.displayName || "Storyteller",
       email,
       photoURL: rawUser.avatarUrl || rawUser.photoURL || "",
       emailVerified: Boolean(rawUser.emailVerified),
       metadata: {
-        creationTime: new Date().toISOString(),
+        creationTime: rawUser.createdAt || new Date().toISOString(),
       },
     };
 
@@ -137,10 +134,10 @@ export async function signUpUser(
       email: authUser.email,
       photoURL: authUser.photoURL,
       bio: rawUser.bio || "",
-      role,
+      role: rawUser.role || role,
       emailVerified: authUser.emailVerified,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: rawUser.createdAt || new Date().toISOString(),
+      updatedAt: rawUser.updatedAt || new Date().toISOString(),
     };
 
     persistSession(authUser, profile, token);
@@ -181,21 +178,17 @@ export async function loginUser(
   password: string
 ): Promise<{ user: AuthUser | null; profile: FirestoreUserData | null }> {
   try {
-    const res = await apiClient.post<{
-      token?: string;
-      accessToken?: string;
-      user?: any;
-      profile?: any;
-    }>("/auth/login", { email, password });
+    const res = await apiClient.post<any>("/auth/login", { email, password });
 
-    const token = res.token || res.accessToken || "";
-    const rawUser = res.user || res.profile || {};
+    const dataObj = res.data || res;
+    const token = dataObj.token || res.token || res.accessToken || "";
+    const rawUser = dataObj.user || res.user || res.profile || {};
     const uid = rawUser.id || rawUser._id || rawUser.uid || `user-${Date.now()}`;
 
     const authUser: AuthUser = {
       uid,
       id: uid,
-      displayName: rawUser.displayName || rawUser.name || "Storyteller",
+      displayName: rawUser.name || rawUser.displayName || "Storyteller",
       email: rawUser.email || email,
       photoURL: rawUser.avatarUrl || rawUser.photoURL || "",
       emailVerified: rawUser.emailVerified ?? true,

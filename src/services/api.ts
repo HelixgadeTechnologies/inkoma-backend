@@ -3,7 +3,7 @@
  */
 
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://inkoma-backend.onrender.com/api";
+  process.env.NEXT_PUBLIC_API_URL || "https://inkoma-brain.onrender.com/api/v1";
 
 const TOKEN_KEY = "inkoma_auth_token";
 
