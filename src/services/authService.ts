@@ -241,6 +241,66 @@ export async function loginWithGoogle(): Promise<{
 }
 
 /**
+ * Request a 6-digit OTP for password recovery
+ */
+export async function sendPasswordResetOtp(email: string): Promise<{ success: boolean; message: string }> {
+  const normalizedEmail = email.trim().toLowerCase();
+  const res = await fetch("/api/auth/forgot-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: normalizedEmail }),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Failed to dispatch password recovery OTP.");
+  }
+  return { success: true, message: data.message };
+}
+
+/**
+ * Verify a 6-digit OTP for password recovery
+ */
+export async function verifyPasswordResetOtp(email: string, otp: string): Promise<{ success: boolean; valid: boolean; message: string }> {
+  const res = await fetch("/api/auth/verify-otp", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: email.trim().toLowerCase(), otp: otp.trim() }),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Invalid or expired verification code.");
+  }
+  return { success: true, valid: Boolean(data.valid), message: data.message };
+}
+
+/**
+ * Reset password using verified OTP and new password
+ */
+export async function resetPasswordWithOtp(
+  email: string,
+  otp: string,
+  newPassword: string
+): Promise<{ success: boolean; message: string }> {
+  const res = await fetch("/api/auth/reset-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: email.trim().toLowerCase(),
+      otp: otp.trim(),
+      newPassword,
+    }),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Failed to reset password.");
+  }
+  return { success: true, message: data.message };
+}
+
+/**
  * Log out current user
  */
 export async function logoutUser(): Promise<void> {
