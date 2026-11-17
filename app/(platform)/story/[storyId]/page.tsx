@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useStory } from "@/hooks/useStory";
 import { useLibrary } from "@/hooks/useLibrary";
-import { MOCK_CURRENT_USER } from "@/config/mock-data";
 import { SupportAuthorDialog } from "@/components/features/story-details/support-author-dialog";
 import { StoryCommentsSection } from "@/components/features/story-details/story-comments-section";
 import { RecommendedCategoriesSection } from "@/components/features/story-details/recommended-categories";
@@ -192,7 +191,10 @@ export default function StoryDetailsPage() {
             {/* Author Profile Row */}
             <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-stone-50 rounded-2xl border border-stone-200">
               <div className="flex items-center gap-3">
-                <Link href={`/profile/kwame_asante`} className="relative w-12 h-12 rounded-full overflow-hidden border border-[#D4AF37]/30">
+                <Link
+                  href={`/profile/${currentStory.authorId || currentStory.authorName?.toLowerCase().replace(/\s+/g, "_") || "storyteller"}`}
+                  className="relative w-12 h-12 rounded-full overflow-hidden border border-[#D4AF37]/30"
+                >
                   <Image
                     src={
                       currentStory.authorAvatar ||
@@ -206,7 +208,7 @@ export default function StoryDetailsPage() {
                 <div>
                   <div className="flex items-center gap-2">
                     <Link
-                      href={`/profile/kwame_asante`}
+                      href={`/profile/${currentStory.authorId || currentStory.authorName?.toLowerCase().replace(/\s+/g, "_") || "storyteller"}`}
                       className="text-sm font-bold text-stone-900 hover:text-[#D4AF37] font-serif"
                     >
                       {currentStory.authorPenName || currentStory.authorName}

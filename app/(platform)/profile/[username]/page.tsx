@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { UserProfile, Story, LoreBadge } from "@/types";
-import { MOCK_CURRENT_USER } from "@/config/mock-data";
 import { SupportAuthorDialog } from "@/components/features/story-details/support-author-dialog";
 import {
   Users,
@@ -822,40 +821,14 @@ export default function UserProfilePage() {
                 </div>
               )
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 bg-stone-50 dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 flex gap-3 items-center">
-                  <div className="w-12 h-16 bg-stone-800 rounded-lg shrink-0 relative overflow-hidden">
-                    <SafeImage
-                      src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=200&auto=format&fit=crop"
-                      alt="Reading book"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-stone-900 dark:text-white">
-                      Legends of the Ashanti Empire
-                    </h4>
-                    <p className="text-xs text-stone-500 dark:text-stone-400">By Nana Kwame • 12 Chapters</p>
-                    <span className="text-[10px] text-[#D4AF37] font-semibold mt-1 block">85% Completed</span>
-                  </div>
-                </div>
-
-                <div className="p-4 bg-stone-50 dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 flex gap-3 items-center">
-                  <div className="w-12 h-16 bg-stone-800 rounded-lg shrink-0 relative overflow-hidden">
-                    <SafeImage
-                      src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=200&auto=format&fit=crop"
-                      alt="Reading book 2"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-stone-900 dark:text-white">Star Dancers of Dogon</h4>
-                    <p className="text-xs text-stone-500 dark:text-stone-400">By Oumar Sangare • 8 Chapters</p>
-                    <span className="text-[10px] text-[#D4AF37] font-semibold mt-1 block">40% Completed</span>
-                  </div>
-                </div>
+              <div className="text-center py-12 px-4 bg-stone-50 dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 space-y-2">
+                <BookOpen className="w-8 h-8 mx-auto text-stone-400" />
+                <h4 className="text-sm font-bold text-stone-900 dark:text-white">
+                  No Public Reading History
+                </h4>
+                <p className="text-xs text-stone-500 dark:text-stone-400">
+                  This storyteller hasn&apos;t shared their reading history.
+                </p>
               </div>
             )}
           </div>

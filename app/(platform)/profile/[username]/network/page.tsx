@@ -35,10 +35,6 @@ interface NetworkUser {
   isFollowing?: boolean;
 }
 
-const MOCK_FOLLOWERS: NetworkUser[] = [];
-
-const MOCK_FOLLOWING: NetworkUser[] = [];
-
 function NetworkLoadingSkeleton() {
   return (
     <div className="space-y-8 pb-20 max-w-5xl mx-auto animate-pulse">
@@ -69,8 +65,8 @@ function UserNetworkContent() {
   const initialTab = tabParam === "following" ? "following" : "followers";
   const [activeTab, setActiveTab] = useState<"followers" | "following">(initialTab);
   const [searchQuery, setSearchQuery] = useState("");
-  const [followersList, setFollowersList] = useState<NetworkUser[]>(MOCK_FOLLOWERS);
-  const [followingList, setFollowingList] = useState<NetworkUser[]>(MOCK_FOLLOWING);
+  const [followersList, setFollowersList] = useState<NetworkUser[]>([]);
+  const [followingList, setFollowingList] = useState<NetworkUser[]>([]);
 
   // Sync activeTab when query param changes
   useEffect(() => {

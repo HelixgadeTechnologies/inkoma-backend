@@ -14,7 +14,6 @@ import {
   sendVerificationEmail,
   checkEmailVerification,
 } from "@/src/services/authService";
-import { MOCK_CURRENT_USER } from "@/config/mock-data";
 
 export interface AuthContextType {
   user: AuthUser | null;
@@ -64,12 +63,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 const parsed = JSON.parse(storedProfile);
                 setProfile(parsed);
                 setUser({
-                  uid: parsed.uid || MOCK_CURRENT_USER.id,
-                  id: parsed.uid || MOCK_CURRENT_USER.id,
-                  email: parsed.email || "kwame@inkoma.app",
-                  displayName: parsed.displayName || MOCK_CURRENT_USER.displayName,
-                  photoURL: parsed.photoURL || MOCK_CURRENT_USER.avatarUrl,
-                  emailVerified: true,
+                  uid: parsed.uid || parsed.id || "",
+                  id: parsed.uid || parsed.id || "",
+                  email: parsed.email || "",
+                  displayName: parsed.displayName || "Storyteller",
+                  photoURL: parsed.photoURL || "",
+                  emailVerified: Boolean(parsed.emailVerified),
                 });
               } catch {}
             }

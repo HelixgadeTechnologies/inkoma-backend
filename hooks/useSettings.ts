@@ -2,8 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { UserProfile, CreatorSupportDetails } from "@/types";
-import { MOCK_CURRENT_USER } from "@/config/mock-data";
 import { useAuth } from "@/hooks/useAuth";
+
+const DEFAULT_EMPTY_PROFILE: UserProfile = {
+  id: "",
+  username: "",
+  displayName: "",
+  email: "",
+  avatarUrl: "",
+  bio: "",
+  country: "",
+  traditionSpecialty: "",
+  role: "reader",
+  followersCount: 0,
+  followingCount: 0,
+  badges: [],
+  createdAt: new Date().toISOString(),
+};
 
 export interface NotificationSettings {
   emailNewChapters?: boolean;
@@ -25,7 +40,7 @@ export interface PrivacySettings {
 
 export function useSettings() {
   const { profile: authProfile, updateProfile: updateAuthProfile } = useAuth();
-  const [profile, setProfile] = useState<UserProfile>(authProfile || MOCK_CURRENT_USER);
+  const [profile, setProfile] = useState<UserProfile>(authProfile || DEFAULT_EMPTY_PROFILE);
   const [notifications, setNotifications] = useState<NotificationSettings>({
     emailNewChapters: true,
     emailComments: true,

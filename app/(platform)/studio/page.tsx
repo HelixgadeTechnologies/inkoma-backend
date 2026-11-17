@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Story } from "@/types";
-import { MOCK_STORIES, MOCK_CURRENT_USER } from "@/config/mock-data";
 import {
   Plus,
   Eye,
@@ -86,9 +85,9 @@ const WRITER_TOOLS = [
 export default function StudioPage() {
   const [overviewPeriod, setOverviewPeriod] = useState("This Month");
   const [showPeriodMenu, setShowPeriodMenu] = useState(false);
-  const { user: authUser } = useAuth();
+  const { user: authUser, profile } = useAuth();
 
-  const [stories, setStories] = useState<Story[]>(MOCK_STORIES.slice(0, 3));
+  const [stories, setStories] = useState<Story[]>([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -101,7 +100,7 @@ export default function StudioPage() {
             return;
           }
         } catch (err) {
-          console.warn("[StudioPage] Firestore load error:", err);
+          console.warn("[StudioPage] Load error:", err);
         }
       }
 
@@ -110,14 +109,14 @@ export default function StudioPage() {
         if (stored && isMounted) {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            setStories([...parsed, ...MOCK_STORIES.slice(0, 3)]);
+            setStories(parsed);
             return;
           }
         }
       } catch {}
 
       if (isMounted) {
-        setStories(MOCK_STORIES.slice(0, 3));
+        setStories([]);
       }
     }
 
@@ -127,12 +126,18 @@ export default function StudioPage() {
     };
   }, [authUser?.id]);
 
-  const user = MOCK_CURRENT_USER;
-
-  const statsStories = user.writingStats?.storiesPublished ?? 3;
-  const statsChapters = user.writingStats?.totalChaptersPublished ?? 24;
-  const statsWords = 18700;
-  const statsReaders = user.followersCount ?? 152;
+  const statsStories = stories.length;
+  const statsChapters = stories.reduce((acc, s) => acc + (s.totalChapters || s.chapters?.length || 0), 0);
+  const statsWords = stories.reduce(
+    (acc, s) =>
+      acc +
+      (s.chapters?.reduce(
+        (w, c) => w + (c.content ? c.content.trim().split(/\s+/).filter(Boolean).length : 0),
+        0
+      ) || 0),
+    0
+  );
+  const statsReaders = profile?.followersCount ?? 0;
 
   return (
     <AuthGuard featureName="Creator Studio">

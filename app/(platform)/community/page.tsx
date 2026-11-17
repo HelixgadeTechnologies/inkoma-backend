@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DiscussionCard } from "@/components/features/community/discussion-card";
 import { CommunityDiscussion } from "@/types";
-
-const MOCK_DISCUSSIONS: CommunityDiscussion[] = [];
+import { useAuth } from "@/hooks/useAuth";
 
 export default function CommunityPage() {
-  const [discussions, setDiscussions] = React.useState<CommunityDiscussion[]>(MOCK_DISCUSSIONS);
+  const { user, profile } = useAuth();
+  const [discussions, setDiscussions] = React.useState<CommunityDiscussion[]>([]);
   const [newTitle, setNewTitle] = React.useState("");
   const [newContent, setNewContent] = React.useState("");
   const [isPosting, setIsPosting] = React.useState(false);
@@ -23,9 +23,10 @@ export default function CommunityPage() {
       id: `disc-${Date.now()}`,
       title: newTitle,
       content: newContent,
-      authorId: "user-kwame-01",
-      authorName: "Kwame Asante",
-      traditionCategory: "Pan-African",
+      authorId: user?.id || "user-current",
+      authorName: profile?.displayName || user?.displayName || "Storyteller",
+      authorAvatar: profile?.avatarUrl || user?.photoURL || "",
+      traditionCategory: profile?.traditionSpecialty || "Pan-African",
       tags: ["LoreCommunity", "Discussion"],
       repliesCount: 0,
       upvotesCount: 1,

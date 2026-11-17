@@ -42,10 +42,10 @@ export function SupportAuthorDialog({
   const avatar = story?.authorAvatar || authorProfile?.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop";
   const bio = story?.authorBio || authorProfile?.bio || "Traditional African storyteller preserving oral mythology and branching folklore manuscripts.";
   
-  const bankName = authorProfile?.supportDetails?.bankName || "Access Bank Plc";
-  const accountName = authorProfile?.supportDetails?.accountName || (authorProfile?.displayName || "Kwame Kofi Asante");
-  const accountNumber = authorProfile?.supportDetails?.accountNumber || "0123456789";
-  const paystackLink = authorProfile?.supportDetails?.paystackLink || "https://paystack.com/pay/kwame-asante";
+  const bankName = authorProfile?.supportDetails?.bankName || "Bank Transfer";
+  const accountName = authorProfile?.supportDetails?.accountName || authorProfile?.displayName || penName;
+  const accountNumber = authorProfile?.supportDetails?.accountNumber || "";
+  const paystackLink = authorProfile?.supportDetails?.paystackLink || "";
 
   const handleCopy = (text: string, fieldName: string) => {
     navigator.clipboard.writeText(text);

@@ -560,7 +560,7 @@ export default function BrowsePage() {
                     </Link>
 
                     <Link
-                      href={`/profile/kwame_asante`}
+                      href={`/profile/${story.authorId || story.authorName?.toLowerCase().replace(/\s+/g, "_") || "storyteller"}`}
                       className="text-xs text-stone-500 hover:text-stone-800 transition-colors block line-clamp-1"
                     >
                       by {story.authorPenName || story.authorName}

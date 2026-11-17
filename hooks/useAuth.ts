@@ -2,7 +2,6 @@
 
 import { useAuthContext } from "@/src/context/AuthContext";
 import { UserProfile } from "@/types";
-import { MOCK_CURRENT_USER } from "@/config/mock-data";
 
 export function useAuth() {
   try {
@@ -70,11 +69,10 @@ export function useAuth() {
       isAuthenticated: context.isAuthenticated,
       emailVerified: context.emailVerified,
       signIn: async (email?: string, pass?: string) => {
-        if (email && pass) {
-          return await context.loginWithEmail(email, pass);
-        } else {
-          return await context.loginWithEmail("kwame@inkoma.app", "password123");
+        if (!email || !pass) {
+          throw new Error("Email and password are required.");
         }
+        return await context.loginWithEmail(email, pass);
       },
       signUp: context.signupWithEmail,
       signInWithGoogle: context.loginWithGoogleProvider,
@@ -86,18 +84,18 @@ export function useAuth() {
   } catch {
     // Fallback if rendered outside of AuthProvider
     return {
-      user: { id: MOCK_CURRENT_USER.id, email: "kwame@inkoma.app", emailVerified: true },
+      user: null,
       firebaseUser: null,
-      profile: MOCK_CURRENT_USER,
+      profile: null,
       loading: false,
-      isAuthenticated: true,
-      emailVerified: true,
+      isAuthenticated: false,
+      emailVerified: false,
       signIn: async () => {},
       signUp: async () => {},
       signInWithGoogle: async () => {},
       signOut: async () => {},
       sendVerification: async () => {},
-      checkVerification: async () => true,
+      checkVerification: async () => false,
       updateProfile: async () => {},
     };
   }

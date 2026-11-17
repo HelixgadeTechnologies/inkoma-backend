@@ -1,6 +1,5 @@
 import { apiClient, setAuthToken, clearAuthToken, getAuthToken } from "@/src/services/api";
 import { UserProfile } from "@/types";
-import { MOCK_CURRENT_USER } from "@/config/mock-data";
 
 export interface AuthUser {
   uid: string;
@@ -143,30 +142,8 @@ export async function signUpUser(
     persistSession(authUser, profile, token);
     return { user: authUser, profile };
   } catch (error) {
-    console.warn("[AuthService] Backend sign-up failed or offline; using local mock mode:", error);
-    const mockUid = "user-" + Date.now();
-    const fallbackUser: AuthUser = {
-      uid: mockUid,
-      id: mockUid,
-      displayName: displayName || "Kwame Asante",
-      email,
-      photoURL: MOCK_CURRENT_USER.avatarUrl,
-      emailVerified: true,
-      metadata: { creationTime: new Date().toISOString() },
-    };
-    const fallbackProfile: FirestoreUserData = {
-      uid: mockUid,
-      displayName: fallbackUser.displayName,
-      email,
-      photoURL: fallbackUser.photoURL,
-      bio: MOCK_CURRENT_USER.bio,
-      role,
-      emailVerified: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    persistSession(fallbackUser, fallbackProfile);
-    return { user: fallbackUser, profile: fallbackProfile };
+    console.error("[AuthService] Sign-up failed:", error);
+    throw error;
   }
 }
 
@@ -214,27 +191,8 @@ export async function loginUser(
     persistSession(authUser, profile, token);
     return { user: authUser, profile };
   } catch (error) {
-    console.warn("[AuthService] Backend login failed; falling back to local credentials:", error);
-    const fallbackUser: AuthUser = {
-      uid: MOCK_CURRENT_USER.id,
-      id: MOCK_CURRENT_USER.id,
-      displayName: MOCK_CURRENT_USER.displayName,
-      email,
-      photoURL: MOCK_CURRENT_USER.avatarUrl,
-      emailVerified: true,
-      metadata: { creationTime: new Date().toISOString() },
-    };
-    const fallbackProfile: FirestoreUserData = {
-      uid: MOCK_CURRENT_USER.id,
-      displayName: MOCK_CURRENT_USER.displayName,
-      email,
-      photoURL: MOCK_CURRENT_USER.avatarUrl,
-      bio: MOCK_CURRENT_USER.bio,
-      role: "author",
-      emailVerified: true,
-    };
-    persistSession(fallbackUser, fallbackProfile);
-    return { user: fallbackUser, profile: fallbackProfile };
+    console.error("[AuthService] Login failed:", error);
+    throw error;
   }
 }
 
@@ -276,26 +234,9 @@ export async function loginWithGoogle(): Promise<{
 
     persistSession(authUser, profile, token);
     return { user: authUser, profile };
-  } catch {
-    const fallbackUser: AuthUser = {
-      uid: MOCK_CURRENT_USER.id,
-      id: MOCK_CURRENT_USER.id,
-      displayName: MOCK_CURRENT_USER.displayName,
-      email: "kwame@inkoma.app",
-      photoURL: MOCK_CURRENT_USER.avatarUrl,
-      emailVerified: true,
-    };
-    const fallbackProfile: FirestoreUserData = {
-      uid: MOCK_CURRENT_USER.id,
-      displayName: MOCK_CURRENT_USER.displayName,
-      email: "kwame@inkoma.app",
-      photoURL: MOCK_CURRENT_USER.avatarUrl,
-      bio: MOCK_CURRENT_USER.bio,
-      role: "author",
-      emailVerified: true,
-    };
-    persistSession(fallbackUser, fallbackProfile);
-    return { user: fallbackUser, profile: fallbackProfile };
+  } catch (error) {
+    console.error("[AuthService] Google login failed:", error);
+    throw error;
   }
 }
 
@@ -339,14 +280,7 @@ export async function getUserProfile(uid: string): Promise<FirestoreUserData | n
     }
   }
 
-  return {
-    uid,
-    displayName: MOCK_CURRENT_USER.displayName,
-    email: "kwame@inkoma.app",
-    photoURL: MOCK_CURRENT_USER.avatarUrl,
-    bio: MOCK_CURRENT_USER.bio,
-    role: "author",
-  };
+  return null;
 }
 
 /**

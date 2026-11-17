@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useStory, useStoryStore } from "@/hooks/useStory";
 import { useLibrary } from "@/hooks/useLibrary";
+import { useAuth } from "@/hooks/useAuth";
 import { StoryChapter } from "@/types";
 import {
   ArrowLeft,
@@ -31,6 +32,25 @@ import { TypographyCustomizer } from "@/components/features/reader/typography-cu
 import { ChapterNavigator } from "@/components/features/reader/chapter-navigator";
 import { AuthGuard } from "@/components/shared/auth-guard";
 
+interface CommentReply {
+  id: string;
+  author: string;
+  avatar: string;
+  text: string;
+  likes: number;
+  createdAt: string;
+}
+
+interface CommentItem {
+  id: string;
+  author: string;
+  avatar: string;
+  text: string;
+  likes: number;
+  createdAt: string;
+  replies?: CommentReply[];
+}
+
 export default function ChapterReaderPage() {
   const params = useParams();
   const router = useRouter();
@@ -46,35 +66,18 @@ export default function ChapterReaderPage() {
   // Focus Read Mode State
   const [isFocusReadMode, setIsFocusReadMode] = useState(false);
 
+  const { user, profile } = useAuth();
+
   // Chapter Engagement State
   const [chapterLiked, setChapterLiked] = useState(false);
-  const [chapterLikesCount, setChapterLikesCount] = useState(42);
+  const [chapterLikesCount, setChapterLikesCount] = useState(0);
   const [showComments, setShowComments] = useState(false);
   const [showShareToast, setShowShareToast] = useState(false);
   const [selectedText, setSelectedText] = useState("");
   const [quoteSavedToast, setQuoteSavedToast] = useState(false);
 
   // Comments state
-  const [comments, setComments] = useState([
-    {
-      id: "comm-1",
-      author: "Elder Moussa",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop",
-      text: "The moral weight of Anansi's dilemma speaks so deeply to Yoruba proverb about the broken calabash.",
-      likes: 12,
-      createdAt: "3 days ago",
-      replies: [
-        {
-          id: "comm-1-1",
-          author: "Kwame Asante",
-          avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
-          text: "Indeed! In Akan storytelling, this is where the children are invited to reflect on humility.",
-          likes: 5,
-          createdAt: "2 days ago",
-        },
-      ],
-    },
-  ]);
+  const [comments, setComments] = useState<CommentItem[]>([]);
   const [newComment, setNewComment] = useState("");
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
@@ -193,8 +196,8 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
 
     const commentObj = {
       id: `comm-${Date.now()}`,
-      author: "Kwame Asante",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
+      author: profile?.displayName || user?.displayName || "Storyteller",
+      avatar: profile?.avatarUrl || user?.photoURL || "",
       text: newComment,
       likes: 0,
       createdAt: "Just now",
@@ -217,8 +220,8 @@ Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling 
               ...(c.replies || []),
               {
                 id: `reply-${Date.now()}`,
-                author: "Kwame Asante",
-                avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
+                author: profile?.displayName || user?.displayName || "Storyteller",
+                avatar: profile?.avatarUrl || user?.photoURL || "",
                 text: replyText,
                 likes: 0,
                 createdAt: "Just now",
