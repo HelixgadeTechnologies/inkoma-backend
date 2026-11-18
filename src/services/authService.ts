@@ -101,13 +101,36 @@ export async function signUpUser(
   displayName: string,
   role: "author" | "reader" = "author"
 ): Promise<{ user: AuthUser | null; profile: FirestoreUserData }> {
+  const cleanName = (displayName || "").trim() || "Storyteller";
+  const cleanEmail = (email || "").trim().toLowerCase();
+
+  if (cleanName.length < 2) {
+    throw new Error("Name must be at least 2 characters long.");
+  }
+
+  if (!cleanEmail || !cleanEmail.includes("@")) {
+    throw new Error("Please provide a valid email address.");
+  }
+
+  if (password.length < 8) {
+    throw new Error("Password must be at least 8 characters long.");
+  }
+
+  if (
+    !/[A-Z]/.test(password) ||
+    !/[a-z]/.test(password) ||
+    !/[0-9]/.test(password)
+  ) {
+    throw new Error(
+      "Password must contain at least one uppercase letter, one lowercase letter, and one number."
+    );
+  }
+
   try {
     const res = await apiClient.post<any>("/auth/register", {
-      name: displayName || "Storyteller",
-      displayName: displayName || "Storyteller",
-      email,
+      name: cleanName,
+      email: cleanEmail,
       password,
-      role,
     });
 
     const dataObj = res.data || res;

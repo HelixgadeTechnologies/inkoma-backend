@@ -8,7 +8,7 @@ import { SocialAuth } from "@/components/features/auth/social-auth";
 import { PasswordInput } from "@/components/features/auth/password-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import { ArrowRight, Loader2, AlertCircle, Check } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function SignupPage() {
@@ -41,14 +41,30 @@ function SignupForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setErrorMessage("");
 
+    const displayName = penName.trim() || `${firstName.trim()} ${lastName.trim()}`.trim() || "Storyteller";
+    if (displayName.length < 2) {
+      setErrorMessage("Please enter a valid name (at least 2 characters).");
+      return;
+    }
+
+    if (password.length < 8) {
+      setErrorMessage("Password must be at least 8 characters long.");
+      return;
+    }
+
+    if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+      setErrorMessage("Password must contain at least one uppercase letter, one lowercase letter, and one number.");
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      const displayName = penName.trim() || `${firstName} ${lastName}`.trim() || "Storyteller";
-      await signUp(email, password, displayName, "author");
+      await signUp(email.trim().toLowerCase(), password, displayName, "author");
       router.push(
-        `/verify-email?email=${encodeURIComponent(email)}&redirect=${encodeURIComponent(redirectTarget)}`
+        `/verify-email?email=${encodeURIComponent(email.trim().toLowerCase())}&redirect=${encodeURIComponent(redirectTarget)}`
       );
     } catch (err: unknown) {
       console.error("[SignupPage] Registration error:", err);
@@ -59,6 +75,11 @@ function SignupForm() {
       setIsLoading(false);
     }
   };
+
+  const hasMinLength = password.length >= 8;
+  const hasUpper = /[A-Z]/.test(password);
+  const hasLower = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
 
   return (
     <AuthCard
@@ -142,6 +163,39 @@ function SignupForm() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+
+          {password.length > 0 && (
+            <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200/80 space-y-1.5 text-[11px] mt-2">
+              <div className="flex items-center gap-1.5">
+                <Check
+                  className={`w-3.5 h-3.5 ${hasMinLength ? "text-emerald-600" : "text-stone-400"}`}
+                />
+                <span className={hasMinLength ? "text-emerald-700 font-medium" : "text-stone-500"}>
+                  At least 8 characters
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Check
+                  className={`w-3.5 h-3.5 ${hasUpper && hasLower ? "text-emerald-600" : "text-stone-400"}`}
+                />
+                <span
+                  className={
+                    hasUpper && hasLower ? "text-emerald-700 font-medium" : "text-stone-500"
+                  }
+                >
+                  Uppercase and lowercase letters
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Check
+                  className={`w-3.5 h-3.5 ${hasNumber ? "text-emerald-600" : "text-stone-400"}`}
+                />
+                <span className={hasNumber ? "text-emerald-700 font-medium" : "text-stone-500"}>
+                  At least one number (0-9)
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="pt-2 text-[11px] text-stone-700 leading-tight">

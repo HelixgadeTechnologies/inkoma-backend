@@ -88,10 +88,20 @@ async function request<T = unknown>(
     const data = isJson ? await response.json() : await response.text();
 
     if (!response.ok) {
-      const message =
+      let message =
         (typeof data === "object" && data !== null && (data as any).message) ||
         (typeof data === "string" && data) ||
         `Request failed with status ${response.status}`;
+
+      if (typeof data === "object" && data !== null) {
+        const errorData = data as any;
+        if (Array.isArray(errorData.errors) && errorData.errors.length > 0) {
+          message = errorData.errors.join(". ");
+        } else if (typeof errorData.error === "string") {
+          message = errorData.error;
+        }
+      }
+
       throw new ApiError(message, response.status, data);
     }
 
