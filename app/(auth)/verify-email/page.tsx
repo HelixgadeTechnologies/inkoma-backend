@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AuthCard } from "@/components/features/auth/auth-card";
+import { OtpInput } from "@/components/features/auth/otp-input";
 import { Button } from "@/components/ui/button";
 import {
   Mail,
@@ -13,22 +14,31 @@ import {
   Sparkles,
   AlertCircle,
   LogOut,
+  KeyRound,
+  Loader2,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { verifyEmailWithOtp, resendVerificationOtp } from "@/src/services/authService";
 
 function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, emailVerified, checkVerification, sendVerification, signOut } = useAuth();
+  const { user, emailVerified, signOut } = useAuth();
 
-  const [checking, setChecking] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
   const [resending, setResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
-  const [cooldown, setCooldown] = useState(0);
-  const [notice, setNotice] = useState<string | null>(null);
+  const [cooldown, setCooldown] = useState(60);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isVerified, setIsVerified] = useState(false);
 
-  const displayEmail = user?.email || searchParams.get("email") || "your email";
+  const displayEmail =
+    searchParams.get("email") ||
+    user?.email ||
+    (typeof window !== "undefined" ? sessionStorage.getItem("inkoma_registered_email") : "") ||
+    "";
+
   const redirectTarget = searchParams.get("redirect");
   const onboardingUrl = redirectTarget
     ? `/onboarding?redirect=${encodeURIComponent(redirectTarget)}`
@@ -43,70 +53,60 @@ function VerifyEmailContent() {
     return () => clearInterval(interval);
   }, [cooldown]);
 
-  // Reactive verification polling (checks every 4 seconds in background)
+  // Already verified redirect
   useEffect(() => {
-    let isMounted = true;
-    let pollInterval: NodeJS.Timeout;
+    if (emailVerified) {
+      setIsVerified(true);
+      const timer = setTimeout(() => router.push(onboardingUrl), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [emailVerified, router, onboardingUrl]);
 
-    const performCheck = async () => {
-      if (emailVerified) {
-        if (isMounted) {
-          setIsVerified(true);
-          setTimeout(() => router.push(onboardingUrl), 1000);
-        }
-        return;
-      }
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!displayEmail) {
+      setErrorMessage("No email specified. Please return to sign up.");
+      return;
+    }
+    if (otp.length !== 6) {
+      setErrorMessage("Please enter the complete 6-digit confirmation code.");
+      return;
+    }
 
-      const verified = await checkVerification();
-      if (verified && isMounted) {
-        setIsVerified(true);
-        setTimeout(() => router.push(onboardingUrl), 1000);
-      }
-    };
+    setIsVerifying(true);
+    setErrorMessage(null);
 
-    performCheck();
-    pollInterval = setInterval(performCheck, 4000);
-
-    return () => {
-      isMounted = false;
-      clearInterval(pollInterval);
-    };
-  }, [checkVerification, emailVerified, router, onboardingUrl]);
-
-  const handleManualCheck = async () => {
-    setChecking(true);
-    setNotice(null);
     try {
-      const verified = await checkVerification();
-      if (verified) {
-        setIsVerified(true);
-        setTimeout(() => router.push(onboardingUrl), 800);
-      } else {
-        setNotice(
-          "We haven't detected your verification yet. If you just clicked the link, please give it a few seconds and try again."
-        );
-      }
-    } catch {
-      setNotice("Could not check verification status at this moment. Please retry.");
+      await verifyEmailWithOtp(displayEmail, otp);
+      setIsVerified(true);
+      setTimeout(() => {
+        router.push(onboardingUrl);
+      }, 1500);
+    } catch (err: unknown) {
+      console.error("[VerifyEmail] Verification error:", err);
+      const msg =
+        err instanceof Error ? err.message : "Invalid or expired confirmation code.";
+      setErrorMessage(msg);
     } finally {
-      setChecking(false);
+      setIsVerifying(false);
     }
   };
 
   const handleResend = async () => {
-    if (cooldown > 0 || resending) return;
+    if (cooldown > 0 || resending || !displayEmail) return;
     setResending(true);
-    setNotice(null);
+    setErrorMessage(null);
     setResendSuccess(false);
 
     try {
-      await sendVerification();
+      await resendVerificationOtp(displayEmail);
       setResendSuccess(true);
       setCooldown(60);
     } catch (err: unknown) {
       console.error("[VerifyEmail] Resend error:", err);
-      const msg = err instanceof Error ? err.message : "Failed to resend verification email.";
-      setNotice(msg);
+      const msg =
+        err instanceof Error ? err.message : "Failed to resend confirmation code.";
+      setErrorMessage(msg);
     } finally {
       setResending(false);
     }
@@ -127,9 +127,12 @@ function VerifyEmailContent() {
           <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600 animate-bounce">
             <CheckCircle2 className="w-9 h-9" />
           </div>
-          <p className="text-xs text-stone-600 font-medium">
-            Redirecting you to choose your favorite storytelling genres...
-          </p>
+          <div className="space-y-1">
+            <p className="text-sm font-bold text-stone-900">Welcome to Inkoma</p>
+            <p className="text-xs text-stone-600 font-medium">
+              Redirecting you to choose your favorite storytelling genres...
+            </p>
+          </div>
         </div>
       </AuthCard>
     );
@@ -138,7 +141,7 @@ function VerifyEmailContent() {
   return (
     <AuthCard
       title="Verify Your Hearth Fire"
-      description="We sent a sacred activation link to your email to verify your place in the Inkoma storytelling circle."
+      description="Enter the 6-digit confirmation code sent to your email to activate your account."
     >
       {/* Target Email Banner */}
       <div className="p-3.5 rounded-2xl bg-amber-50 dark:bg-[#1a1813] border border-[#D4AF37]/30 flex items-center gap-3">
@@ -147,75 +150,86 @@ function VerifyEmailContent() {
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider">
-            Verification link sent to
+            Confirmation code sent to
           </p>
           <p className="text-xs font-bold text-stone-900 dark:text-stone-100 truncate">
-            {displayEmail}
+            {displayEmail || "No email provided"}
           </p>
         </div>
       </div>
 
-      {notice && (
-        <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 text-xs text-rose-700 dark:text-rose-300 flex items-start gap-2">
+      {errorMessage && (
+        <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-start gap-2.5">
           <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
-          <span>{notice}</span>
+          <span>{errorMessage}</span>
         </div>
       )}
 
       {resendSuccess && (
-        <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 text-xs text-emerald-700 dark:text-emerald-300 flex items-start gap-2">
+        <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-700 flex items-start gap-2.5">
           <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
-          <span>A fresh verification link was dispatched to your email address.</span>
+          <span>A fresh 6-digit code has been dispatched to your email address.</span>
         </div>
       )}
 
-      {/* Instructions */}
-      <div className="text-xs text-stone-600 dark:text-stone-400 space-y-2 leading-relaxed">
-        <p>
-          1. Open your inbox and look for the verification email from <strong>Inkoma</strong>.
-        </p>
-        <p>
-          2. Click the verification link to confirm your account.
-        </p>
-        <p className="text-[11px] text-stone-500 italic">
-          This page will automatically detect when you verify and continue to genre selection.
-        </p>
-      </div>
+      <form onSubmit={handleVerifyOtp} className="space-y-4">
+        {/* OTP Input */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-semibold uppercase tracking-wider text-stone-700 flex items-center gap-1.5">
+              <KeyRound className="w-3.5 h-3.5 text-[#D4AF37]" />
+              6-Digit Confirmation Code
+            </label>
+            <button
+              type="button"
+              disabled={resending || cooldown > 0 || !displayEmail}
+              onClick={handleResend}
+              className="text-[11px] font-semibold text-[#D4AF37] hover:underline disabled:text-stone-400 disabled:no-underline flex items-center gap-1 cursor-pointer disabled:cursor-not-allowed"
+            >
+              {resending ? (
+                <>
+                  <RefreshCw className="w-3 h-3 animate-spin" />
+                  Sending...
+                </>
+              ) : cooldown > 0 ? (
+                `Resend in ${cooldown}s`
+              ) : (
+                "Resend Code"
+              )}
+            </button>
+          </div>
 
-      {/* Action Buttons */}
-      <div className="space-y-2.5 pt-2">
-        <Button
-          type="button"
-          onClick={handleManualCheck}
-          disabled={checking}
-          className="w-full bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold shadow-md py-5 cursor-pointer"
-        >
-          {checking ? (
-            <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-          ) : (
-            <Sparkles className="w-4 h-4 mr-2 text-stone-950" />
-          )}
-          I&apos;ve Verified My Email
-          <ArrowRight className="w-4 h-4 ml-2" />
-        </Button>
+          <OtpInput
+            length={6}
+            value={otp}
+            onChange={(val) => {
+              setOtp(val);
+              if (errorMessage) setErrorMessage(null);
+            }}
+            disabled={isVerifying}
+            autoFocus
+          />
+        </div>
 
         <Button
-          type="button"
-          variant="outline"
-          onClick={handleResend}
-          disabled={resending || cooldown > 0}
-          className="w-full border-stone-200 hover:bg-stone-50 text-xs py-4 text-stone-700 font-semibold"
+          type="submit"
+          disabled={isVerifying || otp.length !== 6}
+          className="w-full bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold shadow-md py-5 cursor-pointer mt-2"
         >
-          {resending ? (
-            <RefreshCw className="w-3.5 h-3.5 animate-spin mr-2" />
+          {isVerifying ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              Verifying Code...
+            </>
           ) : (
-            <Mail className="w-3.5 h-3.5 mr-2 text-stone-500" />
+            <>
+              <Sparkles className="w-4 h-4 mr-2 text-stone-950" />
+              Activate Account
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </>
           )}
-          {cooldown > 0
-            ? `Resend link in ${cooldown}s`
-            : "Resend Verification Email"}
         </Button>
-      </div>
+      </form>
 
       {/* Switch Account / Sign Out */}
       <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
@@ -223,7 +237,7 @@ function VerifyEmailContent() {
         <button
           type="button"
           onClick={handleSignOut}
-          className="inline-flex items-center gap-1 text-[#D4AF37] hover:underline font-semibold"
+          className="inline-flex items-center gap-1 text-[#D4AF37] hover:underline font-semibold cursor-pointer"
         >
           <LogOut className="w-3 h-3" />
           Sign out & re-register
@@ -238,6 +252,7 @@ export default function VerifyEmailPage() {
     <Suspense
       fallback={
         <div className="w-full max-w-md p-8 bg-white rounded-3xl border border-stone-200 text-center text-xs text-stone-500">
+          <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-[#D4AF37]" />
           Loading verification status...
         </div>
       }

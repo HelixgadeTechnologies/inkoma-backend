@@ -56,6 +56,17 @@ function LoginForm() {
       const message =
         err instanceof Error ? err.message : "Failed to sign in. Please verify your email and password.";
       setErrorMessage(message);
+
+      if (message.toLowerCase().includes("not verified")) {
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("inkoma_registered_email", email.trim().toLowerCase());
+        }
+        setTimeout(() => {
+          router.push(
+            `/verify-email?email=${encodeURIComponent(email.trim().toLowerCase())}&redirect=${encodeURIComponent(redirectTarget)}`
+          );
+        }, 1800);
+      }
     } finally {
       setIsLoading(false);
     }

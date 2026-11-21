@@ -62,9 +62,13 @@ function SignupForm() {
     setIsLoading(true);
 
     try {
-      await signUp(email.trim().toLowerCase(), password, displayName, "author");
+      const cleanEmail = email.trim().toLowerCase();
+      await signUp(cleanEmail, password, displayName, "author");
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("inkoma_registered_email", cleanEmail);
+      }
       router.push(
-        `/verify-email?email=${encodeURIComponent(email.trim().toLowerCase())}&redirect=${encodeURIComponent(redirectTarget)}`
+        `/verify-email?email=${encodeURIComponent(cleanEmail)}&redirect=${encodeURIComponent(redirectTarget)}`
       );
     } catch (err: unknown) {
       console.error("[SignupPage] Registration error:", err);

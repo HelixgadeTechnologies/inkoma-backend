@@ -67,13 +67,76 @@ function persistSession(user: AuthUser, profile: FirestoreUserData, token?: stri
 }
 
 /**
- * Send email verification link to user via backend
+ * Verify user email address with 6-digit confirmation OTP
+ */
+export async function verifyEmailWithOtp(
+  email: string,
+  otp: string
+): Promise<{ user: AuthUser | null; profile: FirestoreUserData }> {
+  const cleanEmail = email.trim().toLowerCase();
+  const cleanOtp = otp.trim();
+
+  const res = await apiClient.post<any>("/auth/verify-email", {
+    email: cleanEmail,
+    otp: cleanOtp,
+  });
+
+  const dataObj = res.data || res;
+  const token = dataObj.token || res.token || res.accessToken || "";
+  const rawUser = dataObj.user || res.user || res.profile || {};
+  const uid = rawUser.id || rawUser._id || rawUser.uid || `user-${Date.now()}`;
+
+  const authUser: AuthUser = {
+    uid,
+    id: uid,
+    displayName: rawUser.name || rawUser.displayName || "Storyteller",
+    email: rawUser.email || cleanEmail,
+    photoURL: rawUser.avatarUrl || rawUser.photoURL || "",
+    emailVerified: true,
+    metadata: {
+      creationTime: rawUser.createdAt || new Date().toISOString(),
+    },
+  };
+
+  const profile: FirestoreUserData = {
+    uid,
+    displayName: authUser.displayName,
+    email: authUser.email,
+    photoURL: authUser.photoURL,
+    bio: rawUser.bio || "",
+    role: rawUser.role || "author",
+    emailVerified: true,
+    createdAt: rawUser.createdAt || new Date().toISOString(),
+    updatedAt: rawUser.updatedAt || new Date().toISOString(),
+  };
+
+  persistSession(authUser, profile, token);
+  return { user: authUser, profile };
+}
+
+/**
+ * Resend email confirmation OTP via backend
+ */
+export async function resendVerificationOtp(email: string): Promise<{ success: boolean; message: string }> {
+  const cleanEmail = email.trim().toLowerCase();
+  const res = await apiClient.post<any>("/auth/resend-verification-otp", {
+    email: cleanEmail,
+  });
+  return {
+    success: true,
+    message: res.message || "A new verification code was dispatched to your email.",
+  };
+}
+
+/**
+ * Send email verification OTP to user via backend
  */
 export async function sendVerificationEmail(targetUser?: AuthUser | null): Promise<void> {
+  const targetEmail = targetUser?.email;
+  if (!targetEmail) return;
   try {
-    await apiClient.post("/auth/verify-email/request", {
-      email: targetUser?.email,
-      userId: targetUser?.uid,
+    await apiClient.post("/auth/resend-verification-otp", {
+      email: targetEmail.trim().toLowerCase(),
     });
   } catch (err) {
     console.warn("[AuthService] Verification email request notice:", err);
@@ -84,11 +147,12 @@ export async function sendVerificationEmail(targetUser?: AuthUser | null): Promi
  * Check if current user's email has been verified
  */
 export async function checkEmailVerification(targetUser?: AuthUser | null): Promise<boolean> {
+  if (!targetUser?.uid && !targetUser?.email) return false;
   try {
-    const res = await apiClient.get<{ verified: boolean }>("/auth/verify-email/status");
-    return Boolean(res?.verified);
+    const profile = await getUserProfile(targetUser.uid);
+    return Boolean(profile?.emailVerified);
   } catch {
-    return true;
+    return false;
   }
 }
 
