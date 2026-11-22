@@ -305,38 +305,6 @@ export async function getTopAuthors(): Promise<TopAuthor[]> {
 }
 
 /**
- * 9. Get User Bookmarks (GET /api/v1/users/bookmarks) — Protected
- * Returns all bookmarked stories for the logged-in reader
+ * 9. Library, Bookmarks, Favorites & Quotes Endpoints
  */
-export async function getUserBookmarks(): Promise<Story[]> {
-  try {
-    const res = await apiClient.get<any>("/users/bookmarks");
-    const rawStories =
-      res?.data?.bookmarks ||
-      res?.data?.stories ||
-      res?.bookmarks ||
-      res?.stories ||
-      (Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []);
-
-    return rawStories.map(normalizeStory);
-  } catch (error) {
-    console.warn("[UserService] Failed to fetch user bookmarks:", error);
-    return [];
-  }
-}
-
-/**
- * 10. Add Story Bookmark (POST /api/v1/users/bookmarks/:storyId) — Protected
- * Adds story to reader bookmarks & increments bookmarksCount
- */
-export async function addStoryBookmark(storyId: string): Promise<void> {
-  await apiClient.post<any>(`/users/bookmarks/${encodeURIComponent(storyId)}`, {});
-}
-
-/**
- * 11. Remove Story Bookmark (DELETE /api/v1/users/bookmarks/:storyId) — Protected
- * Removes story from reader bookmarks & decrements bookmarksCount
- */
-export async function removeStoryBookmark(storyId: string): Promise<void> {
-  await apiClient.delete<any>(`/users/bookmarks/${encodeURIComponent(storyId)}`);
-}
+export * from "./libraryService";
