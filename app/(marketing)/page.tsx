@@ -3,6 +3,8 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Compass,
   Edit3,
@@ -434,6 +436,15 @@ const TOP_AUTHORS = [
 ];
 
 export default function HomePage() {
+  const router = useRouter();
+  const { isAuthenticated, loading } = useAuth();
+
+  React.useEffect(() => {
+    if (!loading && isAuthenticated) {
+      router.replace("/explore");
+    }
+  }, [isAuthenticated, loading, router]);
+
   const [bookmarked, setBookmarked] = React.useState<Record<string, boolean>>({});
   const [followedAuthors, setFollowedAuthors] = React.useState<Record<string, boolean>>({
     "author-1": false,
@@ -468,6 +479,15 @@ export default function HomePage() {
     e.stopPropagation();
     setFollowedAuthors((prev) => ({ ...prev, [id]: !prev[id] }));
   };
+
+  if (isAuthenticated && !loading) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-3 py-20">
+        <div className="w-9 h-9 rounded-full border-2 border-[#D4AF37] border-t-transparent animate-spin" />
+        <p className="text-xs font-semibold text-stone-600">Redirecting to Explore...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-9 sm:space-y-11 pb-16 text-stone-900 font-sans max-w-6xl mx-auto">

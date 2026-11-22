@@ -58,16 +58,21 @@ export function Navbar() {
     },
   ];
 
-  const visibleNav = marketingNav.filter(
-    (item) => isAuthenticated || !PROTECTED_HREFS.some((p) => item.href.startsWith(p))
-  );
+  const visibleNav = marketingNav.filter((item) => {
+    if (isAuthenticated) {
+      // Authenticated users: hide the Home page link
+      return item.href !== "/";
+    }
+    // Guest users: hide Explore, Library, Studio, Profile
+    return !PROTECTED_HREFS.some((p) => item.href.startsWith(p));
+  });
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-stone-200/80 bg-white/95 backdrop-blur-md transition-colors shadow-sm">
       <div className="flex h-20 w-full items-center justify-between px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
 
-        {/* Brand Logo */}
-        <Link href="/" className="flex items-center space-x-3 group">
+        {/* Brand Logo - Routes to /explore when logged in, or / for guests */}
+        <Link href={isAuthenticated ? "/explore" : "/"} className="flex items-center space-x-3 group">
           <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-[#D4AF37] text-stone-950 p-2 shadow-md group-hover:scale-105 transition-transform">
             <BookOpen className="h-6 w-6 stroke-[2.2]" />
           </div>
@@ -317,6 +322,7 @@ export function Navbar() {
                       onClick={async () => {
                         setMenuOpen(false);
                         await signOut();
+                        window.location.href = "/";
                       }}
                       className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl border border-rose-200 bg-rose-50/50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors"
                     >

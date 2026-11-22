@@ -86,17 +86,13 @@ export default function ChapterReaderPage() {
   const currentChapter = chapters[currentChapterIndex] || {
     id: "chap-1",
     number: 1,
-    title: "The Calabash of All Wisdom",
+    title: currentStory?.title ? `Chapter 1` : "Chapter 1",
     summary: currentStory?.synopsis || "",
-    readTimeMinutes: 5,
+    readTimeMinutes: currentStory?.estimatedReadTime || 5,
     status: "published" as const,
-    likesCount: 120,
-    content: `In the celestial court above the clouds of Asase Yaa, Nyame the Sky God looked down upon Kwaku Anansi with amused eyes.
-
-"You ask for that which cannot be contained, little weaver," Nyame spoke, his voice echoing like rolling thunder across the canopy. "All the wisdom in the heavens and earth resides in this clay pot. Guard it with humility, or its weight will scatter upon the four winds."
-
-Anansi bowed low, clasping the heavy clay pot to his chest with eight trembling legs. He journeyed across ancient plains, learning that wisdom is like water that nourishes only when shared with the human collective.`,
-    updatedAt: "2026-01-10",
+    likesCount: currentStory?.likesCount || 0,
+    content: currentStory?.synopsis || "No chapter content has been published yet for this story.",
+    updatedAt: currentStory?.updatedAt || new Date().toISOString(),
   };
 
   // Keyboard shortcut listener (Escape exits Focus Mode)

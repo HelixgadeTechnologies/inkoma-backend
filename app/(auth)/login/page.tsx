@@ -28,7 +28,8 @@ export default function LoginPage() {
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTarget = searchParams.get("redirect") || "/explore";
+  const rawRedirect = searchParams.get("redirect");
+  const redirectTarget = (!rawRedirect || rawRedirect === "/") ? "/explore" : rawRedirect;
 
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");

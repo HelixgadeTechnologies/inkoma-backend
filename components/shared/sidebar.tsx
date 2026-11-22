@@ -45,9 +45,14 @@ export function Sidebar() {
     Heart: <Heart className="h-4 w-4 fill-none text-[#B8860B]" />,
   };
 
-  const visibleNav = platformSidebarNav.filter(
-    (item) => isAuthenticated || !PROTECTED_HREFS.some((p) => item.href.startsWith(p))
-  );
+  const visibleNav = platformSidebarNav.filter((item) => {
+    if (isAuthenticated) {
+      // Authenticated users: hide the Home page link
+      return item.href !== "/";
+    }
+    // Guest users: hide Explore, Library, Studio, Profile
+    return !PROTECTED_HREFS.some((p) => item.href.startsWith(p));
+  });
 
   return (
     <aside

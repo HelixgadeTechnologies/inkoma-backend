@@ -3,6 +3,31 @@
 import { useState, useEffect, useCallback } from "react";
 import { SavedQuote, ReadingProgress } from "@/types";
 
+// Known dummy / mock identifiers to purge automatically from browser storage
+const DUMMY_STORY_IDS = new Set([
+  "anansi-and-the-pot-of-wisdom",
+  "sundiata-the-lion-king-of-mali",
+]);
+
+const isDummyQuote = (q: SavedQuote): boolean => {
+  if (!q) return true;
+  if (q.id === "quote-1" || q.id === "quote-2") return true;
+  if (DUMMY_STORY_IDS.has(q.storyId)) return true;
+  if (q.quoteText?.includes("Wisdom is like water")) return true;
+  if (q.quoteText?.includes("The tree does not fear the tempest")) return true;
+  if (q.storyTitle?.includes("Anansi and the Pot of Wisdom")) return true;
+  if (q.storyTitle?.includes("Sundiata: The Lion King of Mali")) return true;
+  return false;
+};
+
+const isDummyProgress = (p: ReadingProgress): boolean => {
+  if (!p) return true;
+  if (DUMMY_STORY_IDS.has(p.storyId)) return true;
+  if (p.storyTitle?.includes("Anansi and the Pot of Wisdom")) return true;
+  if (p.storyTitle?.includes("Sundiata: The Lion King of Mali")) return true;
+  return false;
+};
+
 export function useLibrary() {
   const [bookmarks, setBookmarks] = useState<string[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -19,12 +44,48 @@ export function useLibrary() {
       const storedQuotes = localStorage.getItem("inkoma_quotes");
       const storedProgress = localStorage.getItem("inkoma_progress");
 
-      setBookmarks(storedBookmarks ? JSON.parse(storedBookmarks) : []);
-      setFavorites(storedFavorites ? JSON.parse(storedFavorites) : []);
-      setReadingHistory(storedHistory ? JSON.parse(storedHistory) : []);
-      setSavedQuotes(storedQuotes ? JSON.parse(storedQuotes) : []);
-      setContinueReading(storedProgress ? JSON.parse(storedProgress) : []);
+      // Filter out any legacy dummy / mock items
+      const parsedBookmarks: string[] = storedBookmarks ? JSON.parse(storedBookmarks) : [];
+      const cleanBookmarks = parsedBookmarks.filter((id) => !DUMMY_STORY_IDS.has(id));
+
+      const parsedFavorites: string[] = storedFavorites ? JSON.parse(storedFavorites) : [];
+      const cleanFavorites = parsedFavorites.filter((id) => !DUMMY_STORY_IDS.has(id));
+
+      const parsedHistory: string[] = storedHistory ? JSON.parse(storedHistory) : [];
+      const cleanHistory = parsedHistory.filter((id) => !DUMMY_STORY_IDS.has(id));
+
+      const parsedQuotes: SavedQuote[] = storedQuotes ? JSON.parse(storedQuotes) : [];
+      const cleanQuotes = parsedQuotes.filter((q) => !isDummyQuote(q));
+
+      const parsedProgress: ReadingProgress[] = storedProgress ? JSON.parse(storedProgress) : [];
+      const cleanProgress = parsedProgress.filter((p) => !isDummyProgress(p));
+
+      // Synchronize cleaned storage if dummy items were stripped
+      if (cleanBookmarks.length !== parsedBookmarks.length) {
+        localStorage.setItem("inkoma_bookmarks", JSON.stringify(cleanBookmarks));
+      }
+      if (cleanFavorites.length !== parsedFavorites.length) {
+        localStorage.setItem("inkoma_favorites", JSON.stringify(cleanFavorites));
+      }
+      if (cleanHistory.length !== parsedHistory.length) {
+        localStorage.setItem("inkoma_history", JSON.stringify(cleanHistory));
+      }
+      if (cleanQuotes.length !== parsedQuotes.length) {
+        localStorage.setItem("inkoma_quotes", JSON.stringify(cleanQuotes));
+      }
+      if (cleanProgress.length !== parsedProgress.length) {
+        localStorage.setItem("inkoma_progress", JSON.stringify(cleanProgress));
+      }
+
+      setBookmarks(cleanBookmarks);
+      setFavorites(cleanFavorites);
+      setReadingHistory(cleanHistory);
+      setSavedQuotes(cleanQuotes);
+      setContinueReading(cleanProgress);
     } catch {
+      setBookmarks([]);
+      setFavorites([]);
+      setReadingHistory([]);
       setSavedQuotes([]);
       setContinueReading([]);
     } finally {
@@ -55,7 +116,7 @@ export function useLibrary() {
       savedAt: new Date().toISOString().split("T")[0],
     };
     setSavedQuotes((prev) => {
-      const next = [newQuote, ...prev];
+      const next = [newQuote, ...prev.filter((q) => !isDummyQuote(q))];
       localStorage.setItem("inkoma_quotes", JSON.stringify(next));
       return next;
     });
@@ -71,12 +132,34 @@ export function useLibrary() {
   }, []);
 
   const updateReadingProgress = useCallback((progress: ReadingProgress) => {
+    if (isDummyProgress(progress)) return;
     setContinueReading((prev) => {
-      const filtered = prev.filter((p) => p.storyId !== progress.storyId);
+      const filtered = prev.filter((p) => p.storyId !== progress.storyId && !isDummyProgress(p));
       const next = [progress, ...filtered];
       localStorage.setItem("inkoma_progress", JSON.stringify(next));
       return next;
     });
+  }, []);
+
+  const removeReadingProgress = useCallback((storyId: string) => {
+    setContinueReading((prev) => {
+      const next = prev.filter((p) => p.storyId !== storyId);
+      localStorage.setItem("inkoma_progress", JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const clearAllLibraryData = useCallback(() => {
+    setBookmarks([]);
+    setFavorites([]);
+    setReadingHistory([]);
+    setSavedQuotes([]);
+    setContinueReading([]);
+    localStorage.removeItem("inkoma_bookmarks");
+    localStorage.removeItem("inkoma_favorites");
+    localStorage.removeItem("inkoma_history");
+    localStorage.removeItem("inkoma_quotes");
+    localStorage.removeItem("inkoma_progress");
   }, []);
 
   return {
@@ -93,5 +176,7 @@ export function useLibrary() {
     addSavedQuote,
     removeSavedQuote,
     updateReadingProgress,
+    removeReadingProgress,
+    clearAllLibraryData,
   };
 }

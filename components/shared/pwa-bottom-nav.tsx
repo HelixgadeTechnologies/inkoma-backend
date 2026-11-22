@@ -14,7 +14,6 @@ export function PwaBottomNav() {
 
   const navItems = isAuthenticated
     ? [
-        { label: "Home", href: "/", icon: Home },
         { label: "Explore", href: "/explore", icon: Compass },
         { label: "Library", href: "/library", icon: BookOpen },
         { label: "Studio", href: "/studio", icon: Feather },

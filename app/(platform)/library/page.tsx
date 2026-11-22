@@ -35,6 +35,8 @@ export default function LibraryPage() {
     toggleBookmark,
     toggleFavorite,
     removeSavedQuote,
+    removeReadingProgress,
+    clearAllLibraryData,
   } = useLibrary();
 
   const [copiedQuoteId, setCopiedQuoteId] = useState<string | null>(null);
@@ -47,22 +49,46 @@ export default function LibraryPage() {
 
   const bookmarkedStories = stories.filter((s) => bookmarks.includes(s.id));
   const favoriteStories = stories.filter((s) => favorites.includes(s.id));
+  const totalLibraryItems =
+    continueReading.length +
+    bookmarkedStories.length +
+    favoriteStories.length +
+    savedQuotes.length;
 
   return (
     <AuthGuard featureName="Personal Library">
       <div className="space-y-8 pb-16">
       {/* Header */}
-      <div className="space-y-1.5">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37]/10 dark:bg-[#D4AF37]/20 border border-[#D4AF37]/20 dark:border-[#D4AF37]/30 text-[#D4AF37] dark:text-[#D4AF37] text-xs font-semibold uppercase tracking-wider">
-          <BookOpen className="w-3.5 h-3.5 text-[#D4AF37] dark:text-[#D4AF37]" />
-          Personal Reading Desk
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="space-y-1.5">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37]/10 dark:bg-[#D4AF37]/20 border border-[#D4AF37]/20 dark:border-[#D4AF37]/30 text-[#D4AF37] dark:text-[#D4AF37] text-xs font-semibold uppercase tracking-wider">
+            <BookOpen className="w-3.5 h-3.5 text-[#D4AF37] dark:text-[#D4AF37]" />
+            Personal Reading Desk
+          </div>
+          <h1 className="text-3xl font-extrabold text-stone-900 dark:text-stone-100 font-serif tracking-tight">
+            Your Library
+          </h1>
+          <p className="text-sm text-stone-600 dark:text-stone-400">
+            Access your recently read books, bookmarked titles, favorite stories, and saved quotes.
+          </p>
         </div>
-        <h1 className="text-3xl font-extrabold text-stone-900 dark:text-stone-100 font-serif tracking-tight">
-          Your Library
-        </h1>
-        <p className="text-sm text-stone-600 dark:text-stone-400">
-          Access your recently read books, bookmarked titles, favorite stories, and saved quotes.
-        </p>
+
+        {totalLibraryItems > 0 && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              if (window.confirm("Are you sure you want to clear all reading history, bookmarks, favorites, and saved quotes from your library?")) {
+                clearAllLibraryData();
+              }
+            }}
+            className="border-stone-200 dark:border-stone-800 text-stone-500 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 text-xs gap-1.5 self-start sm:self-auto rounded-xl"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            Clear Library
+          </Button>
+        )}
       </div>
 
       {/* Tabs Selector */}
@@ -185,18 +211,32 @@ export default function LibraryPage() {
                     </div>
                   </div>
 
-                  <Link
-                    href={`/story/${item.storyId}/read`}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <Button
-                      size="sm"
-                      className="bg-[#D4AF37] hover:bg-[#B89628] dark:bg-[#D4AF37] dark:hover:bg-[#B89628] text-stone-950 font-bold rounded-xl shadow-xs shrink-0 text-xs"
+                  <div className="flex flex-col items-end gap-2 shrink-0">
+                    <Link
+                      href={`/story/${item.storyId}/read`}
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      <Play className="w-3.5 h-3.5 fill-stone-950 mr-1" />
-                      Read
-                    </Button>
-                  </Link>
+                      <Button
+                        size="sm"
+                        className="bg-[#D4AF37] hover:bg-[#B89628] dark:bg-[#D4AF37] dark:hover:bg-[#B89628] text-stone-950 font-bold rounded-xl shadow-xs shrink-0 text-xs"
+                      >
+                        <Play className="w-3.5 h-3.5 fill-stone-950 mr-1" />
+                        Read
+                      </Button>
+                    </Link>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        removeReadingProgress(item.storyId);
+                      }}
+                      className="text-[11px] text-stone-400 hover:text-red-600 dark:hover:text-red-400 flex items-center gap-1 font-medium transition-colors"
+                    >
+                      <Trash2 className="w-3 h-3" /> Remove
+                    </button>
+                  </div>
                 </Link>
               ))}
             </div>
