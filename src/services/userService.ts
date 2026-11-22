@@ -1,4 +1,22 @@
 import { apiClient } from "@/src/services/api";
+import { Story } from "@/types";
+import { normalizeStory } from "@/src/services/storyService";
+
+export interface TopAuthor {
+  id: string;
+  rank?: number;
+  name: string;
+  username?: string;
+  penName?: string;
+  avatarUrl?: string;
+  avatar?: string;
+  followersCount?: number;
+  readsCount?: number;
+  totalReads?: number;
+  reads?: string;
+  storiesCount?: number;
+  bio?: string;
+}
 
 export interface BankingDetails {
   bankName: string;
@@ -246,4 +264,79 @@ export async function updateUserNotificationSettings(
   }>("/users/me/notifications", payload);
 
   return res?.data?.notifications || (res as any)?.notifications || payload;
+}
+
+/**
+ * 8. Top Authors This Week (GET /api/v1/users/top-authors) — Public
+ * Aggregated author leaderboard ranked by cumulative story reads and followers
+ */
+export async function getTopAuthors(): Promise<TopAuthor[]> {
+  try {
+    const res = await apiClient.get<any>("/users/top-authors");
+    const rawAuthors =
+      res?.data?.authors ||
+      res?.authors ||
+      (Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []);
+
+    return rawAuthors.map((author: any, idx: number) => {
+      const id = String(author._id || author.id || `author-${idx + 1}`);
+      const name = author.name || author.penName || author.displayName || author.username || "Storyteller";
+      const totalReads = Number(author.totalReads || author.readsCount || author.reads || 0);
+      return {
+        id,
+        rank: author.rank || idx + 1,
+        name,
+        username: author.username || "",
+        penName: author.penName || name,
+        avatarUrl: author.avatarUrl || author.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop",
+        avatar: author.avatarUrl || author.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop",
+        followersCount: Number(author.followersCount || 0),
+        readsCount: totalReads,
+        totalReads,
+        reads: `${totalReads} Reads`,
+        storiesCount: Number(author.storiesCount || 0),
+        bio: author.bio || "",
+      };
+    });
+  } catch (error) {
+    console.warn("[UserService] Failed to fetch top authors:", error);
+    return [];
+  }
+}
+
+/**
+ * 9. Get User Bookmarks (GET /api/v1/users/bookmarks) — Protected
+ * Returns all bookmarked stories for the logged-in reader
+ */
+export async function getUserBookmarks(): Promise<Story[]> {
+  try {
+    const res = await apiClient.get<any>("/users/bookmarks");
+    const rawStories =
+      res?.data?.bookmarks ||
+      res?.data?.stories ||
+      res?.bookmarks ||
+      res?.stories ||
+      (Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []);
+
+    return rawStories.map(normalizeStory);
+  } catch (error) {
+    console.warn("[UserService] Failed to fetch user bookmarks:", error);
+    return [];
+  }
+}
+
+/**
+ * 10. Add Story Bookmark (POST /api/v1/users/bookmarks/:storyId) — Protected
+ * Adds story to reader bookmarks & increments bookmarksCount
+ */
+export async function addStoryBookmark(storyId: string): Promise<void> {
+  await apiClient.post<any>(`/users/bookmarks/${encodeURIComponent(storyId)}`, {});
+}
+
+/**
+ * 11. Remove Story Bookmark (DELETE /api/v1/users/bookmarks/:storyId) — Protected
+ * Removes story from reader bookmarks & decrements bookmarksCount
+ */
+export async function removeStoryBookmark(storyId: string): Promise<void> {
+  await apiClient.delete<any>(`/users/bookmarks/${encodeURIComponent(storyId)}`);
 }

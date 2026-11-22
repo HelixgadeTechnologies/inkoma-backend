@@ -43,13 +43,27 @@ export interface CreateStoryMetadata extends Omit<Partial<CreateStoryPayload>, "
 
 export interface ListStoriesOptions {
   mainGenre?: string;
+  tradition?: string;
   storyLanguage?: string;
   status?: string;
   search?: string;
-  sortBy?: "newest" | "popular" | "readTime" | "most_read" | "most_liked" | "trending";
+  hasAudioNarration?: boolean;
+  audioOnly?: boolean;
+  sortBy?: "newest" | "popular" | "readTime" | "most_read" | "most_liked" | "trending" | "highest_rated";
   page?: number;
   limit?: number;
   authorId?: string;
+}
+
+export interface TraditionItem {
+  id: string;
+  name: string;
+  tradition: string;
+  description: string;
+  image: string;
+  href: string;
+  badge: string;
+  count: number;
 }
 
 export interface PaginatedStoriesResult {
@@ -224,22 +238,28 @@ export async function createDraftStory(
 export async function listStories(options: ListStoriesOptions = {}): Promise<PaginatedStoriesResult> {
   const {
     mainGenre,
+    tradition,
     storyLanguage,
     status,
     search,
+    hasAudioNarration,
+    audioOnly,
     sortBy,
     page = 1,
     limit = 12,
   } = options;
 
-  const params: Record<string, string | number | undefined> = {
+  const params: Record<string, string | number | boolean | undefined> = {
     page,
     limit,
   };
   if (mainGenre && mainGenre !== "all") params.mainGenre = mainGenre;
+  if (tradition && tradition !== "all") params.tradition = tradition;
   if (storyLanguage) params.storyLanguage = storyLanguage;
   if (status && status !== "all") params.status = status;
   if (search) params.search = search;
+  if (hasAudioNarration !== undefined) params.hasAudioNarration = hasAudioNarration;
+  else if (audioOnly !== undefined) params.hasAudioNarration = audioOnly;
   if (sortBy) params.sortBy = sortBy;
 
   try {
@@ -298,6 +318,60 @@ export async function getPublishedStories(options: {
   startAfterDoc?: any;
 } = {}): Promise<PaginatedStoriesResult> {
   return listStories({ limit: options.limitCount || 20 });
+}
+
+/**
+ * Trending Stories Carousel (GET /api/v1/stories/trending) — Public
+ * Top 10 viral manuscripts sorted by reader engagement (readsCount + likesCount) with rank badges (1–10)
+ */
+export async function getTrendingStories(): Promise<Story[]> {
+  try {
+    const res = await apiClient.get<any>("/stories/trending");
+    const rawStories =
+      res?.data?.stories ||
+      res?.stories ||
+      (Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []);
+    return rawStories.map(normalizeStory);
+  } catch (error) {
+    console.warn("[StoryService] Error fetching trending stories:", error);
+    return [];
+  }
+}
+
+/**
+ * Highest Rated Stories (GET /api/v1/stories/highest-rated) — Public
+ * Top 10 stories ranked by reader ratings and likes
+ */
+export async function getHighestRatedStories(): Promise<Story[]> {
+  try {
+    const res = await apiClient.get<any>("/stories/highest-rated");
+    const rawStories =
+      res?.data?.stories ||
+      res?.stories ||
+      (Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []);
+    return rawStories.map(normalizeStory);
+  } catch (error) {
+    console.warn("[StoryService] Error fetching highest-rated stories:", error);
+    return [];
+  }
+}
+
+/**
+ * Explore Folklore Categories & Traditions (GET /api/v1/stories/traditions) — Public
+ * Traditions catalogue with real-time manuscript counts
+ */
+export async function getStoryTraditions(): Promise<TraditionItem[]> {
+  try {
+    const res = await apiClient.get<any>("/stories/traditions");
+    const list =
+      res?.data?.traditions ||
+      res?.traditions ||
+      (Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []);
+    return list;
+  } catch (error) {
+    console.warn("[StoryService] Error fetching traditions:", error);
+    return [];
+  }
 }
 
 /**

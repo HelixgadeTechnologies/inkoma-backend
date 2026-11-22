@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { SavedQuote, ReadingProgress } from "@/types";
+import { SavedQuote, ReadingProgress, Story } from "@/types";
+import {
+  getUserBookmarks,
+  addStoryBookmark,
+  removeStoryBookmark,
+} from "@/src/services/userService";
 
 // Known dummy / mock identifiers to purge automatically from browser storage
 const DUMMY_STORY_IDS = new Set([
@@ -82,6 +87,27 @@ export function useLibrary() {
       setReadingHistory(cleanHistory);
       setSavedQuotes(cleanQuotes);
       setContinueReading(cleanProgress);
+
+      // Fetch remote bookmarks if user is logged in
+      const token = localStorage.getItem("inkoma_auth_token");
+      if (token) {
+        getUserBookmarks()
+          .then((remoteStories) => {
+            if (Array.isArray(remoteStories) && remoteStories.length > 0) {
+              const remoteIds = remoteStories.map((s) => s.id).filter(Boolean);
+              setBookmarks((prev) => {
+                const merged = Array.from(new Set([...prev, ...remoteIds]));
+                try {
+                  localStorage.setItem("inkoma_bookmarks", JSON.stringify(merged));
+                } catch {}
+                return merged;
+              });
+            }
+          })
+          .catch((err) => {
+            console.warn("[useLibrary] Remote bookmarks sync warning:", err);
+          });
+      }
     } catch {
       setBookmarks([]);
       setFavorites([]);
@@ -94,9 +120,29 @@ export function useLibrary() {
   }, []);
 
   const toggleBookmark = useCallback((storyId: string) => {
+    if (!storyId) return;
+
     setBookmarks((prev) => {
-      const next = prev.includes(storyId) ? prev.filter((id) => id !== storyId) : [...prev, storyId];
-      localStorage.setItem("inkoma_bookmarks", JSON.stringify(next));
+      const willBookmark = !prev.includes(storyId);
+      const next = willBookmark ? [...prev, storyId] : prev.filter((id) => id !== storyId);
+      try {
+        localStorage.setItem("inkoma_bookmarks", JSON.stringify(next));
+      } catch {}
+
+      // Background API sync
+      const token = typeof window !== "undefined" ? localStorage.getItem("inkoma_auth_token") : null;
+      if (token) {
+        if (willBookmark) {
+          addStoryBookmark(storyId).catch((err) => {
+            console.warn("[useLibrary] Failed to add bookmark on server:", err);
+          });
+        } else {
+          removeStoryBookmark(storyId).catch((err) => {
+            console.warn("[useLibrary] Failed to remove bookmark on server:", err);
+          });
+        }
+      }
+
       return next;
     });
   }, []);

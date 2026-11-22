@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Sparkles, Flame, Volume2, Shield, Moon, Compass, Crown, Waves } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { getStoryTraditions, TraditionItem } from "@/src/services/storyService";
 
 interface CategoryItem {
   id: string;
@@ -15,7 +16,7 @@ interface CategoryItem {
   image: string;
   href: string;
   badge: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
 }
 
 const CATEGORIES: CategoryItem[] = [
@@ -120,8 +121,43 @@ const CATEGORIES: CategoryItem[] = [
   },
 ];
 
-export function CategoryCarousel() {
+export function CategoryCarousel({
+  traditions: initialTraditions,
+  onSelectTradition,
+}: {
+  traditions?: TraditionItem[];
+  onSelectTradition?: (tradition: string) => void;
+} = {}) {
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  const [categories, setCategories] = React.useState<CategoryItem[]>(CATEGORIES);
+
+  React.useEffect(() => {
+    if (initialTraditions && initialTraditions.length > 0) {
+      updateWithTraditions(initialTraditions);
+    } else {
+      getStoryTraditions()
+        .then((data) => {
+          if (Array.isArray(data) && data.length > 0) {
+            updateWithTraditions(data);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [initialTraditions]);
+
+  const updateWithTraditions = (serverList: TraditionItem[]) => {
+    setCategories((prev) =>
+      prev.map((cat) => {
+        const found = serverList.find(
+          (t) =>
+            t.id === cat.id ||
+            t.tradition.toLowerCase() === cat.tradition.toLowerCase() ||
+            t.name.toLowerCase() === cat.name.toLowerCase()
+        );
+        return found ? { ...cat, count: found.count ?? cat.count } : cat;
+      })
+    );
+  };
 
   const handleScroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -172,10 +208,16 @@ export function CategoryCarousel() {
         ref={scrollRef}
         className="flex items-stretch gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none"
       >
-        {CATEGORIES.map((cat) => (
+        {categories.map((cat) => (
           <Link
             key={cat.id}
             href={cat.href}
+            onClick={(e) => {
+              if (onSelectTradition) {
+                e.preventDefault();
+                onSelectTradition(cat.tradition);
+              }
+            }}
             className="group relative flex flex-col justify-between w-[76vw] max-w-[260px] sm:w-[260px] shrink-0 snap-start rounded-2xl border border-stone-200 bg-white overflow-hidden p-4 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-300 min-w-0"
           >
             {/* Background Image Overlay */}
