@@ -44,6 +44,7 @@ export interface UserProfile {
   displayName: string;
   penName?: string;
   bio?: string;
+  phone?: string;
   avatarUrl?: string;
   bannerUrl?: string;
   country?: string;

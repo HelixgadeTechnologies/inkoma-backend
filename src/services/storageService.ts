@@ -1,5 +1,7 @@
 import { apiClient } from "@/src/services/api";
 
+import { uploadUserAvatar } from "@/src/services/userService";
+
 const MAX_COVER_SIZE = 5 * 1024 * 1024; // 5 MB
 const MAX_AVATAR_SIZE = 2 * 1024 * 1024; // 2 MB
 
@@ -58,10 +60,11 @@ export async function uploadCoverImage(
 
 /**
  * Upload an author profile avatar image
+ * Endpoint: POST /api/v1/users/me/avatar (multipart/form-data, field: avatar)
  */
 export async function uploadAvatarImage(
   file: File | Blob,
-  authorId: string
+  _authorId?: string
 ): Promise<string> {
   if (file.size > MAX_AVATAR_SIZE) {
     throw new Error("Avatar image exceeds maximum allowed size of 2MB.");
@@ -71,19 +74,8 @@ export async function uploadAvatarImage(
     throw new Error("Invalid file type. Only image files (JPEG, PNG, WebP) are allowed.");
   }
 
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("authorId", authorId);
-  formData.append("type", "avatar");
-
   try {
-    const res = await apiClient.upload<{ url?: string; fileUrl?: string; secure_url?: string }>(
-      "/upload",
-      formData
-    );
-    const uploadedUrl = res.url || res.fileUrl || res.secure_url;
-    if (uploadedUrl) return uploadedUrl;
-    throw new Error("Upload response did not return a valid URL");
+    return await uploadUserAvatar(file);
   } catch (error) {
     console.warn("[StorageService] Backend avatar upload failed, using local fallback:", error);
     if (typeof window !== "undefined") {
