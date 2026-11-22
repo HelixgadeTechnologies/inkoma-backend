@@ -2,91 +2,210 @@ import { apiClient } from "@/src/services/api";
 import { uploadCoverImage } from "@/src/services/storageService";
 import { Story, StoryChapter, StoryStatus } from "@/types";
 
-export interface CreateStoryMetadata {
+export interface StoryChapterInput {
   id?: string;
-  authorId: string;
-  authorName: string;
-  authorAvatar?: string;
-  authorPenName?: string;
+  number?: number;
+  chapterNumber?: number;
+  title: string;
+  summary?: string;
+  synopsis?: string;
+  content?: string;
+  status?: "draft" | "published";
+}
+
+export interface CreateStoryPayload {
   title: string;
   subtitle?: string;
   synopsis: string;
-  coverImageUrl?: string;
+  coverImage: string;
   mainGenre: string;
-  subGenres: string[];
-  triggerWarnings?: string[];
-  ageRating?: string;
-  targetAudience?: string;
+  subGenres?: string[];
   storyLanguage?: string;
+  targetAudience?: string;
+  ageRating?: string;
+  triggerWarnings?: string[];
   tradition?: string;
-  status?: StoryStatus;
+  difficulty?: string;
+  tags?: string[];
+  status?: StoryStatus | "draft" | "ongoing" | "completed";
+  chapters?: StoryChapterInput[];
+}
+
+export interface CreateStoryMetadata extends Omit<Partial<CreateStoryPayload>, "chapters"> {
+  id?: string;
+  authorId?: string;
+  authorName?: string;
+  authorAvatar?: string;
+  authorPenName?: string;
+  coverImageUrl?: string;
   chapters?: StoryChapter[];
+}
+
+export interface ListStoriesOptions {
+  mainGenre?: string;
+  storyLanguage?: string;
+  status?: string;
+  search?: string;
+  sortBy?: "newest" | "popular" | "readTime" | "most_read" | "most_liked" | "trending";
+  page?: number;
+  limit?: number;
+  authorId?: string;
 }
 
 export interface PaginatedStoriesResult {
   stories: Story[];
+  total?: number;
+  page?: number;
+  limit?: number;
+  totalPages?: number;
   lastDoc: any | null;
   hasMore: boolean;
 }
 
 /**
+ * Normalizes any story JSON from the backend (Render / MongoDB) into the frontend Story interface
+ */
+export function normalizeStory(data: any): Story {
+  if (!data) return {} as Story;
+  const id = String(data._id || data.id || `story-${Date.now()}`);
+  const slug =
+    data.slug ||
+    (data.title
+      ? data.title
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+      : id);
+
+  return {
+    ...data,
+    id,
+    slug,
+    title: data.title || "Untitled Story",
+    subtitle: data.subtitle || "",
+    synopsis: data.synopsis || "",
+    coverImage: data.coverImage || data.coverImageUrl || "",
+    tradition: data.tradition || "Pan-African",
+    mainGenre: data.mainGenre || "Folklore",
+    subGenres: Array.isArray(data.subGenres) ? data.subGenres : [],
+    triggerWarnings: Array.isArray(data.triggerWarnings) ? data.triggerWarnings : [],
+    targetAudience: data.targetAudience || "All Readers",
+    tags: Array.isArray(data.tags) ? data.tags : [],
+    difficulty: data.difficulty || "Intermediate",
+    status: data.status || "ongoing",
+    authorId:
+      data.author?._id ||
+      data.author?.id ||
+      (typeof data.author === "string" ? data.author : data.authorId || ""),
+    authorName: data.authorName || data.author?.name || data.author?.displayName || "Storyteller",
+    authorPenName:
+      data.authorPenName || data.author?.penName || data.authorName || "Storyteller",
+    authorAvatar: data.authorAvatar || data.author?.avatarUrl || "",
+    totalChapters:
+      data.totalChapters || (Array.isArray(data.chapters) ? data.chapters.length : 1),
+    estimatedReadTime: data.estimatedReadTime || 1,
+    readsCount: data.readsCount || 0,
+    likesCount: data.likesCount || 0,
+    bookmarksCount: data.bookmarksCount || 0,
+    chapters: Array.isArray(data.chapters)
+      ? data.chapters.map((c: any, idx: number) => ({
+          ...c,
+          id: String(c._id || c.id || `chap-${c.number || idx + 1}`),
+          number: c.number || c.chapterNumber || idx + 1,
+          chapterNumber: c.chapterNumber || c.number || idx + 1,
+          title: c.title || `Chapter ${idx + 1}`,
+          summary: c.summary || c.synopsis || "",
+          content: c.content || "",
+          status: c.status || "published",
+          likesCount: c.likesCount || 0,
+        }))
+      : [],
+    createdAt: data.createdAt || new Date().toISOString(),
+    publishedAt: data.publishedAt || data.createdAt || new Date().toISOString(),
+    updatedAt: data.updatedAt || new Date().toISOString(),
+  };
+}
+
+/**
+ * 1. Create a New Story (POST /api/v1/stories) — Protected
+ * Creates a story matching the /studio/new payload
+ */
+export async function createStory(payload: CreateStoryPayload): Promise<Story> {
+  const res = await apiClient.post<{
+    success: boolean;
+    statusCode: number;
+    message: string;
+    data: { story: any };
+  }>("/stories", payload);
+
+  const rawStory = res?.data?.story || res?.data || res;
+  const story = normalizeStory(rawStory);
+
+  // Backup to local custom stories
+  if (typeof window !== "undefined") {
+    try {
+      const existing = localStorage.getItem("inkoma_custom_stories");
+      const list: Story[] = existing ? JSON.parse(existing) : [];
+      const updatedList = [story, ...list.filter((s) => s.id !== story.id)];
+      localStorage.setItem("inkoma_custom_stories", JSON.stringify(updatedList));
+      localStorage.removeItem("inkoma_draft_story");
+    } catch {}
+  }
+
+  return story;
+}
+
+/**
  * Creates or updates a draft story on the Render backend (MongoDB)
+ * Adapter wrapper around createStory for backward compatibility
  */
 export async function createDraftStory(
   metadata: CreateStoryMetadata,
   coverFile?: File | Blob
 ): Promise<string> {
-  const storyId = metadata.id || `story-${Date.now()}`;
-
-  let finalCoverUrl = metadata.coverImageUrl || "";
+  let finalCoverUrl = metadata.coverImageUrl || metadata.coverImage || "";
   if (coverFile) {
     try {
-      finalCoverUrl = await uploadCoverImage(coverFile, metadata.authorId, storyId);
+      finalCoverUrl = await uploadCoverImage(coverFile);
     } catch (e) {
       console.warn("[StoryService] Error uploading cover image:", e);
     }
   }
 
-  const storyPayload: Record<string, unknown> = {
-    id: storyId,
-    authorId: metadata.authorId,
-    authorName: metadata.authorName,
-    authorAvatar: metadata.authorAvatar || "",
-    authorPenName: metadata.authorPenName || metadata.authorName,
-    title: metadata.title,
+  const payload: CreateStoryPayload = {
+    title: metadata.title || "Untitled Story",
     subtitle: metadata.subtitle || "",
-    synopsis: metadata.synopsis,
-    coverImageUrl: finalCoverUrl,
-    coverImage: finalCoverUrl,
+    synopsis: metadata.synopsis || "A captivating story on INKOMA.",
+    coverImage:
+      finalCoverUrl ||
+      "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=600&auto=format&fit=crop",
     mainGenre: metadata.mainGenre || "Folklore",
     subGenres: metadata.subGenres || [],
-    triggerWarnings: metadata.triggerWarnings || [],
-    ageRating: metadata.ageRating || "General Audience",
-    targetAudience: metadata.targetAudience || "All Readers",
     storyLanguage: metadata.storyLanguage || "English",
+    targetAudience: metadata.targetAudience || "Young Adult (YA)",
+    ageRating: metadata.ageRating || "16+",
+    triggerWarnings: metadata.triggerWarnings || [],
     tradition: metadata.tradition || "Pan-African",
-    totalChapters: metadata.chapters?.length || 1,
-    status: metadata.status || "draft",
-    updatedAt: new Date().toISOString(),
+    difficulty: metadata.difficulty || "Intermediate",
+    tags: metadata.tags || (metadata.subGenres ? [metadata.mainGenre || "Folklore", ...metadata.subGenres] : ["Folklore"]),
+    status: metadata.status || "ongoing",
+    chapters: metadata.chapters?.map((c, idx) => ({
+      title: c.title || `Chapter ${idx + 1}`,
+      summary: c.summary || c.synopsis || "",
+      content: c.content || "",
+      status: c.status || "published",
+    })),
   };
 
   try {
-    const res = await apiClient.post<{ id?: string; _id?: string }>(
-      "/stories",
-      storyPayload
-    );
-    const returnedId = res.id || res._id || storyId;
-
-    if (metadata.chapters && metadata.chapters.length > 0) {
-      for (const chap of metadata.chapters) {
-        await saveChapterDraft(returnedId, chap);
-      }
-    }
-    return returnedId;
+    const created = await createStory(payload);
+    return created.id;
   } catch (err) {
     console.warn("[StoryService] Backend offline or error; storing draft locally:", err);
+    const storyId = metadata.id || `story-${Date.now()}`;
     if (typeof window !== "undefined") {
-      const localDraft = { ...storyPayload, id: storyId, chapters: metadata.chapters || [] };
+      const localDraft = { ...payload, id: storyId, chapters: metadata.chapters || [] };
       localStorage.setItem("inkoma_draft_story", JSON.stringify(localDraft));
 
       const rawCustom = localStorage.getItem("inkoma_custom_stories");
@@ -96,6 +215,205 @@ export async function createDraftStory(
     }
     return storyId;
   }
+}
+
+/**
+ * 2. List Stories (GET /api/v1/stories) — Public
+ * Feed and discovery with pagination and filtering
+ */
+export async function listStories(options: ListStoriesOptions = {}): Promise<PaginatedStoriesResult> {
+  const {
+    mainGenre,
+    storyLanguage,
+    status,
+    search,
+    sortBy,
+    page = 1,
+    limit = 12,
+  } = options;
+
+  const params: Record<string, string | number | undefined> = {
+    page,
+    limit,
+  };
+  if (mainGenre && mainGenre !== "all") params.mainGenre = mainGenre;
+  if (storyLanguage) params.storyLanguage = storyLanguage;
+  if (status && status !== "all") params.status = status;
+  if (search) params.search = search;
+  if (sortBy) params.sortBy = sortBy;
+
+  try {
+    const res = await apiClient.get<any>("/stories", { params });
+    const rawStories =
+      res?.data?.stories ||
+      res?.stories ||
+      (Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []);
+
+    const normalized = rawStories.map(normalizeStory);
+    const total = res?.data?.total || res?.total || normalized.length;
+    const totalPages =
+      res?.data?.totalPages || res?.totalPages || Math.ceil(total / limit) || 1;
+    const currentPage = res?.data?.page || res?.page || page;
+
+    return {
+      stories: normalized,
+      total,
+      page: currentPage,
+      limit,
+      totalPages,
+      hasMore: currentPage < totalPages,
+      lastDoc: null,
+    };
+  } catch (error) {
+    console.warn("[StoryService] Error fetching stories from backend:", error);
+    const local =
+      typeof window !== "undefined"
+        ? (() => {
+            try {
+              const raw = localStorage.getItem("inkoma_custom_stories");
+              return raw ? JSON.parse(raw) : [];
+            } catch {
+              return [];
+            }
+          })()
+        : [];
+
+    return {
+      stories: local.map(normalizeStory),
+      total: local.length,
+      page: 1,
+      limit,
+      totalPages: 1,
+      hasMore: false,
+      lastDoc: null,
+    };
+  }
+}
+
+/**
+ * Alias for backward compatibility with existing components
+ */
+export async function getPublishedStories(options: {
+  limitCount?: number;
+  startAfterDoc?: any;
+} = {}): Promise<PaginatedStoriesResult> {
+  return listStories({ limit: options.limitCount || 20 });
+}
+
+/**
+ * 3. Get Story by ID or Slug (GET /api/v1/stories/:idOrSlug) — Public
+ * Supports querying by either MongoDB _id or clean URL slug. Automatically increments readsCount.
+ */
+export async function getStoryById(idOrSlug: string): Promise<Story | null> {
+  if (!idOrSlug) return null;
+  try {
+    const res = await apiClient.get<any>(`/stories/${encodeURIComponent(idOrSlug)}`);
+    const rawStory = res?.data?.story || res?.data || res?.story || res;
+    if (rawStory && (rawStory._id || rawStory.id || rawStory.title)) {
+      return normalizeStory(rawStory);
+    }
+  } catch (error) {
+    console.warn(`[StoryService] Backend getStoryById error for ${idOrSlug}:`, error);
+  }
+
+  // Fallback to local storage
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem("inkoma_custom_stories");
+      if (raw) {
+        const list: Story[] = JSON.parse(raw);
+        const match = list.find(
+          (s) =>
+            s.id === idOrSlug ||
+            s.slug === idOrSlug ||
+            (s.aliases && s.aliases.includes(idOrSlug))
+        );
+        if (match) return normalizeStory(match);
+      }
+    } catch {}
+  }
+
+  return null;
+}
+
+/**
+ * 4. Update Story (PUT /api/v1/stories/:id) — Protected (Author or Admin)
+ * Update metadata, edit existing chapters, or add new chapters progressively.
+ */
+export async function updateStory(
+  id: string,
+  updates: Partial<CreateStoryPayload>
+): Promise<Story> {
+  const res = await apiClient.put<any>(`/stories/${encodeURIComponent(id)}`, updates);
+  const rawStory = res?.data?.story || res?.data || res?.story || res;
+  const story = normalizeStory(rawStory);
+
+  if (typeof window !== "undefined") {
+    try {
+      const existing = localStorage.getItem("inkoma_custom_stories");
+      const list: Story[] = existing ? JSON.parse(existing) : [];
+      const updated = list.map((s) => (s.id === id ? { ...s, ...story } : s));
+      localStorage.setItem("inkoma_custom_stories", JSON.stringify(updated));
+    } catch {}
+  }
+
+  return story;
+}
+
+/**
+ * 5. Delete Story (DELETE /api/v1/stories/:id) — Protected (Author or Admin)
+ * Permanently remove a story.
+ */
+export async function deleteStory(id: string): Promise<boolean> {
+  try {
+    await apiClient.delete(`/stories/${encodeURIComponent(id)}`);
+  } catch (error) {
+    console.warn(`[StoryService] Failed to delete story ${id} on backend:`, error);
+  }
+
+  if (typeof window !== "undefined") {
+    try {
+      const existing = localStorage.getItem("inkoma_custom_stories");
+      if (existing) {
+        const list: Story[] = JSON.parse(existing);
+        const updated = list.filter((s) => s.id !== id);
+        localStorage.setItem("inkoma_custom_stories", JSON.stringify(updated));
+      }
+    } catch {}
+  }
+
+  return true;
+}
+
+/**
+ * Fetches stories created by a specific author
+ */
+export async function getStoriesByAuthor(authorId: string): Promise<Story[]> {
+  const localCustom: Story[] =
+    typeof window !== "undefined"
+      ? (() => {
+          try {
+            const raw = localStorage.getItem("inkoma_custom_stories");
+            return raw ? JSON.parse(raw) : [];
+          } catch {
+            return [];
+          }
+        })()
+      : [];
+
+  try {
+    const res = await apiClient.get<any>("/stories", {
+      params: { authorId },
+    });
+    const rawList = res?.data?.stories || res?.stories || (Array.isArray(res) ? res : []);
+    if (Array.isArray(rawList)) {
+      return rawList.map(normalizeStory);
+    }
+  } catch (error) {
+    console.warn("[StoryService] Error fetching author stories from backend:", error);
+  }
+
+  return localCustom.filter((s: Story) => s.authorId === authorId || !s.authorId).map(normalizeStory);
 }
 
 /**
@@ -120,7 +438,8 @@ export async function saveChapterDraft(
     synopsis: chapterData.synopsis || chapterData.summary || "",
     content: chapterData.content || "",
     wordCount,
-    estimatedReadTime: chapterData.estimatedReadTime || Math.max(1, Math.ceil(wordCount / 200)),
+    estimatedReadTime:
+      chapterData.estimatedReadTime || Math.max(1, Math.ceil(wordCount / 200)),
     status: chapterData.status || "draft",
     updatedAt: new Date().toISOString(),
   };
@@ -141,36 +460,9 @@ export async function getStoryPreview(storyId: string): Promise<{
   story: Story | null;
   chapters: StoryChapter[];
 }> {
-  try {
-    const res = await apiClient.get<{ story?: Story; chapters?: StoryChapter[] } | Story>(
-      `/stories/${storyId}/preview`
-    );
-    if (res && "story" in res && res.story) {
-      return {
-        story: res.story,
-        chapters: res.chapters || [],
-      };
-    }
-    if (res && "title" in res) {
-      const storyObj = res as Story;
-      const chapters = await getStoryChapters(storyId);
-      return { story: storyObj, chapters };
-    }
-  } catch (error) {
-    console.warn("[StoryService] Error fetching story preview from backend:", error);
-  }
-
-  // Fallback to local draft
-  if (typeof window !== "undefined") {
-    try {
-      const raw = localStorage.getItem("inkoma_draft_story");
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed.id === storyId) {
-          return { story: parsed, chapters: parsed.chapters || [] };
-        }
-      }
-    } catch {}
+  const story = await getStoryById(storyId);
+  if (story) {
+    return { story, chapters: story.chapters || [] };
   }
 
   return { story: null, chapters: [] };
@@ -181,143 +473,10 @@ export async function getStoryPreview(storyId: string): Promise<{
  */
 export async function publishStory(storyId: string): Promise<void> {
   try {
-    await apiClient.patch(`/stories/${storyId}/publish`, { status: "published" });
+    await updateStory(storyId, { status: "ongoing" });
   } catch (error) {
     console.warn("[StoryService] Failed to publish on backend, updating locally:", error);
   }
-
-  if (typeof window !== "undefined") {
-    try {
-      const rawCustom = localStorage.getItem("inkoma_custom_stories");
-      if (rawCustom) {
-        const list: Story[] = JSON.parse(rawCustom);
-        const updated = list.map((s) =>
-          s.id === storyId
-            ? { ...s, status: "published" as StoryStatus, publishedAt: new Date().toISOString() }
-            : s
-        );
-        localStorage.setItem("inkoma_custom_stories", JSON.stringify(updated));
-      }
-    } catch {}
-  }
-}
-
-/**
- * Fetches published stories for the Home / "For You" page (FYP)
- */
-export async function getPublishedStories(options: {
-  limitCount?: number;
-  startAfterDoc?: any;
-} = {}): Promise<PaginatedStoriesResult> {
-  const { limitCount = 10 } = options;
-
-  try {
-    const res = await apiClient.get<{ stories: Story[]; hasMore?: boolean } | Story[]>("/stories", {
-      params: { status: "published", limit: limitCount },
-    });
-
-    const storiesList: Story[] = Array.isArray(res) ? res : res?.stories || [];
-    const normalized = storiesList.map((data: any) => ({
-      ...data,
-      id: data.id || data._id,
-      coverImage: data.coverImageUrl || data.coverImage,
-      publishedAt: data.publishedAt || new Date().toISOString(),
-      updatedAt: data.updatedAt || new Date().toISOString(),
-    }));
-
-    return {
-      stories: normalized,
-      lastDoc: null,
-      hasMore: Array.isArray(res) ? res.length === limitCount : Boolean(res?.hasMore),
-    };
-  } catch (error) {
-    console.warn("[StoryService] Error fetching published stories from backend:", error);
-    // Return empty array or local custom stories
-    const localCustom: Story[] =
-      typeof window !== "undefined"
-        ? (() => {
-            try {
-              const raw = localStorage.getItem("inkoma_custom_stories");
-              return raw ? JSON.parse(raw) : [];
-            } catch {
-              return [];
-            }
-          })()
-        : [];
-
-    return {
-      stories: localCustom.filter((s) => s.status === "published"),
-      lastDoc: null,
-      hasMore: false,
-    };
-  }
-}
-
-/**
- * Fetches public story details by ID
- */
-export async function getStoryById(storyId: string): Promise<Story | null> {
-  try {
-    const data = await apiClient.get<any>(`/stories/${storyId}`);
-    if (data) {
-      return {
-        ...data,
-        id: data.id || data._id,
-        coverImage: data.coverImageUrl || data.coverImage,
-      } as Story;
-    }
-  } catch (error) {
-    console.warn("[StoryService] Backend getStoryById error:", error);
-  }
-
-  // Local storage check
-  if (typeof window !== "undefined") {
-    try {
-      const rawCustom = localStorage.getItem("inkoma_custom_stories");
-      if (rawCustom) {
-        const list: Story[] = JSON.parse(rawCustom);
-        const match = list.find((s) => s.id === storyId);
-        if (match) return match;
-      }
-    } catch {}
-  }
-
-  return null;
-}
-
-/**
- * Fetches stories created by a specific author
- */
-export async function getStoriesByAuthor(authorId: string): Promise<Story[]> {
-  const localCustom: Story[] =
-    typeof window !== "undefined"
-      ? (() => {
-          try {
-            const raw = localStorage.getItem("inkoma_custom_stories");
-            return raw ? JSON.parse(raw) : [];
-          } catch {
-            return [];
-          }
-        })()
-      : [];
-
-  try {
-    const res = await apiClient.get<any[]>("/stories", {
-      params: { authorId },
-    });
-    if (Array.isArray(res)) {
-      const fetched: Story[] = res.map((data) => ({
-        ...data,
-        id: data.id || data._id,
-        coverImage: data.coverImageUrl || data.coverImage,
-      }));
-      return fetched;
-    }
-  } catch (error) {
-    console.warn("[StoryService] Error fetching author stories from backend:", error);
-  }
-
-  return localCustom.filter((s: Story) => s.authorId === authorId || !s.authorId);
 }
 
 /**
@@ -325,8 +484,10 @@ export async function getStoriesByAuthor(authorId: string): Promise<Story[]> {
  */
 export async function getStoryChapters(storyId: string): Promise<StoryChapter[]> {
   try {
-    const res = await apiClient.get<StoryChapter[]>(`/stories/${storyId}/chapters`);
-    if (Array.isArray(res)) return res;
+    const story = await getStoryById(storyId);
+    if (story?.chapters && story.chapters.length > 0) {
+      return story.chapters;
+    }
   } catch (error) {
     console.warn("[StoryService] Error fetching chapters from backend:", error);
   }
@@ -341,13 +502,13 @@ export async function getChapterContent(
   storyId: string,
   chapterNumber: number
 ): Promise<StoryChapter | null> {
-  try {
-    const res = await apiClient.get<StoryChapter>(`/stories/${storyId}/chapters/${chapterNumber}`);
-    if (res) return res;
-  } catch (error) {
-    console.warn("[StoryService] Error fetching chapter content from backend:", error);
+  const story = await getStoryById(storyId);
+  if (story?.chapters) {
+    const chapter = story.chapters.find(
+      (c) => c.number === chapterNumber || c.chapterNumber === chapterNumber
+    );
+    if (chapter) return chapter;
   }
-
   return null;
 }
 
@@ -364,7 +525,6 @@ export async function toggleBookmark(
     });
     return res;
   } catch {
-    // Local fallback
     if (typeof window !== "undefined") {
       try {
         const raw = localStorage.getItem("inkoma_bookmarks");
@@ -392,7 +552,6 @@ export async function toggleLike(
     });
     return res;
   } catch {
-    // Local fallback
     if (typeof window !== "undefined") {
       try {
         const raw = localStorage.getItem("inkoma_likes");

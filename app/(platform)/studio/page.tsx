@@ -21,10 +21,11 @@ import {
   PenLine,
   BookOpen,
   Pencil,
+  Trash2,
 } from "lucide-react";
 import { AuthGuard } from "@/components/shared/auth-guard";
 import { useAuth } from "@/hooks/useAuth";
-import { getStoriesByAuthor } from "@/src/services/storyService";
+import { getStoriesByAuthor, deleteStory } from "@/src/services/storyService";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
@@ -125,6 +126,15 @@ export default function StudioPage() {
       isMounted = false;
     };
   }, [authUser?.id]);
+
+  const handleDeleteStory = async (storyId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (window.confirm("Are you sure you want to permanently delete this story?")) {
+      await deleteStory(storyId);
+      setStories((prev) => prev.filter((s) => s.id !== storyId));
+    }
+  };
 
   const statsStories = stories.length;
   const statsChapters = stories.reduce((acc, s) => acc + (s.totalChapters || s.chapters?.length || 0), 0);
@@ -377,12 +387,13 @@ export default function StudioPage() {
                       <Heart className="w-3.5 h-3.5" />
                       <span>{formatCount(story.likesCount)}</span>
                     </div>
-                    {/* Overflow button — stops propagation so it doesn't trigger the Link */}
+                    {/* Delete Story Button */}
                     <button
-                      onClick={(e) => e.preventDefault()}
-                      className="p-1 rounded-lg hover:bg-stone-200 transition-colors"
+                      onClick={(e) => handleDeleteStory(story.id, e)}
+                      title="Delete Story"
+                      className="p-1 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                     >
-                      <MoreHorizontal className="w-4 h-4 text-stone-400" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>

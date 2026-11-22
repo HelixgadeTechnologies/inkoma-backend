@@ -4,15 +4,15 @@ const MAX_COVER_SIZE = 5 * 1024 * 1024; // 5 MB
 const MAX_AVATAR_SIZE = 2 * 1024 * 1024; // 2 MB
 
 /**
- * Upload a story cover image to the Render backend (MongoDB/Cloud Storage)
- * Fallback to local object URL if backend is unreachable during offline testing
+ * Upload a custom story cover image directly to Cloudinary via the Render backend
+ * Endpoint: POST /api/v1/stories/cover (multipart/form-data, field: coverImage)
  */
 export async function uploadCoverImage(
   file: File | Blob,
-  authorId: string,
-  storyId: string
+  _authorId?: string,
+  _storyId?: string
 ): Promise<string> {
-  // Size limit validation
+  // Size limit validation (5MB)
   if (file.size > MAX_COVER_SIZE) {
     throw new Error("Cover image exceeds maximum allowed size of 5MB.");
   }
@@ -23,21 +23,32 @@ export async function uploadCoverImage(
   }
 
   const formData = new FormData();
-  formData.append("file", file);
-  formData.append("authorId", authorId);
-  formData.append("storyId", storyId);
-  formData.append("type", "cover");
+  formData.append("coverImage", file);
 
   try {
-    const res = await apiClient.upload<{ url?: string; fileUrl?: string; secure_url?: string }>(
-      "/upload",
-      formData
-    );
-    const uploadedUrl = res.url || res.fileUrl || res.secure_url;
+    const res = await apiClient.upload<{
+      success?: boolean;
+      statusCode?: number;
+      message?: string;
+      data?: { url?: string; secure_url?: string; coverImage?: string; coverUrl?: string };
+      url?: string;
+      secure_url?: string;
+      coverUrl?: string;
+    }>("/stories/cover", formData);
+
+    const uploadedUrl =
+      res?.data?.url ||
+      res?.data?.secure_url ||
+      res?.data?.coverImage ||
+      res?.data?.coverUrl ||
+      res?.url ||
+      res?.secure_url ||
+      res?.coverUrl;
+
     if (uploadedUrl) return uploadedUrl;
-    throw new Error("Upload response did not return a valid URL");
+    throw new Error("Upload response did not return a valid CDN URL");
   } catch (error) {
-    console.warn("[StorageService] Backend upload failed, using local object URL fallback:", error);
+    console.warn("[StorageService] Backend cover upload failed, using local object URL fallback:", error);
     if (typeof window !== "undefined") {
       return URL.createObjectURL(file);
     }

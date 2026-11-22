@@ -38,7 +38,8 @@ import { ProseRenderer } from "@/components/features/editor/prose-renderer";
 import { Story, StoryChapter, StoryStatus } from "@/types";
 import { MAIN_GENRES, SUB_GENRES, TRIGGER_WARNINGS } from "@/config/genres";
 import { useAuth } from "@/hooks/useAuth";
-import { createDraftStory, publishStory } from "@/src/services/storyService";
+import { createStory, createDraftStory, publishStory, CreateStoryPayload } from "@/src/services/storyService";
+import { uploadCoverImage } from "@/src/services/storageService";
 import { AuthGuard } from "@/components/shared/auth-guard";
 
 // SafeImage component to guarantee NO broken image displays
@@ -406,39 +407,52 @@ export default function StudioNewStoryPage() {
     setIsPublishing(true);
 
     const publishedTag = status === "completed" ? "Completed" : "Ongoing";
-    const newStoryId = `story-${Date.now()}`;
+    let newStoryId = `story-${Date.now()}`;
     const authorId = user?.id || "";
     const authorName = profile?.displayName || user?.displayName || "Storyteller";
     const authorAvatar = profile?.avatarUrl || "";
 
-    // Save to Firestore via storyService
-    try {
-      await createDraftStory(
-        {
-          id: newStoryId,
-          authorId,
-          authorName,
-          authorAvatar,
-          title: title.trim() || "Untitled Story",
-          subtitle: subtitle.trim() || undefined,
-          synopsis: synopsis.trim() || "A captivating story on INKOMA.",
-          coverImageUrl: coverImage || COVER_TEMPLATES[0].url,
-          mainGenre: mainGenre || "Folklore",
-          subGenres: subGenres,
-          triggerWarnings: selectedTriggerWarnings,
-          ageRating: ageRating || "General Audience",
-          targetAudience: targetAudience || "All Ages",
-          storyLanguage: storyLanguage || "English",
-          tradition: "Pan-African",
-          status: status,
-          chapters: chapters,
-        },
-        coverFile || undefined
-      );
+    // 1. Upload custom cover image to Cloudinary if file was provided
+    let finalCoverUrl = coverImage || COVER_TEMPLATES[0].url;
+    if (coverFile) {
+      try {
+        finalCoverUrl = await uploadCoverImage(coverFile);
+      } catch (uploadErr) {
+        console.warn("[Studio] Cover upload warning:", uploadErr);
+      }
+    }
 
-      await publishStory(newStoryId);
+    // 2. Submit story payload to POST /api/v1/stories
+    const storyPayload: CreateStoryPayload = {
+      title: title.trim() || "Untitled Story",
+      subtitle: subtitle.trim() || undefined,
+      synopsis: synopsis.trim() || "A captivating story on INKOMA.",
+      coverImage: finalCoverUrl,
+      mainGenre: mainGenre || "Romance",
+      subGenres: subGenres || [],
+      storyLanguage: storyLanguage || "English",
+      targetAudience: targetAudience || "Young Adult (YA)",
+      ageRating: ageRating || "16+",
+      triggerWarnings: selectedTriggerWarnings || [],
+      tradition: "Pan-African",
+      difficulty: "Intermediate",
+      tags: [publishedTag, mainGenre, ...subGenres].filter(Boolean),
+      status: status || "ongoing",
+      chapters: chapters.map((c, idx) => ({
+        title: c.title || `Chapter ${idx + 1}`,
+        summary: c.summary || c.synopsis || "",
+        content: c.content || "",
+        status: (c.status as "draft" | "published") || "published",
+      })),
+    };
+
+    try {
+      const createdStory = await createStory(storyPayload);
+      if (createdStory?.id) {
+        newStoryId = createdStory.id;
+      }
     } catch (cloudErr) {
-      console.warn("[Studio] Cloud publish error, local fallback active:", cloudErr);
+      console.warn("[Studio] Cloud story creation error, local fallback active:", cloudErr);
     }
 
     const newStory: Story = {
