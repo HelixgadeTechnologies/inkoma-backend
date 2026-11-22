@@ -73,8 +73,15 @@ export function Navbar() {
 
         {/* Brand Logo - Routes to /explore when logged in, or / for guests */}
         <Link href={isAuthenticated ? "/explore" : "/"} className="flex items-center space-x-3 group">
-          <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-[#D4AF37] text-stone-950 p-2 shadow-md group-hover:scale-105 transition-transform">
-            <BookOpen className="h-6 w-6 stroke-[2.2]" />
+          <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-white p-1 border border-stone-200/80 shadow-md group-hover:scale-105 group-hover:border-[#D4AF37]/50 transition-all overflow-hidden shrink-0">
+            <Image
+              src="/images/inkoma-logo.png"
+              alt="Inkoma Logo"
+              width={40}
+              height={40}
+              className="object-contain h-full w-full"
+              priority
+            />
           </div>
           <div className="flex flex-col">
             <span className="font-sans text-xl font-extrabold tracking-tight text-stone-900 group-hover:text-[#B8860B] transition-colors leading-none">

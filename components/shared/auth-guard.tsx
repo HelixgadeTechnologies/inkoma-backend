@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
 import { BookOpen, Lock, Sparkles, UserPlus, LogIn, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -60,8 +61,15 @@ export function AuthGuard({
       <div className="flex min-h-[65vh] w-full items-center justify-center px-4 py-12">
         <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-stone-200 bg-white/95 p-8 text-center shadow-xl backdrop-blur-md">
           {/* Top Decorative Emblem */}
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#D4AF37]/15 text-[#B8860B] ring-8 ring-[#D4AF37]/10">
-            <Lock className="h-7 w-7 stroke-[2.2]" />
+          <div className="relative mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-white p-2 border border-stone-200 shadow-lg shadow-[#D4AF37]/10 ring-8 ring-[#D4AF37]/10 overflow-hidden">
+            <Image
+              src="/images/inkoma-logo.png"
+              alt="Inkoma Logo"
+              width={72}
+              height={72}
+              className="object-contain h-full w-full"
+              priority
+            />
           </div>
 
           <div className="inline-flex items-center gap-1.5 rounded-full bg-[#D4AF37]/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#B8860B] mb-3">

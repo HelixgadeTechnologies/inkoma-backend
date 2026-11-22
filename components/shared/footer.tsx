@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Heart, Globe, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -52,8 +53,14 @@ export function Footer() {
           {/* Brand Col */}
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-[#D4AF37] text-stone-950 p-2 shadow-md">
-                <span className="font-extrabold text-lg">📖</span>
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-white p-1 border border-stone-200 shadow-sm overflow-hidden shrink-0">
+                <Image
+                  src="/images/inkoma-logo.png"
+                  alt="Inkoma Logo"
+                  width={36}
+                  height={36}
+                  className="object-contain h-full w-full"
+                />
               </div>
               <span className="font-sans text-xl font-extrabold tracking-tight text-stone-900">
                 INKOMA
