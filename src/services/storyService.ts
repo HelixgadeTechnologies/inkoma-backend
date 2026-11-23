@@ -656,3 +656,117 @@ export async function toggleLike(
     return { isLiked: true };
   }
 }
+
+// ─── PDF Extraction & Import Engine ──────────────────────────────────────────
+
+export interface ParsedPdfChapter {
+  number: number;
+  chapterNumber?: number;
+  title: string;
+  content: string;
+  wordCount: number;
+  readTime?: number;
+  estimatedReadTime?: number;
+  summary?: string;
+  synopsis?: string;
+}
+
+export interface ParsedPdfResult {
+  detectedTitle?: string;
+  title?: string;
+  totalChapters: number;
+  totalWordCount: number;
+  estimatedTotalReadTime: number;
+  chapters: ParsedPdfChapter[];
+}
+
+export interface ImportPdfPayload {
+  title?: string;
+  subtitle?: string;
+  synopsis?: string;
+  mainGenre?: string;
+  subGenres?: string[];
+  storyLanguage?: string;
+  tradition?: string;
+  targetAudience?: string;
+  ageRating?: string;
+  coverImage?: string;
+  status?: StoryStatus | "draft" | "ongoing" | "completed";
+}
+
+/**
+ * Parses an uploaded PDF manuscript via POST /api/v1/stories/parse-pdf
+ * Extracts document streams, segments chapters, detects headings,
+ * and computes word counts and reading metrics without saving to database.
+ */
+export async function parsePdfManuscript(file: File): Promise<ParsedPdfResult> {
+  if (file.size > 25 * 1024 * 1024) {
+    throw new Error("PDF manuscript exceeds the maximum allowed size of 25MB.");
+  }
+  if (file.type && file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+    throw new Error("Invalid file format. Please upload a valid PDF manuscript (.pdf).");
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await apiClient.upload<any>("/stories/parse-pdf", formData);
+  const data = res?.data || res || {};
+
+  const chapters: ParsedPdfChapter[] = (data.chapters || []).map((c: any, idx: number) => ({
+    number: Number(c.number || c.chapterNumber || idx + 1),
+    chapterNumber: Number(c.number || c.chapterNumber || idx + 1),
+    title: c.title || `Chapter ${idx + 1}`,
+    content: c.content || "",
+    wordCount: Number(c.wordCount || (c.content ? c.content.trim().split(/\s+/).filter(Boolean).length : 0)),
+    readTime: Number(c.readTime || c.estimatedReadTime || Math.ceil((c.wordCount || 1) / 200)),
+    estimatedReadTime: Number(c.estimatedReadTime || c.readTime || Math.ceil((c.wordCount || 1) / 200)),
+    summary: c.summary || c.synopsis || (c.content ? c.content.slice(0, 280).trim() + "..." : ""),
+    synopsis: c.synopsis || c.summary || (c.content ? c.content.slice(0, 280).trim() + "..." : ""),
+  }));
+
+  const totalWords = data.totalWordCount || chapters.reduce((acc, c) => acc + c.wordCount, 0);
+
+  return {
+    detectedTitle: data.detectedTitle || data.title || file.name.replace(/\.[^/.]+$/, ""),
+    totalChapters: data.totalChapters || chapters.length,
+    totalWordCount: totalWords,
+    estimatedTotalReadTime: data.estimatedTotalReadTime || Math.ceil(totalWords / 200),
+    chapters,
+  };
+}
+
+/**
+ * Parses and imports an uploaded PDF manuscript directly into MongoDB as a draft story
+ * via POST /api/v1/stories/import-pdf
+ */
+export async function importPdfManuscript(
+  file: File,
+  metadata?: ImportPdfPayload
+): Promise<Story> {
+  if (file.size > 25 * 1024 * 1024) {
+    throw new Error("PDF manuscript exceeds the maximum allowed size of 25MB.");
+  }
+  if (file.type && file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+    throw new Error("Invalid file format. Please upload a valid PDF manuscript (.pdf).");
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  if (metadata) {
+    Object.entries(metadata).forEach(([k, v]) => {
+      if (v !== undefined && v !== null) {
+        if (Array.isArray(v)) {
+          formData.append(k, JSON.stringify(v));
+        } else {
+          formData.append(k, String(v));
+        }
+      }
+    });
+  }
+
+  const res = await apiClient.upload<any>("/stories/import-pdf", formData);
+  const storyData = res?.data || res || {};
+  return normalizeStory(storyData);
+}

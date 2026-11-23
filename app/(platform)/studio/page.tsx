@@ -22,10 +22,12 @@ import {
   BookOpen,
   Pencil,
   Trash2,
+  FileUp,
 } from "lucide-react";
 import { AuthGuard } from "@/components/shared/auth-guard";
 import { useAuth } from "@/hooks/useAuth";
 import { getStoriesByAuthor, deleteStory } from "@/src/services/storyService";
+import { PdfStoryUploader } from "@/components/features/editor/pdf-story-uploader";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
@@ -86,6 +88,7 @@ const WRITER_TOOLS = [
 export default function StudioPage() {
   const [overviewPeriod, setOverviewPeriod] = useState("This Month");
   const [showPeriodMenu, setShowPeriodMenu] = useState(false);
+  const [isPdfUploaderOpen, setIsPdfUploaderOpen] = useState(false);
   const { user: authUser, profile } = useAuth();
 
   const [stories, setStories] = useState<Story[]>([]);
@@ -164,10 +167,10 @@ export default function StudioPage() {
       </div>
 
       {/* ── 2. Quick Action Cards ── */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {/* Create New Story */}
         <Link href="/studio/new">
-          <div className="group flex items-center gap-3 p-4 rounded-2xl border border-stone-200 bg-white hover:border-[#D4AF37]/50 hover:shadow-md transition-all cursor-pointer">
+          <div className="group flex items-center gap-3 p-4 rounded-2xl border border-stone-200 bg-white hover:border-[#D4AF37]/50 hover:shadow-md transition-all cursor-pointer h-full">
             <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center shrink-0 group-hover:bg-[#D4AF37]/20 transition-colors">
               <PenLine className="w-5 h-5 text-[#D4AF37]" />
             </div>
@@ -183,9 +186,28 @@ export default function StudioPage() {
           </div>
         </Link>
 
+        {/* Upload PDF Manuscript */}
+        <div
+          onClick={() => setIsPdfUploaderOpen(true)}
+          className="group flex items-center gap-3 p-4 rounded-2xl border border-stone-200 bg-white hover:border-[#D4AF37]/50 hover:shadow-md transition-all cursor-pointer h-full"
+        >
+          <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/15 flex items-center justify-center shrink-0 group-hover:bg-[#D4AF37]/25 transition-colors">
+            <FileUp className="w-5 h-5 text-[#B8860B]" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-bold text-stone-900 leading-tight">
+              Upload PDF Story
+            </p>
+            <p className="text-xs text-stone-500 leading-tight mt-0.5">
+              Auto-segment chapters &amp; stats.
+            </p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
+        </div>
+
         {/* Continue Writing */}
         <Link href="/studio/new">
-          <div className="group flex items-center gap-3 p-4 rounded-2xl border border-stone-200 bg-white hover:border-[#D4AF37]/50 hover:shadow-md transition-all cursor-pointer">
+          <div className="group flex items-center gap-3 p-4 rounded-2xl border border-stone-200 bg-white hover:border-[#D4AF37]/50 hover:shadow-md transition-all cursor-pointer h-full">
             <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center shrink-0 group-hover:bg-[#D4AF37]/20 transition-colors">
               <BookOpen className="w-5 h-5 text-[#D4AF37]" />
             </div>
@@ -477,6 +499,15 @@ export default function StudioPage() {
           </div>
         </div>
       </div>
+
+      {/* PDF Manuscript Upload Dialog */}
+      <PdfStoryUploader
+        open={isPdfUploaderOpen}
+        onOpenChange={setIsPdfUploaderOpen}
+        onImportedSuccess={(story) => {
+          setStories((prev) => [story, ...prev.filter((s) => s.id !== story.id)]);
+        }}
+      />
 
     </div>
     </AuthGuard>

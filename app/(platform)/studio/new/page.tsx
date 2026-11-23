@@ -28,6 +28,7 @@ import {
   Sparkles,
   ShieldAlert,
   Globe,
+  FileUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +42,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { createStory, createDraftStory, publishStory, CreateStoryPayload } from "@/src/services/storyService";
 import { uploadCoverImage } from "@/src/services/storageService";
 import { AuthGuard } from "@/components/shared/auth-guard";
+import { PdfStoryUploader } from "@/components/features/editor/pdf-story-uploader";
 
 // SafeImage component to guarantee NO broken image displays
 function SafeImage({
@@ -249,6 +251,19 @@ export default function StudioNewStoryPage() {
   const [saved, setSaved] = React.useState(false);
   const [isPublishing, setIsPublishing] = React.useState(false);
   const [coverFile, setCoverFile] = React.useState<File | null>(null);
+  const [isPdfUploaderOpen, setIsPdfUploaderOpen] = React.useState(false);
+  const [pdfSuccessBanner, setPdfSuccessBanner] = React.useState<{ title: string; count: number } | null>(null);
+
+  const handlePdfLoadedToEditor = (data: { title: string; chapters: StoryChapter[] }) => {
+    if (data.title) setTitle(data.title);
+    if (data.chapters && data.chapters.length > 0) {
+      setChapters(data.chapters);
+      setSelectedChapterId(data.chapters[0].id);
+      setPdfSuccessBanner({ title: data.title, count: data.chapters.length });
+      saveDraftToStorage(1);
+      setTimeout(() => setPdfSuccessBanner(null), 8000);
+    }
+  };
 
   // Save draft state to localStorage
   const saveDraftToStorage = (stepToSave: number = activeStep) => {
@@ -666,9 +681,69 @@ export default function StudioNewStoryPage() {
       {/* STEP 1: STORY DETAILS FORM CARD */}
       {activeStep === 1 && (
         <div className="space-y-6 max-w-3xl mx-auto animate-in fade-in duration-200">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-white tracking-tight">
-            Create Your Story
-          </h1>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-white tracking-tight">
+              Create Your Story
+            </h1>
+
+            <Button
+              type="button"
+              onClick={() => setIsPdfUploaderOpen(true)}
+              className="bg-[#D4AF37] hover:bg-[#c49f27] text-stone-950 font-bold text-xs rounded-xl shadow-xs self-start sm:self-auto gap-1.5"
+            >
+              <FileUp className="w-3.5 h-3.5" />
+              <span>Import Manuscript PDF</span>
+            </Button>
+          </div>
+
+          {/* Success notification if manuscript just imported */}
+          {pdfSuccessBanner && (
+            <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-center justify-between gap-3 animate-in fade-in">
+              <div className="flex items-center gap-2.5">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                <div>
+                  <p className="font-bold">Manuscript Loaded Successfully!</p>
+                  <p className="text-emerald-700">
+                    "{pdfSuccessBanner.title}" has been populated with {pdfSuccessBanner.count} chapters.
+                  </p>
+                </div>
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => setActiveStep(3)}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shrink-0"
+              >
+                Review Chapters
+              </Button>
+            </div>
+          )}
+
+          {/* Quick PDF Import Callout Banner */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-5 rounded-2xl bg-[#FAF8F5] dark:bg-[#18171f] border border-[#D4AF37]/30 shadow-xs">
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/15 flex items-center justify-center text-[#B8860B] shrink-0">
+                <FileUp className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs sm:text-sm font-bold text-stone-900 dark:text-stone-100 font-serif">
+                  Have an existing PDF manuscript?
+                </p>
+                <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                  Auto-extracts chapters, prologues, acts, titles, word counts, and estimated reading times.
+                </p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsPdfUploaderOpen(true)}
+              className="border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-200 hover:bg-white dark:hover:bg-stone-800 font-bold text-xs rounded-xl shrink-0 gap-1.5"
+            >
+              <FileUp className="w-3.5 h-3.5 text-[#B8860B]" />
+              <span>Upload PDF Story</span>
+            </Button>
+          </div>
 
           <div className="bg-white dark:bg-[#141318] border border-stone-200 dark:border-stone-800 rounded-2xl p-5 sm:p-7 space-y-5 shadow-sm dark:shadow-2xl">
             {/* Card Title */}
@@ -1066,6 +1141,31 @@ export default function StudioNewStoryPage() {
       {/* STEP 3: BOOK CHAPTERS */}
       {activeStep === 3 && (
         <div className="space-y-6 animate-in fade-in duration-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-white dark:bg-[#141318] border border-stone-200 dark:border-stone-800 shadow-xs">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[#D4AF37]/15 flex items-center justify-center text-[#B8860B] shrink-0">
+                <FileUp className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-stone-900 dark:text-stone-100">
+                  Import Manuscript from PDF
+                </p>
+                <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                  Auto-extracts chapters, prologues, acts, titles, word counts, and estimated reading times.
+                </p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              onClick={() => setIsPdfUploaderOpen(true)}
+              variant="outline"
+              className="border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800 font-bold text-xs rounded-xl shrink-0 gap-1.5"
+            >
+              <FileUp className="w-3.5 h-3.5 text-[#B8860B]" />
+              <span>Import Chapters from PDF</span>
+            </Button>
+          </div>
+
           <ChapterListBuilder
             chapters={chapters}
             onChange={(updatedChaps) => setChapters(updatedChaps)}
@@ -1907,6 +2007,13 @@ export default function StudioNewStoryPage() {
         </div>
       )}
     </div>
+
+    {/* PDF Manuscript Upload Dialog */}
+    <PdfStoryUploader
+      open={isPdfUploaderOpen}
+      onOpenChange={setIsPdfUploaderOpen}
+      onLoadedToEditor={handlePdfLoadedToEditor}
+    />
     </AuthGuard>
   );
 }
