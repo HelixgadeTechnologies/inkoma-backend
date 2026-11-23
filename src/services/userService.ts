@@ -1,6 +1,74 @@
 import { apiClient } from "@/src/services/api";
-import { Story, UserProfile, CreatorSupportDetails, LoreBadge } from "@/types";
+import {
+  Story,
+  UserProfile,
+  CreatorSupportDetails,
+  LoreBadge,
+  NetworkUser,
+  GetNetworkUsersResult,
+  GetNetworkUsersOptions,
+  NetworkPagination,
+} from "@/types";
 import { normalizeStory } from "@/src/services/storyService";
+
+export type { NetworkUser, GetNetworkUsersResult, GetNetworkUsersOptions, NetworkPagination };
+
+/**
+ * Normalizes a raw network user object from followers/following responses
+ */
+export function normalizeNetworkUser(rawUser: any): NetworkUser {
+  if (!rawUser) {
+    return {
+      id: "",
+      username: "",
+      displayName: "Storyteller",
+      avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200",
+      bio: "",
+      followersCount: 0,
+      isFollowing: false,
+    };
+  }
+
+  const id = String(rawUser._id || rawUser.id || "");
+  const username =
+    rawUser.username || (rawUser.email ? rawUser.email.split("@")[0].toLowerCase() : "");
+  const displayName =
+    rawUser.displayName || rawUser.name || rawUser.penName || username || "Storyteller";
+  const penName = rawUser.penName || displayName;
+  const avatarUrl =
+    rawUser.avatarUrl ||
+    rawUser.avatar ||
+    rawUser.photoURL ||
+    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200";
+  const bio = rawUser.bio || "Preserving ancestral lore through interactive storytelling.";
+  const specialty = rawUser.traditionSpecialty || rawUser.specialty || undefined;
+  const followersCount = Number(
+    rawUser.followersCount ??
+      (Array.isArray(rawUser.followers) ? rawUser.followers.length : 0)
+  );
+  const followingCount = Number(
+    rawUser.followingCount ??
+      (Array.isArray(rawUser.following) ? rawUser.following.length : 0)
+  );
+  const isVerified = Boolean(
+    rawUser.isVerified || (rawUser.role && (rawUser.role === "elder" || rawUser.role === "elder_admin"))
+  );
+  const isFollowing = Boolean(rawUser.isFollowing);
+
+  return {
+    id,
+    username,
+    displayName,
+    penName,
+    avatarUrl,
+    bio,
+    specialty,
+    followersCount,
+    followingCount,
+    isVerified,
+    isFollowing,
+  };
+}
 
 export interface TopAuthor {
   id: string;
@@ -491,6 +559,162 @@ export async function getAuthorSupportDetails(
 }
 
 /**
- * 14. Library, Bookmarks, Favorites & Quotes Endpoints
+ * 14. Get Storyteller Followers (GET /api/v1/users/profile/:username/followers) — Public
+ * Also accessible via GET /api/v1/users/:username/followers
+ * Returns paginated list of users following :username.
+ * Query parameters: page (default: 1), limit (default: 20), search (filters by name/penName/specialty)
+ * If viewer is authenticated, isFollowing indicates whether viewer follows each returned user.
+ */
+export async function getUserFollowers(
+  username: string,
+  options: GetNetworkUsersOptions = {}
+): Promise<GetNetworkUsersResult> {
+  if (!username) {
+    return {
+      users: [],
+      pagination: { total: 0, page: 1, limit: options.limit || 20, totalPages: 1 },
+    };
+  }
+
+  const cleanUsername = username.toLowerCase().trim();
+  const params: Record<string, string | number> = {
+    page: options.page || 1,
+    limit: options.limit || 20,
+  };
+  if (options.search && options.search.trim()) {
+    params.search = options.search.trim();
+  }
+
+  try {
+    let res: any;
+    try {
+      res = await apiClient.get<any>(
+        `/users/profile/${encodeURIComponent(cleanUsername)}/followers`,
+        { params }
+      );
+    } catch (primaryErr: any) {
+      if (primaryErr?.status === 404 || primaryErr?.statusCode === 404) {
+        // Fallback to alternate route /users/:username/followers
+        res = await apiClient.get<any>(
+          `/users/${encodeURIComponent(cleanUsername)}/followers`,
+          { params }
+        );
+      } else {
+        throw primaryErr;
+      }
+    }
+
+    const data = res?.data || res || {};
+    const rawList: any[] =
+      data.followers || data.users || data.items || (Array.isArray(data) ? data : []);
+
+    const users = rawList.map(normalizeNetworkUser);
+
+    const pagination: NetworkPagination = {
+      total: Number(data.pagination?.total ?? data.total ?? users.length),
+      page: Number(data.pagination?.page ?? data.page ?? (options.page || 1)),
+      limit: Number(data.pagination?.limit ?? data.limit ?? (options.limit || 20)),
+      totalPages: Number(
+        data.pagination?.totalPages ??
+          data.totalPages ??
+          Math.max(1, Math.ceil((data.total || users.length) / (options.limit || 20)))
+      ),
+    };
+
+    return { users, pagination };
+  } catch (error: any) {
+    console.warn(`[UserService] Error fetching followers for ${username}:`, error);
+    return {
+      users: [],
+      pagination: {
+        total: 0,
+        page: options.page || 1,
+        limit: options.limit || 20,
+        totalPages: 1,
+      },
+    };
+  }
+}
+
+/**
+ * 15. Get Users Followed by Storyteller (GET /api/v1/users/profile/:username/following) — Public
+ * Also accessible via GET /api/v1/users/:username/following
+ * Returns paginated list of users that :username follows.
+ * Query parameters: page (default: 1), limit (default: 20), search (filters by name/penName/specialty)
+ * If viewer is authenticated, isFollowing indicates whether viewer follows each returned user.
+ */
+export async function getUserFollowing(
+  username: string,
+  options: GetNetworkUsersOptions = {}
+): Promise<GetNetworkUsersResult> {
+  if (!username) {
+    return {
+      users: [],
+      pagination: { total: 0, page: 1, limit: options.limit || 20, totalPages: 1 },
+    };
+  }
+
+  const cleanUsername = username.toLowerCase().trim();
+  const params: Record<string, string | number> = {
+    page: options.page || 1,
+    limit: options.limit || 20,
+  };
+  if (options.search && options.search.trim()) {
+    params.search = options.search.trim();
+  }
+
+  try {
+    let res: any;
+    try {
+      res = await apiClient.get<any>(
+        `/users/profile/${encodeURIComponent(cleanUsername)}/following`,
+        { params }
+      );
+    } catch (primaryErr: any) {
+      if (primaryErr?.status === 404 || primaryErr?.statusCode === 404) {
+        // Fallback to alternate route /users/:username/following
+        res = await apiClient.get<any>(
+          `/users/${encodeURIComponent(cleanUsername)}/following`,
+          { params }
+        );
+      } else {
+        throw primaryErr;
+      }
+    }
+
+    const data = res?.data || res || {};
+    const rawList: any[] =
+      data.following || data.users || data.items || (Array.isArray(data) ? data : []);
+
+    const users = rawList.map(normalizeNetworkUser);
+
+    const pagination: NetworkPagination = {
+      total: Number(data.pagination?.total ?? data.total ?? users.length),
+      page: Number(data.pagination?.page ?? data.page ?? (options.page || 1)),
+      limit: Number(data.pagination?.limit ?? data.limit ?? (options.limit || 20)),
+      totalPages: Number(
+        data.pagination?.totalPages ??
+          data.totalPages ??
+          Math.max(1, Math.ceil((data.total || users.length) / (options.limit || 20)))
+      ),
+    };
+
+    return { users, pagination };
+  } catch (error: any) {
+    console.warn(`[UserService] Error fetching following for ${username}:`, error);
+    return {
+      users: [],
+      pagination: {
+        total: 0,
+        page: options.page || 1,
+        limit: options.limit || 20,
+        totalPages: 1,
+      },
+    };
+  }
+}
+
+/**
+ * 16. Library, Bookmarks, Favorites & Quotes Endpoints
  */
 export * from "./libraryService";

@@ -77,3 +77,36 @@ export interface UserProfile {
   
   onboardingCompleted?: boolean;
 }
+
+export interface NetworkUser {
+  id: string;
+  username: string;
+  displayName: string;
+  penName?: string;
+  avatarUrl: string;
+  bio: string;
+  specialty?: string;
+  followersCount: number;
+  followingCount?: number;
+  isVerified?: boolean;
+  isFollowing?: boolean;
+}
+
+export interface NetworkPagination {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface GetNetworkUsersResult {
+  users: NetworkUser[];
+  pagination: NetworkPagination;
+}
+
+export interface GetNetworkUsersOptions {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+

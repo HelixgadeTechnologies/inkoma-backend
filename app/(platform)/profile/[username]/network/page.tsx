@@ -21,20 +21,13 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { AuthGuard } from "@/components/shared/auth-guard";
 import { useAuth } from "@/hooks/useAuth";
-import { followStoryteller, unfollowStoryteller } from "@/src/services/userService";
-
-interface NetworkUser {
-  id: string;
-  username: string;
-  displayName: string;
-  penName?: string;
-  avatarUrl: string;
-  bio: string;
-  specialty?: string;
-  followersCount: number;
-  isVerified?: boolean;
-  isFollowing?: boolean;
-}
+import {
+  followStoryteller,
+  unfollowStoryteller,
+  getUserFollowers,
+  getUserFollowing,
+  NetworkUser,
+} from "@/src/services/userService";
 
 function NetworkLoadingSkeleton() {
   return (
@@ -66,8 +59,12 @@ function UserNetworkContent() {
   const initialTab = tabParam === "following" ? "following" : "followers";
   const [activeTab, setActiveTab] = useState<"followers" | "following">(initialTab);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const [followersList, setFollowersList] = useState<NetworkUser[]>([]);
   const [followingList, setFollowingList] = useState<NetworkUser[]>([]);
+  const [followersTotal, setFollowersTotal] = useState(0);
+  const [followingTotal, setFollowingTotal] = useState(0);
 
   // Sync activeTab when query param changes
   useEffect(() => {
@@ -75,6 +72,85 @@ function UserNetworkContent() {
       setActiveTab(tabParam);
     }
   }, [tabParam]);
+
+  // Debounce search input to query API smoothly
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 350);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  // Fetch initial total counts for both tabs
+  useEffect(() => {
+    let isCancelled = false;
+    async function fetchCounts() {
+      try {
+        const [fRes, ingRes] = await Promise.all([
+          getUserFollowers(username, { page: 1, limit: 1 }),
+          getUserFollowing(username, { page: 1, limit: 1 }),
+        ]);
+        if (!isCancelled) {
+          setFollowersTotal(fRes.pagination.total);
+          setFollowingTotal(ingRes.pagination.total);
+        }
+      } catch (err) {
+        console.warn("[NetworkPage] Error fetching counts:", err);
+      }
+    }
+    if (username) {
+      fetchCounts();
+    }
+    return () => {
+      isCancelled = true;
+    };
+  }, [username]);
+
+  // Fetch active tab users whenever tab, username, or search changes
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadNetworkData() {
+      setIsLoading(true);
+      try {
+        if (activeTab === "followers") {
+          const res = await getUserFollowers(username, {
+            page: 1,
+            limit: 50,
+            search: debouncedSearch.trim() || undefined,
+          });
+          if (!isCancelled) {
+            setFollowersList(res.users);
+            setFollowersTotal(res.pagination.total);
+          }
+        } else {
+          const res = await getUserFollowing(username, {
+            page: 1,
+            limit: 50,
+            search: debouncedSearch.trim() || undefined,
+          });
+          if (!isCancelled) {
+            setFollowingList(res.users);
+            setFollowingTotal(res.pagination.total);
+          }
+        }
+      } catch (err) {
+        console.error("[NetworkPage] Error loading connections:", err);
+      } finally {
+        if (!isCancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    if (username) {
+      loadNetworkData();
+    }
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [username, activeTab, debouncedSearch]);
 
   const handleTabChange = (tab: "followers" | "following") => {
     setActiveTab(tab);
@@ -170,7 +246,7 @@ function UserNetworkContent() {
           >
             <span>Followers</span>
             <Badge className="bg-white/20 text-current text-[10px] px-1.5 py-0">
-              {followersList.length}
+              {followersTotal || followersList.length}
             </Badge>
           </button>
 
@@ -185,7 +261,7 @@ function UserNetworkContent() {
           >
             <span>Following</span>
             <Badge className="bg-white/20 text-current text-[10px] px-1.5 py-0">
-              {followingList.length}
+              {followingTotal || followingList.length}
             </Badge>
           </button>
         </div>
@@ -203,14 +279,31 @@ function UserNetworkContent() {
       </div>
 
       {/* Network User Cards List */}
-      {filteredList.length === 0 ? (
+      {isLoading && currentList.length === 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-pulse">
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="h-40 rounded-3xl bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800"
+            />
+          ))}
+        </div>
+      ) : filteredList.length === 0 ? (
         <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 p-8 space-y-3">
           <Users className="w-10 h-10 text-stone-300 dark:text-stone-600 mx-auto" />
           <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 font-serif">
-            No Connections Found
+            {searchQuery
+              ? "No Connections Found"
+              : activeTab === "followers"
+              ? "No Followers Yet"
+              : "Not Following Anyone"}
           </h3>
           <p className="text-xs text-stone-500 dark:text-stone-400 max-w-sm mx-auto">
-            No users matched your search query. Try adjusting your search term.
+            {searchQuery
+              ? "No users matched your search query. Try adjusting your search term."
+              : activeTab === "followers"
+              ? `@${username} does not have any followers yet.`
+              : `@${username} is not following any storytellers yet.`}
           </p>
         </div>
       ) : (
