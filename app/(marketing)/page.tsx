@@ -18,6 +18,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getHomeFeed } from "@/src/services/homeFeedService";
 
 // SafeImage component to guarantee NO broken image displays
 function SafeImage({
@@ -446,13 +447,122 @@ export default function HomePage() {
   }, [isAuthenticated, loading, router]);
 
   const [bookmarked, setBookmarked] = React.useState<Record<string, boolean>>({});
-  const [followedAuthors, setFollowedAuthors] = React.useState<Record<string, boolean>>({
-    "author-1": false,
-    "author-2": false,
-    "author-3": false,
-    "author-4": false,
-    "author-5": false,
-  });
+  const [followedAuthors, setFollowedAuthors] = React.useState<Record<string, boolean>>({});
+  const [featuredStories, setFeaturedStories] = React.useState<any[]>(FEATURED_STORIES);
+  const [recommendedStories, setRecommendedStories] = React.useState<any[]>(RECOMMENDED_STORIES);
+  const [newReleases, setNewReleases] = React.useState<any[]>(NEW_RELEASES);
+  const [recentlyUpdated, setRecentlyUpdated] = React.useState<any[]>(RECENTLY_UPDATED);
+  const [topAuthors, setTopAuthors] = React.useState<any[]>(TOP_AUTHORS);
+  const [feedLoading, setFeedLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    let isCancelled = false;
+    async function loadFeed() {
+      try {
+        const feed = await getHomeFeed();
+        if (!isCancelled) {
+          if (feed.featured.length > 0) {
+            setFeaturedStories(
+              feed.featured.map((s) => ({
+                id: s.id,
+                slug: s.slug || s.id,
+                title: s.title,
+                genre: (s.mainGenre || "FOLKLORE").toUpperCase(),
+                badgeColor: "bg-[#6B3254] text-white",
+                author: s.authorPenName || s.authorName || "Storyteller",
+                authorAvatar:
+                  s.authorAvatar ||
+                  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
+                blurb: s.synopsis || "An ancestral journey through folklore.",
+                views: `${s.readsCount || 0}`,
+                likes: `${s.likesCount || 0}`,
+                cover:
+                  s.coverImage ||
+                  "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800&auto=format&fit=crop",
+              }))
+            );
+          }
+          if (feed.recommended.length > 0) {
+            setRecommendedStories(
+              feed.recommended.map((s) => ({
+                id: s.id,
+                slug: s.slug || s.id,
+                title: s.title,
+                author: s.authorPenName || s.authorName || "Storyteller",
+                genre: (s.mainGenre || "DRAMA").toUpperCase(),
+                badgeColor: "bg-[#1A5C52]/90 text-white",
+                views: `${s.readsCount || 0}`,
+                likes: `${s.likesCount || 0}`,
+                cover:
+                  s.coverImage ||
+                  "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=800&auto=format&fit=crop",
+              }))
+            );
+          }
+          if (feed.newReleases.length > 0) {
+            setNewReleases(
+              feed.newReleases.map((s) => ({
+                id: s.id,
+                slug: s.slug || s.id,
+                title: s.title,
+                author: s.authorPenName || s.authorName || "Storyteller",
+                genre: (s.mainGenre || "ROMANCE").toUpperCase(),
+                badgeColor: "bg-[#B54A62]/90 text-white",
+                views: `${s.readsCount || 0}`,
+                likes: `${s.likesCount || 0}`,
+                cover:
+                  s.coverImage ||
+                  "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800&auto=format&fit=crop",
+              }))
+            );
+          }
+          if (feed.recentlyUpdated.length > 0) {
+            setRecentlyUpdated(
+              feed.recentlyUpdated.map((s) => ({
+                id: s.id,
+                slug: s.slug || s.id,
+                title: s.title,
+                author: s.authorPenName || s.authorName || "Storyteller",
+                genre: (s.mainGenre || "FANTASY").toUpperCase(),
+                badgeColor: "bg-[#D1FAE5] text-[#047857]",
+                cardTheme: "dark",
+                views: `${s.readsCount || 0}`,
+                likes: `${s.likesCount || 0}`,
+                cover:
+                  s.coverImage ||
+                  "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=400&auto=format&fit=crop",
+              }))
+            );
+          }
+          if (feed.topAuthors.length > 0) {
+            setTopAuthors(
+              feed.topAuthors.map((a) => ({
+                id: a.id,
+                username: a.username,
+                name: a.name,
+                avatar:
+                  a.avatarUrl ||
+                  a.avatar ||
+                  "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=300&auto=format&fit=crop",
+                followers: `${a.followersCount || 0} Followers`,
+                stories: `${a.storiesCount || 0} Stories`,
+              }))
+            );
+          }
+        }
+      } catch (err) {
+        console.warn("[HomePage] Failed to fetch home feed:", err);
+      } finally {
+        if (!isCancelled) setFeedLoading(false);
+      }
+    }
+
+    loadFeed();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   // Section Refs for smooth sideways scrolling on click
   const featuredRef = React.useRef<HTMLDivElement>(null);
@@ -631,7 +741,7 @@ export default function HomePage() {
           ref={featuredRef}
           className="flex items-stretch gap-4 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x snap-mandatory scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
         >
-          {FEATURED_STORIES.map((story) => {
+          {featuredStories.map((story) => {
             const isBookmarked = bookmarked[story.id];
             return (
               <Link
@@ -756,7 +866,7 @@ export default function HomePage() {
           ref={recommendedRef}
           className="flex items-stretch gap-3 sm:gap-3.5 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x snap-mandatory scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
         >
-          {RECOMMENDED_STORIES.map((story) => (
+          {recommendedStories.map((story) => (
             <Link
               key={story.id}
               href={`/story/${story.slug}`}
@@ -846,7 +956,7 @@ export default function HomePage() {
           ref={newReleasesRef}
           className="flex items-stretch gap-3 sm:gap-3.5 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x snap-mandatory scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
         >
-          {NEW_RELEASES.map((story) => (
+          {newReleases.map((story) => (
             <Link
               key={story.id}
               href={`/story/${story.slug}`}
@@ -936,7 +1046,7 @@ export default function HomePage() {
           ref={recentlyUpdatedRef}
           className="flex items-stretch gap-3 sm:gap-3.5 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x snap-mandatory scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
         >
-          {RECENTLY_UPDATED.map((story) => {
+          {recentlyUpdated.map((story) => {
             const isDark = story.cardTheme === "dark";
             return (
               <Link
@@ -1047,7 +1157,7 @@ export default function HomePage() {
           ref={topAuthorsRef}
           className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x snap-mandatory scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
         >
-          {TOP_AUTHORS.map((author) => {
+          {topAuthors.map((author) => {
             const isFollowing = followedAuthors[author.id];
             return (
               <div

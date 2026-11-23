@@ -1,10 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { StoryComment } from "@/types";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  getStoryComments,
+  postStoryComment,
+  toggleCommentLike,
+  deleteStoryComment,
+} from "@/src/services/commentService";
 import {
   MessageSquare,
   ThumbsUp,
@@ -43,13 +49,37 @@ export function StoryCommentsSection({
   const [replyText, setReplyText] = useState("");
   const [sortBy, setSortBy] = useState<"top" | "newest">("top");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isCancelled = false;
+    async function load() {
+      setLoading(true);
+      try {
+        const fetched = await getStoryComments(storyId);
+        if (!isCancelled) {
+          setComments(fetched);
+        }
+      } catch (err) {
+        console.warn("[CommentsSection] Error loading comments:", err);
+      } finally {
+        if (!isCancelled) setLoading(false);
+      }
+    }
+    if (storyId) {
+      load();
+    }
+    return () => {
+      isCancelled = true;
+    };
+  }, [storyId]);
 
   const totalCount = comments.reduce(
     (acc, c) => acc + 1 + (c.replies ? c.replies.length : 0),
     0
   );
 
-  const handleUpvote = (commentId: string, isReply = false, parentId?: string) => {
+  const handleUpvote = async (commentId: string, isReply = false, parentId?: string) => {
     if (isReply && parentId) {
       setComments((prev) =>
         prev.map((parent) => {
@@ -64,7 +94,7 @@ export function StoryCommentsSection({
                     hasUpvoted,
                     upvotesCount: hasUpvoted
                       ? reply.upvotesCount + 1
-                      : reply.upvotesCount - 1,
+                      : Math.max(0, reply.upvotesCount - 1),
                   };
                 }
                 return reply;
@@ -82,87 +112,87 @@ export function StoryCommentsSection({
             return {
               ...c,
               hasUpvoted,
-              upvotesCount: hasUpvoted ? c.upvotesCount + 1 : c.upvotesCount - 1,
+              upvotesCount: hasUpvoted ? c.upvotesCount + 1 : Math.max(0, c.upvotesCount - 1),
             };
           }
           return c;
         })
       );
     }
+
+    try {
+      await toggleCommentLike(commentId);
+    } catch (err) {
+      console.warn("Failed to toggle comment like:", err);
+    }
   };
 
-  const handlePostComment = (e: React.FormEvent) => {
+  const handlePostComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCommentText.trim()) return;
 
     setIsSubmitting(true);
-
-    const newComment: StoryComment = {
-      id: `comment-${Date.now()}`,
-      storyId,
-      authorId: currentUserId || "guest",
-      authorName: currentUserName,
-      authorAvatar: currentUserAvatar,
-      content: newCommentText.trim(),
-      upvotesCount: 1,
-      hasUpvoted: true,
-      createdAt: "Just now",
-      replies: [],
-    };
-
-    setTimeout(() => {
-      setComments((prev) => [newComment, ...prev]);
-      setNewCommentText("");
+    try {
+      const created = await postStoryComment(storyId, { content: newCommentText.trim() });
+      if (created) {
+        setComments((prev) => [created, ...prev]);
+        setNewCommentText("");
+      }
+    } catch (err) {
+      console.error("Failed to post comment:", err);
+    } finally {
       setIsSubmitting(false);
-    }, 400);
+    }
   };
 
-  const handlePostReply = (parentId: string) => {
+  const handlePostReply = async (parentId: string) => {
     if (!replyText.trim()) return;
 
-    const newReply: StoryComment = {
-      id: `reply-${Date.now()}`,
-      storyId,
-      authorId: currentUserId || "guest",
-      authorName: currentUserName,
-      authorAvatar: currentUserAvatar,
-      content: replyText.trim(),
-      upvotesCount: 1,
-      hasUpvoted: true,
-      createdAt: "Just now",
-    };
-
-    setComments((prev) =>
-      prev.map((parent) => {
-        if (parent.id === parentId) {
-          return {
-            ...parent,
-            replies: [...(parent.replies || []), newReply],
-          };
-        }
-        return parent;
-      })
-    );
-
-    setReplyText("");
-    setReplyingToId(null);
+    try {
+      const created = await postStoryComment(storyId, {
+        content: replyText.trim(),
+        parentCommentId: parentId,
+      });
+      if (created) {
+        setComments((prev) =>
+          prev.map((parent) => {
+            if (parent.id === parentId) {
+              return {
+                ...parent,
+                replies: [...(parent.replies || []), created],
+              };
+            }
+            return parent;
+          })
+        );
+        setReplyText("");
+        setReplyingToId(null);
+      }
+    } catch (err) {
+      console.error("Failed to post reply:", err);
+    }
   };
 
-  const handleDeleteComment = (commentId: string, parentId?: string) => {
-    if (parentId) {
-      setComments((prev) =>
-        prev.map((p) => {
-          if (p.id === parentId && p.replies) {
-            return {
-              ...p,
-              replies: p.replies.filter((r) => r.id !== commentId),
-            };
-          }
-          return p;
-        })
-      );
-    } else {
-      setComments((prev) => prev.filter((c) => c.id !== commentId));
+  const handleDeleteComment = async (commentId: string, parentId?: string) => {
+    try {
+      if (parentId) {
+        setComments((prev) =>
+          prev.map((p) => {
+            if (p.id === parentId && p.replies) {
+              return {
+                ...p,
+                replies: p.replies.filter((r) => r.id !== commentId),
+              };
+            }
+            return p;
+          })
+        );
+      } else {
+        setComments((prev) => prev.filter((c) => c.id !== commentId));
+      }
+      await deleteStoryComment(commentId);
+    } catch (err) {
+      console.error("Failed to delete comment:", err);
     }
   };
 

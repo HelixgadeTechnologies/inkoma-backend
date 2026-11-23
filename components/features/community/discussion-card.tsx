@@ -6,19 +6,25 @@ import { MessageSquare, ArrowBigUp, Pin, Sparkles } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
+import { toggleDiscussionLike } from "@/src/services/communityService";
 
 export function DiscussionCard({ discussion }: { discussion: CommunityDiscussion }) {
   const [upvotes, setUpvotes] = React.useState(discussion.upvotesCount);
   const [hasUpvoted, setHasUpvoted] = React.useState(false);
 
-  const handleUpvote = (e: React.MouseEvent) => {
+  const handleUpvote = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (hasUpvoted) {
-      setUpvotes(upvotes - 1);
+      setUpvotes(Math.max(0, upvotes - 1));
       setHasUpvoted(false);
     } else {
       setUpvotes(upvotes + 1);
       setHasUpvoted(true);
+    }
+    try {
+      await toggleDiscussionLike(discussion.id);
+    } catch (err) {
+      console.warn("Failed to toggle discussion like:", err);
     }
   };
 

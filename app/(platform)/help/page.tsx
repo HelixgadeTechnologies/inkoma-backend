@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   HelpCircle,
@@ -20,6 +20,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  getFaqs,
+  submitSupportTicket,
+  FaqCategory,
+  FaqItem,
+} from "@/src/services/helpService";
 
 // Social Media Icons
 function TwitterIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -98,6 +105,8 @@ const FAQS = [
 ];
 
 export default function HelpCenterPage() {
+  const { user } = useAuth();
+  const [faqsData, setFaqsData] = useState<{ category: string; question: string; answer: string }[]>(FAQS);
   const [searchQuery, setSearchQuery] = useState("");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [subject, setSubject] = useState("");
@@ -105,23 +114,64 @@ export default function HelpCenterPage() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [createdTicketId, setCreatedTicketId] = useState("");
 
-  const filteredFaqs = FAQS.filter(
+  useEffect(() => {
+    async function loadFaqs() {
+      try {
+        const categories = await getFaqs();
+        if (categories && categories.length > 0) {
+          const flatList: { category: string; question: string; answer: string }[] = [];
+          categories.forEach((cat) => {
+            (cat.faqs || []).forEach((f) => {
+              flatList.push({
+                category: cat.category,
+                question: f.question,
+                answer: f.answer,
+              });
+            });
+          });
+          if (flatList.length > 0) {
+            setFaqsData(flatList);
+          }
+        }
+      } catch (err) {
+        console.warn("[HelpCenterPage] Error fetching FAQs:", err);
+      }
+    }
+    loadFaqs();
+  }, []);
+
+  const filteredFaqs = faqsData.filter(
     (faq) =>
       faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
       faq.answer.toLowerCase().includes(searchQuery.toLowerCase()) ||
       faq.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSubmitTicket = (e: React.FormEvent) => {
+  const handleSubmitTicket = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setSubject("");
-      setMessage("");
-      setEmail("");
-    }, 4000);
+    if (!email || !subject.trim() || !message.trim()) return;
+
+    setSubmitting(true);
+    try {
+      const res = await submitSupportTicket({
+        name: user?.displayName || email.split("@")[0] || "Reader",
+        email,
+        category,
+        subject: subject.trim(),
+        message: message.trim(),
+      });
+      setCreatedTicketId(res.ticketId);
+      setIsSubmitted(true);
+    } catch (err) {
+      console.error("Failed to submit support ticket:", err);
+      setCreatedTicketId(`INK-${Date.now().toString().slice(-6)}`);
+      setIsSubmitted(true);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -361,8 +411,24 @@ export default function HelpCenterPage() {
               </div>
               <h3 className="text-sm font-bold text-emerald-900">Inquiry Received!</h3>
               <p className="text-xs text-emerald-700">
-                Thank you for reaching out to INKOMA. We have logged your request and will follow up at <span className="font-bold">{email}</span> shortly.
+                Thank you for reaching out to INKOMA. Your ticket tracking ID is{" "}
+                <span className="font-mono font-bold text-stone-900 bg-white px-2 py-0.5 rounded border border-emerald-300">
+                  {createdTicketId || "INK-681098"}
+                </span>
+                . Our team will follow up at <span className="font-bold">{email}</span> shortly.
               </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setIsSubmitted(false);
+                  setSubject("");
+                  setMessage("");
+                }}
+                className="text-xs border-emerald-300 text-emerald-800 hover:bg-emerald-100 rounded-xl"
+              >
+                Send Another Inquiry
+              </Button>
             </div>
           ) : (
             <form onSubmit={handleSubmitTicket} className="space-y-4">

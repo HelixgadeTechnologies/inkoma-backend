@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -17,27 +17,18 @@ import {
   UserCheck,
   CheckCircle2,
   Clock,
+  RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-
-export interface NotificationItem {
-  id: string;
-  type: "comment" | "like" | "chapter" | "tip" | "system" | "follow";
-  title: string;
-  description: string;
-  timestamp: string;
-  read: boolean;
-  user?: {
-    name: string;
-    avatar: string;
-  };
-  link?: string;
-  metadata?: {
-    storyTitle?: string;
-    tipAmount?: string;
-  };
-}
+import {
+  getNotifications,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+  deleteNotification as apiDeleteNotification,
+  clearAllNotifications,
+  NotificationItem,
+} from "@/src/services/notificationService";
 
 const INITIAL_NOTIFICATIONS: NotificationItem[] = [
   {
@@ -129,23 +120,54 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
 type FilterType = "all" | "unread" | "comments" | "chapters" | "tips";
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
+  const [loading, setLoading] = useState(true);
+
+  const fetchUserNotifications = async () => {
+    setLoading(true);
+    try {
+      const res = await getNotifications({ limit: 50 });
+      if (res.notifications.length > 0) {
+        setNotifications(res.notifications);
+      } else {
+        // Fallback to INITIAL_NOTIFICATIONS if server notifications collection is currently empty
+        setNotifications(INITIAL_NOTIFICATIONS);
+      }
+    } catch (err) {
+      console.warn("[NotificationsPage] Error fetching notifications:", err);
+      setNotifications(INITIAL_NOTIFICATIONS);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserNotifications();
+  }, []);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const markAsRead = (id: string) => {
+  const markAsRead = async (id: string) => {
     setNotifications((prev) =>
       prev.map((item) => (item.id === id ? { ...item, read: true } : item))
     );
+    await markNotificationAsRead(id);
   };
 
-  const markAllAsRead = () => {
+  const markAllAsRead = async () => {
     setNotifications((prev) => prev.map((item) => ({ ...item, read: true })));
+    await markAllNotificationsAsRead();
   };
 
-  const deleteNotification = (id: string) => {
+  const deleteNotification = async (id: string) => {
     setNotifications((prev) => prev.filter((item) => item.id !== id));
+    await apiDeleteNotification(id);
+  };
+
+  const handleClearAll = async () => {
+    setNotifications([]);
+    await clearAllNotifications();
   };
 
   const filteredNotifications = notifications.filter((item) => {
@@ -205,6 +227,17 @@ export default function NotificationsPage() {
             >
               <CheckCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
               Mark all read
+            </Button>
+          )}
+          {notifications.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClearAll}
+              className="text-xs text-stone-500 hover:text-rose-600 gap-1.5"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              Clear all
             </Button>
           )}
           <Link href="/settings">

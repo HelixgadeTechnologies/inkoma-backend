@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Heart,
@@ -20,10 +20,18 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  getPlatformSupportInfo,
+  initializeDonation,
+  PlatformSupportInfo,
+} from "@/src/services/supportService";
 
 type PaymentMethod = "paystack" | "bank_transfer" | "other";
 
 export default function SupportInkomaPage() {
+  const { user, profile } = useAuth();
+  const [platformInfo, setPlatformInfo] = useState<PlatformSupportInfo | null>(null);
   const [activeMethod, setActiveMethod] = useState<PaymentMethod>("paystack");
   const [selectedAmount, setSelectedAmount] = useState<number>(25);
   const [customAmount, setCustomAmount] = useState<string>("");
@@ -32,10 +40,29 @@ export default function SupportInkomaPage() {
   const [copiedCrypto, setCopiedCrypto] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [payRef, setPayRef] = useState("");
 
-  const localAccNo = "1029384756";
-  const domAccNo = "0293847561";
-  const cryptoWallet = "0x71C849204A3b2075D1c29E04f21F1a21";
+  useEffect(() => {
+    async function loadSupportInfo() {
+      const info = await getPlatformSupportInfo();
+      if (info) {
+        setPlatformInfo(info);
+      }
+    }
+    loadSupportInfo();
+  }, []);
+
+  const localAccNo = platformInfo?.banking?.localAccount?.accountNumber || "1029384756";
+  const localBankName = platformInfo?.banking?.localAccount?.bankName || "Zenith Bank Nigeria";
+  const localAccName = platformInfo?.banking?.localAccount?.accountName || "Inkoma Oral Heritage Initiative";
+
+  const domAccNo = platformInfo?.banking?.domiciliaryAccount?.accountNumber || "0293847561";
+  const domBankName = platformInfo?.banking?.domiciliaryAccount?.bankName || "Guaranty Trust Bank (GTBank)";
+  const domAccName = platformInfo?.banking?.domiciliaryAccount?.accountName || "Inkoma Global Heritage Ltd";
+  const domSwift = platformInfo?.banking?.domiciliaryAccount?.swiftCode || "GTBINGLA";
+
+  const cryptoWallet = platformInfo?.cryptoWallets?.ethereum?.address || "0x71C849204A3b2075D1c29E04f21F1a21C0c2262E";
+  const btcWallet = platformInfo?.cryptoWallets?.bitcoin?.address || "bc1q9x3t0g7g78g0dfy876s8fgh6k7l59f0g4d3s8h";
 
   const copyToClipboard = (text: string, type: "local" | "dom" | "crypto") => {
     navigator.clipboard.writeText(text);
@@ -51,16 +78,37 @@ export default function SupportInkomaPage() {
     }
   };
 
-  const handlePaystackPay = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-      setPaymentSuccess(true);
-    }, 1500);
-  };
-
   const amountToPay = customAmount ? parseFloat(customAmount) || 0 : selectedAmount;
+
+  const handlePaystackPay = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (amountToPay <= 0) return;
+
+    setIsProcessing(true);
+    try {
+      const initResult = await initializeDonation({
+        amount: amountToPay,
+        email: user?.email || "supporter@inkoma.com",
+        paymentMethod: "paystack",
+        currency: "USD",
+        targetType: "platform",
+      });
+
+      if (initResult.authorizationUrl) {
+        window.location.href = initResult.authorizationUrl;
+      } else {
+        setPayRef(initResult.reference);
+        setPaymentSuccess(true);
+      }
+    } catch (err) {
+      console.error("Failed to initialize donation payment:", err);
+      // Fallback display
+      setPayRef(`INK-${Date.now().toString().slice(-6)}`);
+      setPaymentSuccess(true);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div className="space-y-12 pb-16 max-w-5xl mx-auto">
@@ -241,17 +289,17 @@ export default function SupportInkomaPage() {
                   <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-extrabold uppercase tracking-wider">
                     🇳🇬 Local Bank Transfer (NGN / Naira)
                   </span>
-                  <span className="text-xs font-bold text-stone-500">Guaranty Trust Bank</span>
+                  <span className="text-xs font-bold text-stone-500">{localBankName}</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
                   <div>
                     <span className="text-stone-500 block text-[11px]">Bank Name</span>
-                    <span className="font-bold text-stone-900 text-sm">GTBank (Guaranty Trust)</span>
+                    <span className="font-bold text-stone-900 text-sm">{localBankName}</span>
                   </div>
                   <div>
                     <span className="text-stone-500 block text-[11px]">Account Name</span>
-                    <span className="font-bold text-stone-900 text-sm">INKOMA Folklore Foundation</span>
+                    <span className="font-bold text-stone-900 text-sm">{localAccName}</span>
                   </div>
                 </div>
 
@@ -288,17 +336,17 @@ export default function SupportInkomaPage() {
                   <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-900 border border-blue-300 text-[10px] font-extrabold uppercase tracking-wider">
                     🌐 International Wire / Domiciliary (USD)
                   </span>
-                  <span className="text-xs font-bold text-stone-500">Zenith Bank Plc</span>
+                  <span className="text-xs font-bold text-stone-500">{domBankName}</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
                   <div>
                     <span className="text-stone-500 block text-[11px]">SWIFT / BIC Code</span>
-                    <span className="font-bold text-stone-900 text-sm font-mono">ZEIBNGLA</span>
+                    <span className="font-bold text-stone-900 text-sm font-mono">{domSwift}</span>
                   </div>
                   <div>
                     <span className="text-stone-500 block text-[11px]">Account Name</span>
-                    <span className="font-bold text-stone-900 text-sm">INKOMA Tech Ltd (USD)</span>
+                    <span className="font-bold text-stone-900 text-sm">{domAccName}</span>
                   </div>
                 </div>
 

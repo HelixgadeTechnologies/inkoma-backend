@@ -31,6 +31,7 @@ import { AudioPlayer } from "@/components/features/reader/audio-player";
 import { TypographyCustomizer } from "@/components/features/reader/typography-customizer";
 import { ChapterNavigator } from "@/components/features/reader/chapter-navigator";
 import { AuthGuard } from "@/components/shared/auth-guard";
+import { getStoryComments, postStoryComment } from "@/src/services/commentService";
 
 interface CommentReply {
   id: string;
@@ -186,50 +187,109 @@ export default function ChapterReaderPage() {
     }
   };
 
-  const handleAddComment = (e: React.FormEvent) => {
+  useEffect(() => {
+    let isCancelled = false;
+    async function loadChapterComments() {
+      try {
+        const fetched = await getStoryComments(storyId, { chapterNumber: currentChapter.number });
+        if (!isCancelled) {
+          setComments(
+            fetched.map((c) => ({
+              id: c.id,
+              author: c.authorName,
+              avatar: c.authorAvatar || "",
+              text: c.content,
+              likes: c.upvotesCount,
+              createdAt: c.createdAt,
+              replies: (c.replies || []).map((r) => ({
+                id: r.id,
+                author: r.authorName,
+                avatar: r.authorAvatar || "",
+                text: r.content,
+                likes: r.upvotesCount,
+                createdAt: r.createdAt,
+              })),
+            }))
+          );
+        }
+      } catch (err) {
+        console.warn("Failed to load chapter comments:", err);
+      }
+    }
+    if (storyId) {
+      loadChapterComments();
+    }
+    return () => {
+      isCancelled = true;
+    };
+  }, [storyId, currentChapter.number]);
+
+  const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
 
-    const commentObj = {
-      id: `comm-${Date.now()}`,
-      author: profile?.displayName || user?.displayName || "Storyteller",
-      avatar: profile?.avatarUrl || user?.photoURL || "",
-      text: newComment,
-      likes: 0,
-      createdAt: "Just now",
-      replies: [],
-    };
-
-    setComments([commentObj, ...comments]);
-    setNewComment("");
+    try {
+      const created = await postStoryComment(storyId, {
+        content: newComment.trim(),
+        chapterNumber: currentChapter.number,
+      });
+      if (created) {
+        setComments((prev) => [
+          {
+            id: created.id,
+            author: created.authorName,
+            avatar: created.authorAvatar || "",
+            text: created.content,
+            likes: created.upvotesCount,
+            createdAt: "Just now",
+            replies: [],
+          },
+          ...prev,
+        ]);
+        setNewComment("");
+      }
+    } catch (err) {
+      console.error("Failed to post chapter comment:", err);
+    }
   };
 
-  const handleAddReply = (commentId: string) => {
+  const handleAddReply = async (commentId: string) => {
     if (!replyText.trim()) return;
 
-    setComments((prev) =>
-      prev.map((c) => {
-        if (c.id === commentId) {
-          return {
-            ...c,
-            replies: [
-              ...(c.replies || []),
-              {
-                id: `reply-${Date.now()}`,
-                author: profile?.displayName || user?.displayName || "Storyteller",
-                avatar: profile?.avatarUrl || user?.photoURL || "",
-                text: replyText,
-                likes: 0,
-                createdAt: "Just now",
-              },
-            ],
-          };
-        }
-        return c;
-      })
-    );
-    setReplyingTo(null);
-    setReplyText("");
+    try {
+      const created = await postStoryComment(storyId, {
+        content: replyText.trim(),
+        chapterNumber: currentChapter.number,
+        parentCommentId: commentId,
+      });
+      if (created) {
+        setComments((prev) =>
+          prev.map((c) => {
+            if (c.id === commentId) {
+              return {
+                ...c,
+                replies: [
+                  ...(c.replies || []),
+                  {
+                    id: created.id,
+                    author: created.authorName,
+                    avatar: created.authorAvatar || "",
+                    text: created.content,
+                    likes: created.upvotesCount,
+                    createdAt: "Just now",
+                  },
+                ],
+              };
+            }
+            return c;
+          })
+        );
+        setReplyingTo(null);
+        setReplyText("");
+      }
+    } catch (err) {
+      console.error("Failed to post comment reply:", err);
+    }
   };
 
   if (!currentStory) {
