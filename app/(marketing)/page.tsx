@@ -453,7 +453,6 @@ export default function HomePage() {
   const [newReleases, setNewReleases] = React.useState<any[]>(NEW_RELEASES);
   const [recentlyUpdated, setRecentlyUpdated] = React.useState<any[]>(RECENTLY_UPDATED);
   const [topAuthors, setTopAuthors] = React.useState<any[]>(TOP_AUTHORS);
-  const [feedLoading, setFeedLoading] = React.useState(true);
 
   React.useEffect(() => {
     let isCancelled = false;
@@ -552,8 +551,6 @@ export default function HomePage() {
         }
       } catch (err) {
         console.warn("[HomePage] Failed to fetch home feed:", err);
-      } finally {
-        if (!isCancelled) setFeedLoading(false);
       }
     }
 

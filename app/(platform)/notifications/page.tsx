@@ -17,7 +17,6 @@ import {
   UserCheck,
   CheckCircle2,
   Clock,
-  RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -128,12 +127,7 @@ export default function NotificationsPage() {
     setLoading(true);
     try {
       const res = await getNotifications({ limit: 50 });
-      if (res.notifications.length > 0) {
-        setNotifications(res.notifications);
-      } else {
-        // Fallback to INITIAL_NOTIFICATIONS if server notifications collection is currently empty
-        setNotifications(INITIAL_NOTIFICATIONS);
-      }
+      setNotifications(res.notifications);
     } catch (err) {
       console.warn("[NotificationsPage] Error fetching notifications:", err);
       setNotifications(INITIAL_NOTIFICATIONS);

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from "react";
-import { Users, PlusCircle, Sparkles, MessageSquare, Flame, Search, Filter } from "lucide-react";
+import { Users, PlusCircle, Sparkles, MessageSquare, Flame, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DiscussionCard } from "@/components/features/community/discussion-card";
@@ -112,14 +112,41 @@ export default function CommunityPage() {
 
       {/* Controls: Search, Sort & Tradition Tabs */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-stone-200">
-        <div className="relative flex-1 sm:max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-          <Input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search lore inquiries..."
-            className="pl-9 h-9 text-xs border-stone-200"
-          />
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1 sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search lore inquiries..."
+              className="pl-9 h-9 text-xs border-stone-200"
+            />
+          </div>
+
+          <div className="flex items-center bg-stone-100 p-0.5 rounded-xl border border-stone-200 shrink-0">
+            <button
+              type="button"
+              onClick={() => setSortBy("recent")}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                sortBy === "recent"
+                  ? "bg-white text-stone-900 shadow-xs font-bold"
+                  : "text-stone-500 hover:text-stone-800"
+              }`}
+            >
+              Recent
+            </button>
+            <button
+              type="button"
+              onClick={() => setSortBy("popular")}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                sortBy === "popular"
+                  ? "bg-white text-stone-900 shadow-xs font-bold"
+                  : "text-stone-500 hover:text-stone-800"
+              }`}
+            >
+              Popular
+            </button>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">

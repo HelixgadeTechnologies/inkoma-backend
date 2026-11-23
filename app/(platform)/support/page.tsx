@@ -17,6 +17,7 @@ import {
   DollarSign,
   Coffee,
   Coins,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,7 +31,7 @@ import {
 type PaymentMethod = "paystack" | "bank_transfer" | "other";
 
 export default function SupportInkomaPage() {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const [platformInfo, setPlatformInfo] = useState<PlatformSupportInfo | null>(null);
   const [activeMethod, setActiveMethod] = useState<PaymentMethod>("paystack");
   const [selectedAmount, setSelectedAmount] = useState<number>(25);
@@ -40,6 +41,7 @@ export default function SupportInkomaPage() {
   const [copiedCrypto, setCopiedCrypto] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
   const [payRef, setPayRef] = useState("");
 
   useEffect(() => {
@@ -85,6 +87,7 @@ export default function SupportInkomaPage() {
     if (amountToPay <= 0) return;
 
     setIsProcessing(true);
+    setPaymentError(null);
     try {
       const initResult = await initializeDonation({
         amount: amountToPay,
@@ -100,11 +103,12 @@ export default function SupportInkomaPage() {
         setPayRef(initResult.reference);
         setPaymentSuccess(true);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to initialize donation payment:", err);
-      // Fallback display
-      setPayRef(`INK-${Date.now().toString().slice(-6)}`);
-      setPaymentSuccess(true);
+      setPaymentError(
+        err?.message || "Failed to initialize payment gateway. Please try again or select an alternative payment method."
+      );
+      setPaymentSuccess(false);
     } finally {
       setIsProcessing(false);
     }
@@ -144,7 +148,7 @@ export default function SupportInkomaPage() {
           {/* Payment Method Selector Tabs */}
           <div className="grid grid-cols-3 gap-2 p-1.5 bg-[#FAF8F5] rounded-2xl border border-stone-200">
             <button
-              onClick={() => { setActiveMethod("paystack"); setPaymentSuccess(false); }}
+              onClick={() => { setActiveMethod("paystack"); setPaymentSuccess(false); setPaymentError(null); }}
               className={`py-3 px-2 rounded-xl text-xs font-extrabold transition-all flex flex-col items-center gap-1.5 ${
                 activeMethod === "paystack"
                   ? "bg-white text-stone-950 shadow-md border border-[#D4AF37]"
@@ -156,7 +160,7 @@ export default function SupportInkomaPage() {
             </button>
 
             <button
-              onClick={() => { setActiveMethod("bank_transfer"); setPaymentSuccess(false); }}
+              onClick={() => { setActiveMethod("bank_transfer"); setPaymentSuccess(false); setPaymentError(null); }}
               className={`py-3 px-2 rounded-xl text-xs font-extrabold transition-all flex flex-col items-center gap-1.5 ${
                 activeMethod === "bank_transfer"
                   ? "bg-white text-stone-950 shadow-md border border-[#D4AF37]"
@@ -168,7 +172,7 @@ export default function SupportInkomaPage() {
             </button>
 
             <button
-              onClick={() => { setActiveMethod("other"); setPaymentSuccess(false); }}
+              onClick={() => { setActiveMethod("other"); setPaymentSuccess(false); setPaymentError(null); }}
               className={`py-3 px-2 rounded-xl text-xs font-extrabold transition-all flex flex-col items-center gap-1.5 ${
                 activeMethod === "other"
                   ? "bg-white text-stone-950 shadow-md border border-[#D4AF37]"
@@ -225,6 +229,16 @@ export default function SupportInkomaPage() {
                   </div>
                 </div>
               </div>
+
+              {paymentError && (
+                <div className="p-4 bg-rose-50 rounded-2xl border border-rose-200 text-xs text-rose-800 space-y-1 animate-in fade-in duration-200">
+                  <div className="font-bold flex items-center gap-1.5 text-rose-900">
+                    <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                    <span>Payment Initialization Failed</span>
+                  </div>
+                  <p className="text-rose-700 leading-relaxed">{paymentError}</p>
+                </div>
+              )}
 
               {paymentSuccess ? (
                 <div className="p-6 bg-emerald-50 rounded-2xl border border-emerald-200 text-center space-y-3 animate-in zoom-in-95">

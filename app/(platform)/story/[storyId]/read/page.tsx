@@ -18,7 +18,6 @@ import {
   Sparkles,
   Quote,
   Check,
-  RotateCcw,
   Maximize2,
   Minimize2,
   BookOpenCheck,
@@ -31,7 +30,7 @@ import { AudioPlayer } from "@/components/features/reader/audio-player";
 import { TypographyCustomizer } from "@/components/features/reader/typography-customizer";
 import { ChapterNavigator } from "@/components/features/reader/chapter-navigator";
 import { AuthGuard } from "@/components/shared/auth-guard";
-import { getStoryComments, postStoryComment } from "@/src/services/commentService";
+import { getStoryComments, postStoryComment, toggleCommentLike } from "@/src/services/commentService";
 
 interface CommentReply {
   id: string;
@@ -39,6 +38,7 @@ interface CommentReply {
   avatar: string;
   text: string;
   likes: number;
+  hasLiked?: boolean;
   createdAt: string;
 }
 
@@ -48,6 +48,7 @@ interface CommentItem {
   avatar: string;
   text: string;
   likes: number;
+  hasLiked?: boolean;
   createdAt: string;
   replies?: CommentReply[];
 }
@@ -200,6 +201,7 @@ export default function ChapterReaderPage() {
               avatar: c.authorAvatar || "",
               text: c.content,
               likes: c.upvotesCount,
+              hasLiked: c.hasUpvoted,
               createdAt: c.createdAt,
               replies: (c.replies || []).map((r) => ({
                 id: r.id,
@@ -207,6 +209,7 @@ export default function ChapterReaderPage() {
                 avatar: r.authorAvatar || "",
                 text: r.content,
                 likes: r.upvotesCount,
+                hasLiked: r.hasUpvoted,
                 createdAt: r.createdAt,
               })),
             }))
@@ -289,6 +292,72 @@ export default function ChapterReaderPage() {
       }
     } catch (err) {
       console.error("Failed to post comment reply:", err);
+    }
+  };
+
+  const handleLikeComment = async (commentId: string, isReply = false, parentId?: string) => {
+    // Optimistic toggle
+    if (isReply && parentId) {
+      setComments((prev) =>
+        prev.map((c) => {
+          if (c.id === parentId && c.replies) {
+            return {
+              ...c,
+              replies: c.replies.map((r) =>
+                r.id === commentId
+                  ? {
+                      ...r,
+                      likes: r.hasLiked ? Math.max(0, r.likes - 1) : r.likes + 1,
+                      hasLiked: !r.hasLiked,
+                    }
+                  : r
+              ),
+            };
+          }
+          return c;
+        })
+      );
+    } else {
+      setComments((prev) =>
+        prev.map((c) =>
+          c.id === commentId
+            ? {
+                ...c,
+                likes: c.hasLiked ? Math.max(0, c.likes - 1) : c.likes + 1,
+                hasLiked: !c.hasLiked,
+              }
+            : c
+        )
+      );
+    }
+
+    try {
+      const res = await toggleCommentLike(commentId);
+      if (res && typeof res.likesCount === "number") {
+        if (isReply && parentId) {
+          setComments((prev) =>
+            prev.map((c) => {
+              if (c.id === parentId && c.replies) {
+                return {
+                  ...c,
+                  replies: c.replies.map((r) =>
+                    r.id === commentId ? { ...r, likes: res.likesCount, hasLiked: res.isLiked } : r
+                  ),
+                };
+              }
+              return c;
+            })
+          );
+        } else {
+          setComments((prev) =>
+            prev.map((c) =>
+              c.id === commentId ? { ...c, likes: res.likesCount, hasLiked: res.isLiked } : c
+            )
+          );
+        }
+      }
+    } catch (err) {
+      console.warn("Failed to toggle comment like:", err);
     }
   };
 
@@ -606,9 +675,12 @@ export default function ChapterReaderPage() {
                     </div>
                     <button
                       type="button"
-                      className="flex items-center gap-1 text-xs text-stone-500 hover:text-[#D4AF37]"
+                      onClick={() => handleLikeComment(comment.id)}
+                      className={`flex items-center gap-1 text-xs transition-colors ${
+                        comment.hasLiked ? "text-[#D4AF37]" : "text-stone-500 hover:text-[#D4AF37]"
+                      }`}
                     >
-                      <ThumbsUp className="w-3.5 h-3.5" />
+                      <ThumbsUp className={`w-3.5 h-3.5 ${comment.hasLiked ? "fill-[#D4AF37]" : ""}`} />
                       <span>{comment.likes}</span>
                     </button>
                   </div>
@@ -653,7 +725,19 @@ export default function ChapterReaderPage() {
                         <div key={reply.id} className="p-2.5 bg-white rounded-xl border border-stone-200 space-y-1">
                           <div className="flex items-center justify-between text-[11px]">
                             <span className="font-bold text-stone-900">{reply.author}</span>
-                            <span className="text-stone-400">{reply.createdAt}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-stone-400">{reply.createdAt}</span>
+                              <button
+                                type="button"
+                                onClick={() => handleLikeComment(reply.id, true, comment.id)}
+                                className={`flex items-center gap-0.5 text-[11px] transition-colors ${
+                                  reply.hasLiked ? "text-[#D4AF37]" : "text-stone-400 hover:text-[#D4AF37]"
+                                }`}
+                              >
+                                <ThumbsUp className={`w-3 h-3 ${reply.hasLiked ? "fill-[#D4AF37]" : ""}`} />
+                                <span>{reply.likes}</span>
+                              </button>
+                            </div>
                           </div>
                           <p className="text-xs text-stone-600">{reply.text}</p>
                         </div>

@@ -301,7 +301,23 @@ export function StoryCommentsSection({
 
       {/* Comments List */}
       <div className="space-y-4 pt-2">
-        {sortedComments.length === 0 ? (
+        {loading && comments.length === 0 ? (
+          <div className="space-y-3 py-2">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="p-4 sm:p-5 bg-white rounded-2xl border border-stone-200 animate-pulse space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-stone-200" />
+                  <div className="space-y-1.5 flex-1">
+                    <div className="w-28 h-3 bg-stone-200 rounded" />
+                    <div className="w-16 h-2 bg-stone-100 rounded" />
+                  </div>
+                </div>
+                <div className="w-full h-3 bg-stone-100 rounded" />
+                <div className="w-3/4 h-3 bg-stone-100 rounded" />
+              </div>
+            ))}
+          </div>
+        ) : sortedComments.length === 0 ? (
           <div className="text-center py-8 text-stone-500 text-xs font-medium">
             Be the first storyteller to leave a comment on this manuscript!
           </div>
