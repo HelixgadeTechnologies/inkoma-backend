@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { UserProfile, Story, LoreBadge } from "@/types";
 import { SupportAuthorDialog } from "@/components/features/story-details/support-author-dialog";
 import {
@@ -25,12 +25,20 @@ import {
   Sliders,
   Sparkles,
   Loader2,
+  Compass,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthGuard } from "@/components/shared/auth-guard";
 import { useAuth } from "@/hooks/useAuth";
 import { useLibrary } from "@/hooks/useLibrary";
 import { getStoriesByAuthor } from "@/src/services/storyService";
+import {
+  getUserPublicProfile,
+  followStoryteller,
+  unfollowStoryteller,
+  getFollowStatus,
+  getAuthorSupportDetails,
+} from "@/src/services/userService";
 
 // Helper to format join date cleanly
 function formatJoinDate(dateInput?: unknown): string {
@@ -117,7 +125,7 @@ const DEFAULT_INITIATE_BADGES: LoreBadge[] = [
   },
 ];
 
-// Cynthia Profile & Manuscripts Data (Matching Public Storyteller Profile)
+// Cynthia Demo Profile fallback (used only if offline or demo viewing)
 const CYNTHIA_PROFILE: UserProfile = {
   id: "user-cynthia-01",
   username: "ceba_stories",
@@ -129,14 +137,14 @@ const CYNTHIA_PROFILE: UserProfile = {
   role: "storyteller",
   traditionSpecialty: "Pan-African",
   createdAt: "Joined Mar 2025",
-  followersCount: 18200, // 18.2K
+  followersCount: 18200,
   followingCount: 156,
   onboardingCompleted: true,
   writingStats: {
     storiesPublished: 24,
     draftStories: 2,
     totalChaptersPublished: 86,
-    totalReads: 312000, // 312K
+    totalReads: 312000,
     totalLikes: 312000,
     totalComments: 4200,
   },
@@ -174,72 +182,14 @@ const CYNTHIA_PROFILE: UserProfile = {
   ],
 };
 
-const CYNTHIA_STORIES = [
-  {
-    id: "story-1",
-    title: "Beneath the Silent Crown",
-    status: "Published" as const,
-    views: "25.4K",
-    cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    id: "story-2",
-    title: "Whispers of the Heart",
-    status: "Published" as const,
-    views: "18.7K",
-    cover: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    id: "story-3",
-    title: "Shadows Beneath",
-    status: "Draft" as const,
-    views: "12.3K",
-    cover: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    id: "story-4",
-    title: "Fragments of Tomorrow",
-    status: "Published" as const,
-    views: "9.4K",
-    cover: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    id: "story-5",
-    title: "Throne of Secrets",
-    status: "Published" as const,
-    views: "14.8K",
-    cover: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    id: "story-6",
-    title: "Echoes of Yesterday",
-    status: "Draft" as const,
-    views: "8.1K",
-    cover: "https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    id: "story-7",
-    title: "The Fire Within",
-    status: "Published" as const,
-    views: "11.2K",
-    cover: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    id: "story-8",
-    title: "Beyond the Horizon",
-    status: "Published" as const,
-    views: "6.7K",
-    cover: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=600&auto=format&fit=crop",
-  },
-];
-
 export default function UserProfilePage() {
-  const { user, profile: authProfile, loading: authLoading } = useAuth();
+  const { user, profile: authProfile } = useAuth();
   const { continueReading } = useLibrary();
+  const router = useRouter();
 
   const params = useParams();
   const rawUsername = params?.username as string;
-  const username = rawUsername ? rawUsername.toLowerCase() : "";
+  const username = rawUsername ? rawUsername.toLowerCase().trim() : "";
 
   // Determine if viewing own profile
   const isOwnProfile =
@@ -258,7 +208,24 @@ export default function UserProfilePage() {
     (Boolean(authProfile?.displayName) &&
       username.replace(/_/g, " ") === authProfile?.displayName?.toLowerCase());
 
-  // Build the effective profile object
+  // Remote storyteller profile state
+  const [remoteProfile, setRemoteProfile] = useState<UserProfile | null>(null);
+  const [profileLoading, setProfileLoading] = useState(!isOwnProfile);
+  const [profileNotFound, setProfileNotFound] = useState(false);
+
+  // Author stories state (GET /api/v1/stories?author=:username)
+  const [userStories, setUserStories] = useState<Story[]>([]);
+  const [loadingStories, setLoadingStories] = useState(false);
+
+  // Follow & support interaction state
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followersCount, setFollowersCount] = useState(0);
+  const [isTogglingFollow, setIsTogglingFollow] = useState(false);
+  const [showSupportModal, setShowSupportModal] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [activeTab, setActiveTab] = useState<"stories" | "reading" | "achievements" | "metrics">("stories");
+
+  // Effective profile object
   const profile: UserProfile = isOwnProfile
     ? {
         id: user?.id || authProfile?.id || "user-current",
@@ -285,85 +252,218 @@ export default function UserProfilePage() {
         readingStats: authProfile?.readingStats,
         supportDetails: authProfile?.supportDetails,
       }
-    : CYNTHIA_PROFILE;
+    : remoteProfile || CYNTHIA_PROFILE;
 
-  // Author stories state (fetched dynamically from Firestore/local storage)
-  const [userStories, setUserStories] = useState<Story[]>([]);
-  const [loadingStories, setLoadingStories] = useState(false);
-
-  // Profile actions & tabs state
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [followersCount, setFollowersCount] = useState(profile.followersCount);
-  const [showSupportModal, setShowSupportModal] = useState(false);
-  const [copiedLink, setCopiedLink] = useState(false);
-  const [activeTab, setActiveTab] = useState<"stories" | "reading" | "achievements" | "metrics">("stories");
-
-  // Keep followers count in sync if profile updates
+  // 1. Fetch Public Storyteller Profile (GET /api/v1/users/profile/:username)
   useEffect(() => {
-    setFollowersCount(profile.followersCount);
-  }, [profile.followersCount]);
-
-  // Fetch stories authored by the registered user
-  useEffect(() => {
-    if (isOwnProfile && user?.id) {
-      setLoadingStories(true);
-      getStoriesByAuthor(user.id)
-        .then((stories) => {
-          setUserStories(stories || []);
-        })
-        .catch((err) => {
-          console.error("[UserProfilePage] Error fetching user stories:", err);
-        })
-        .finally(() => {
-          setLoadingStories(false);
-        });
+    if (isOwnProfile) {
+      setFollowersCount(authProfile?.followersCount ?? 0);
+      setProfileLoading(false);
+      return;
     }
-  }, [isOwnProfile, user?.id]);
 
-  const handleFollowToggle = () => {
-    if (isFollowing) {
-      setIsFollowing(false);
-      setFollowersCount((prev) => Math.max(0, prev - 1));
-    } else {
-      setIsFollowing(true);
-      setFollowersCount((prev) => prev + 1);
+    if (!username) return;
+
+    let isMounted = true;
+    setProfileLoading(true);
+    setProfileNotFound(false);
+
+    getUserPublicProfile(username)
+      .then((data) => {
+        if (!isMounted) return;
+        if (data && data.profile) {
+          setRemoteProfile(data.profile);
+          setIsFollowing(data.isFollowing);
+          setFollowersCount(data.profile.followersCount ?? 0);
+        } else {
+          // If viewing ceba_stories fallback demo, allow graceful display
+          if (username === "ceba_stories" || username === "cynthia") {
+            setRemoteProfile(CYNTHIA_PROFILE);
+            setFollowersCount(CYNTHIA_PROFILE.followersCount);
+          } else {
+            setProfileNotFound(true);
+          }
+        }
+      })
+      .catch((err) => {
+        console.warn("[UserProfilePage] Error fetching public profile:", err);
+        if (username === "ceba_stories" || username === "cynthia") {
+          setRemoteProfile(CYNTHIA_PROFILE);
+          setFollowersCount(CYNTHIA_PROFILE.followersCount);
+        } else {
+          setProfileNotFound(true);
+        }
+      })
+      .finally(() => {
+        if (isMounted) setProfileLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isOwnProfile, username, authProfile]);
+
+  // 2. Fetch Author Support Details (GET /api/v1/users/support/:userIdOrUsername)
+  useEffect(() => {
+    const target = isOwnProfile ? (user?.id || authProfile?.username) : (username || remoteProfile?.id);
+    if (!target) return;
+
+    getAuthorSupportDetails(target)
+      .then((supportData) => {
+        if (supportData) {
+          setRemoteProfile((prev) => (prev ? { ...prev, supportDetails: supportData } : null));
+        }
+      })
+      .catch(() => {});
+  }, [isOwnProfile, user?.id, authProfile?.username, username, remoteProfile?.id]);
+
+  // 3. Instant Follow Check for Reader (GET /api/v1/users/follow/status/:userId)
+  useEffect(() => {
+    if (!isOwnProfile && user?.id && profile?.id && profile.id !== "user-cynthia-01") {
+      getFollowStatus(profile.id)
+        .then((status) => {
+          setIsFollowing(status);
+        })
+        .catch(() => {});
+    }
+  }, [isOwnProfile, user?.id, profile?.id]);
+
+  // 4. Fetch Dynamic Stories for the Stories Tab (GET /api/v1/stories?author=:username)
+  useEffect(() => {
+    const authorParam = isOwnProfile
+      ? (user?.id || authProfile?.username || "me")
+      : (username || profile?.id);
+
+    if (!authorParam) return;
+
+    let isMounted = true;
+    setLoadingStories(true);
+
+    getStoriesByAuthor(authorParam)
+      .then((stories) => {
+        if (!isMounted) return;
+        setUserStories(stories || []);
+      })
+      .catch((err) => {
+        console.warn("[UserProfilePage] Error fetching author stories:", err);
+      })
+      .finally(() => {
+        if (isMounted) setLoadingStories(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isOwnProfile, user?.id, authProfile?.username, username, profile?.id]);
+
+  // Follow / Unfollow Action (POST / DELETE /api/v1/users/follow/:userId)
+  const handleFollowToggle = async () => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+    const targetUserId = profile.id;
+    if (!targetUserId) return;
+
+    const willFollow = !isFollowing;
+    setIsFollowing(willFollow);
+    setFollowersCount((prev) => (willFollow ? prev + 1 : Math.max(0, prev - 1)));
+    setIsTogglingFollow(true);
+
+    try {
+      if (willFollow) {
+        const res = await followStoryteller(targetUserId);
+        if (res.followersCount !== undefined) {
+          setFollowersCount(res.followersCount);
+        }
+      } else {
+        const res = await unfollowStoryteller(targetUserId);
+        if (res.followersCount !== undefined) {
+          setFollowersCount(res.followersCount);
+        }
+      }
+    } catch (err: any) {
+      console.warn("[UserProfilePage] Follow action error:", err);
+      // Revert optimistic state
+      setIsFollowing(!willFollow);
+      setFollowersCount((prev) => (willFollow ? Math.max(0, prev - 1) : prev + 1));
+    } finally {
+      setIsTogglingFollow(false);
     }
   };
 
   const handleShareProfile = () => {
-    if (navigator.clipboard) {
+    if (typeof window !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(window.location.href);
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2500);
     }
   };
 
-  // Calculations for dynamic stats
-  const totalLikes = isOwnProfile
-    ? userStories.reduce((acc, s) => acc + (s.likesCount || 0), 0)
-    : 312000;
-  const totalReads = isOwnProfile
-    ? userStories.reduce((acc, s) => acc + (s.readsCount || 0), 0)
-    : 312000;
-  const publishedCount = isOwnProfile
-    ? userStories.filter((s) => s.status === "published").length || userStories.length
-    : profile.writingStats?.storiesPublished || 24;
+  // Dynamic calculations for stats & metrics
+  const totalLikes =
+    userStories.length > 0
+      ? userStories.reduce((acc, s) => acc + (s.likesCount || 0), 0)
+      : profile.writingStats?.totalLikes || 0;
 
-  const followersDisplay =
-    followersCount >= 1000
-      ? `${(followersCount / 1000).toFixed(1)}K`
-      : String(followersCount);
-  const likesDisplay =
-    totalLikes >= 1000
-      ? `${(totalLikes / 1000).toFixed(1)}K`
-      : String(totalLikes);
+  const totalReads =
+    userStories.length > 0
+      ? userStories.reduce((acc, s) => acc + (s.readsCount || 0), 0)
+      : profile.writingStats?.totalReads || 0;
+
+  const publishedCount =
+    userStories.length > 0
+      ? userStories.filter((s) => s.status === "published").length || userStories.length
+      : profile.writingStats?.storiesPublished || 0;
+
+  const followersDisplay = formatCompactNumber(followersCount);
+  const likesDisplay = formatCompactNumber(totalLikes);
+
+  // Loading State
+  if (profileLoading) {
+    return (
+      <AuthGuard featureName="Storyteller Profile">
+        <div className="flex flex-col items-center justify-center py-24 space-y-4 text-stone-500">
+          <Loader2 className="w-8 h-8 animate-spin text-[#D4AF37]" />
+          <p className="text-xs font-semibold">Loading storyteller profile from archives...</p>
+        </div>
+      </AuthGuard>
+    );
+  }
+
+  // Storyteller Not Found State
+  if (profileNotFound) {
+    return (
+      <AuthGuard featureName="Storyteller Profile">
+        <div className="text-center py-24 px-4 max-w-md mx-auto space-y-4">
+          <div className="w-16 h-16 mx-auto rounded-full bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-400">
+            <User className="w-8 h-8" />
+          </div>
+          <div className="space-y-1">
+            <h2 className="text-xl font-bold font-serif text-stone-900 dark:text-stone-100">
+              Storyteller Not Found
+            </h2>
+            <p className="text-xs text-stone-500 dark:text-stone-400">
+              The author profile @{username} does not exist or may have been updated.
+            </p>
+          </div>
+          <Link href="/explore">
+            <Button className="bg-[#D4AF37] hover:bg-[#B89628] text-stone-950 font-bold text-xs rounded-xl px-5">
+              <Compass className="w-4 h-4 mr-1.5" /> Explore Storytellers
+            </Button>
+          </Link>
+        </div>
+      </AuthGuard>
+    );
+  }
 
   return (
     <AuthGuard featureName="Storyteller Profile">
       <div className="space-y-6 pb-24 max-w-5xl mx-auto font-sans text-stone-900 dark:text-stone-100">
         {/* 1. USER PROFILE HEADER */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-6 pt-2">
-          {/* Avatar with Gold Ring & Green Online Dot */}
+          {/* Avatar with Gold Ring & Active Indicator */}
           <div className="relative shrink-0">
             <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-[#D4AF37] p-1 shadow-lg bg-stone-900 overflow-hidden relative flex items-center justify-center">
               {profile.avatarUrl ? (
@@ -392,8 +492,8 @@ export default function UserProfilePage() {
               <div className="space-y-0.5">
                 {/* Name & Crown Badge */}
                 <div className="flex items-center gap-2">
-                  <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-white tracking-tight">
-                    {profile.displayName}
+                  <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-white tracking-tight font-serif">
+                    {profile.penName || profile.displayName}
                   </h1>
                   <div
                     className="p-1 rounded-md bg-purple-950/80 border border-purple-500/40 text-purple-300 flex items-center justify-center"
@@ -423,7 +523,7 @@ export default function UserProfilePage() {
                     <Link href="/studio/new">
                       <Button
                         size="sm"
-                        className="bg-[#D4AF37] hover:bg-[#B8860B] text-black rounded-full text-xs font-bold px-4"
+                        className="bg-[#D4AF37] hover:bg-[#B89628] text-black rounded-full text-xs font-bold px-4"
                       >
                         <Plus className="w-3.5 h-3.5 mr-1" /> Write Story
                       </Button>
@@ -435,7 +535,8 @@ export default function UserProfilePage() {
                       variant="outline"
                       size="sm"
                       onClick={handleFollowToggle}
-                      className={`rounded-full text-xs font-bold px-4 py-2 ${
+                      disabled={isTogglingFollow}
+                      className={`rounded-full text-xs font-bold px-4 py-2 transition-all ${
                         isFollowing
                           ? "bg-[#D4AF37]/20 border-[#D4AF37] text-[#D4AF37]"
                           : "border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37]/10"
@@ -476,25 +577,30 @@ export default function UserProfilePage() {
             </div>
 
             {/* Bio */}
-            <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 font-medium max-w-2xl">
+            <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed max-w-2xl">
               {profile.bio}
             </p>
 
-            {/* Location & Joined Date */}
-            <div className="flex items-center gap-3 text-xs text-stone-500 dark:text-stone-400">
-              <span className="flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-stone-400" /> {profile.country}
+            {/* Location, Specialty & Joined Date */}
+            <div className="flex flex-wrap items-center gap-4 text-xs text-stone-500 dark:text-stone-400 pt-1">
+              <span className="flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-[#D4AF37]" />
+                {profile.country || "Pan-African"}
               </span>
-              <span>•</span>
-              <span className="flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5 text-stone-400" /> {formatJoinDate(profile.createdAt)}
+              <span className="flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+                {profile.traditionSpecialty || "Folklore & Mythology"}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-[#D4AF37]" />
+                {formatJoinDate(profile.createdAt)}
               </span>
             </div>
           </div>
         </div>
 
-        {/* 2. STATS BAR (4 Columns Matching Design) */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4 border-y border-stone-200 dark:border-stone-800/80">
+        {/* 2. STATS BAR (Followers, Following, Stories, Likes) */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-white dark:bg-[#141318] rounded-3xl border border-stone-200 dark:border-stone-800 shadow-sm">
           {/* Followers */}
           <Link
             href={`/profile/${profile.username || "me"}/network?tab=followers`}
@@ -540,7 +646,7 @@ export default function UserProfilePage() {
             </div>
             <div>
               <span className="text-base sm:text-lg font-extrabold text-stone-900 dark:text-white block leading-none">
-                {isOwnProfile ? userStories.length : (profile.writingStats?.storiesPublished || 24)}
+                {publishedCount}
               </span>
               <span className="text-xs text-stone-500 dark:text-stone-400 font-medium">Stories</span>
             </div>
@@ -572,7 +678,7 @@ export default function UserProfilePage() {
             }`}
           >
             <BookOpen className="w-4 h-4" />
-            <span>My Stories</span>
+            <span>Stories ({publishedCount})</span>
           </button>
 
           <button
@@ -598,7 +704,7 @@ export default function UserProfilePage() {
             }`}
           >
             <Trophy className="w-4 h-4" />
-            <span>Achievements</span>
+            <span>Badges ({profile.badges?.length || 0})</span>
           </button>
 
           <button
@@ -615,12 +721,12 @@ export default function UserProfilePage() {
           </button>
         </div>
 
-        {/* TAB 1: MY STORIES (4-Column Card Grid) */}
+        {/* TAB 1: STORIES (Dynamic Cards Grid from GET /api/v1/stories?author=:username) */}
         {activeTab === "stories" && (
           <div className="space-y-4 animate-in fade-in duration-200">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-extrabold text-stone-900 dark:text-white font-serif">
-                {isOwnProfile ? "Authored Manuscripts" : "My Stories"}
+                {isOwnProfile ? "Authored Manuscripts" : `Stories by ${profile.penName || profile.displayName}`}
               </h2>
               {isOwnProfile && (
                 <Link href="/studio/new">
@@ -631,91 +737,30 @@ export default function UserProfilePage() {
               )}
             </div>
 
-            {isOwnProfile ? (
-              loadingStories ? (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div
-                      key={i}
-                      className="aspect-[9/15] rounded-2xl bg-stone-100 dark:bg-stone-900 animate-pulse border border-stone-200 dark:border-stone-800 flex items-center justify-center"
-                    >
-                      <Loader2 className="w-6 h-6 animate-spin text-[#D4AF37]/40" />
-                    </div>
-                  ))}
-                </div>
-              ) : userStories.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5">
-                  {userStories.map((story) => (
-                    <Link
-                      key={story.id}
-                      href={`/story/${story.id}`}
-                      className="group relative aspect-[9/15] rounded-2xl overflow-hidden border border-stone-200 dark:border-stone-800 bg-stone-900 shadow-md hover:border-[#D4AF37] transition-all duration-300 flex flex-col justify-end p-4 text-center"
-                    >
-                      <SafeImage
-                        src={
-                          story.coverImage ||
-                          "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop"
-                        }
-                        alt={story.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-75"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0c0b0e] via-[#0c0b0e]/60 to-transparent" />
-                      <div className="relative z-10 space-y-2 flex flex-col items-center justify-end h-full">
-                        <h3 className="text-base sm:text-lg font-bold font-serif text-[#D4AF37] leading-tight drop-shadow-md line-clamp-2 px-1">
-                          {story.title}
-                        </h3>
-                        <div>
-                          {story.status === "published" ? (
-                            <span className="inline-block bg-purple-950/90 text-purple-200 border border-purple-500/40 text-[10px] font-extrabold px-3 py-1 rounded-full shadow-xs">
-                              Published
-                            </span>
-                          ) : (
-                            <span className="inline-block bg-amber-950/90 text-amber-200 border border-amber-500/40 text-[10px] font-extrabold px-3 py-1 rounded-full shadow-xs">
-                              Draft
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center justify-center gap-1 text-[11px] text-stone-300 font-medium pt-0.5">
-                          <Eye className="w-3.5 h-3.5 text-stone-400" />
-                          <span>{formatCompactNumber(story.readsCount || 0)} reads</span>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-16 px-4 bg-white dark:bg-[#141318] rounded-3xl border border-stone-200 dark:border-stone-800 space-y-4">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37]">
-                    <BookOpen className="w-8 h-8" />
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="text-lg font-bold text-stone-900 dark:text-white">
-                      No Folklore Manuscripts Yet
-                    </h3>
-                    <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 max-w-md mx-auto">
-                      You haven&apos;t written any stories yet. Step into the Creator Studio and craft your first branching interactive legend.
-                    </p>
-                  </div>
-                  <div className="pt-2">
-                    <Link href="/studio/new">
-                      <Button className="bg-[#D4AF37] hover:bg-[#B8860B] text-black font-bold text-xs rounded-full px-5 py-2.5">
-                        <Plus className="w-3.5 h-3.5 mr-1.5" /> Pen Your First Tale
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              )
-            ) : (
+            {loadingStories ? (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5">
-                {CYNTHIA_STORIES.map((story) => (
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className="aspect-[9/15] rounded-2xl bg-stone-100 dark:bg-stone-900 animate-pulse border border-stone-200 dark:border-stone-800 flex items-center justify-center"
+                  >
+                    <Loader2 className="w-6 h-6 animate-spin text-[#D4AF37]/40" />
+                  </div>
+                ))}
+              </div>
+            ) : userStories.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5">
+                {userStories.map((story) => (
                   <Link
                     key={story.id}
-                    href={`/story/${story.id}`}
+                    href={`/story/${story.slug || story.id}`}
                     className="group relative aspect-[9/15] rounded-2xl overflow-hidden border border-stone-200 dark:border-stone-800 bg-stone-900 shadow-md hover:border-[#D4AF37] transition-all duration-300 flex flex-col justify-end p-4 text-center"
                   >
                     <SafeImage
-                      src={story.cover}
+                      src={
+                        story.coverImage ||
+                        "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop"
+                      }
                       alt={story.title}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-75"
@@ -726,7 +771,7 @@ export default function UserProfilePage() {
                         {story.title}
                       </h3>
                       <div>
-                        {story.status === "Published" ? (
+                        {story.status === "published" ? (
                           <span className="inline-block bg-purple-950/90 text-purple-200 border border-purple-500/40 text-[10px] font-extrabold px-3 py-1 rounded-full shadow-xs">
                             Published
                           </span>
@@ -738,11 +783,36 @@ export default function UserProfilePage() {
                       </div>
                       <div className="flex items-center justify-center gap-1 text-[11px] text-stone-300 font-medium pt-0.5">
                         <Eye className="w-3.5 h-3.5 text-stone-400" />
-                        <span>{story.views}</span>
+                        <span>{formatCompactNumber(story.readsCount || 0)} reads</span>
                       </div>
                     </div>
                   </Link>
                 ))}
+              </div>
+            ) : (
+              <div className="text-center py-16 px-4 bg-white dark:bg-[#141318] rounded-3xl border border-stone-200 dark:border-stone-800 space-y-4">
+                <div className="w-16 h-16 mx-auto rounded-full bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37]">
+                  <BookOpen className="w-8 h-8" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-lg font-bold text-stone-900 dark:text-white">
+                    No Folklore Manuscripts Yet
+                  </h3>
+                  <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 max-w-md mx-auto">
+                    {isOwnProfile
+                      ? "You haven't written any stories yet. Step into the Creator Studio and craft your first branching interactive legend."
+                      : "This storyteller has not published any folklore manuscripts yet."}
+                  </p>
+                </div>
+                {isOwnProfile && (
+                  <div className="pt-2">
+                    <Link href="/studio/new">
+                      <Button className="bg-[#D4AF37] hover:bg-[#B8860B] text-black font-bold text-xs rounded-full px-5 py-2.5">
+                        <Plus className="w-3.5 h-3.5 mr-1.5" /> Pen Your First Tale
+                      </Button>
+                    </Link>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -752,101 +822,82 @@ export default function UserProfilePage() {
         {activeTab === "reading" && (
           <div className="space-y-4 bg-white dark:bg-[#141318] rounded-3xl border border-stone-200 dark:border-stone-800 p-6 shadow-sm animate-in fade-in duration-200">
             <h2 className="text-xl font-extrabold text-stone-900 dark:text-white font-serif">
-              Reading List
+              Current Reading Journey
             </h2>
-
             {isOwnProfile ? (
-              continueReading && continueReading.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              continueReading.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {continueReading.map((item) => (
                     <Link
                       key={item.storyId}
-                      href={`/story/${item.storyId}`}
-                      className="p-4 bg-stone-50 dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 flex gap-3 items-center hover:border-[#D4AF37]/50 transition-colors"
+                      href={`/story/${item.storyId}/read`}
+                      className="flex items-center gap-4 p-4 bg-stone-50 dark:bg-stone-900/60 rounded-2xl border border-stone-200 dark:border-stone-800 hover:border-[#D4AF37] transition-all group"
                     >
-                      <div className="w-12 h-16 bg-stone-800 rounded-lg shrink-0 relative overflow-hidden">
-                        <SafeImage
-                          src={item.coverImage}
-                          alt={item.storyTitle}
-                          fill
-                          className="object-cover"
-                        />
+                      <div className="relative w-16 h-20 rounded-xl overflow-hidden shrink-0 border border-stone-200 dark:border-stone-700">
+                        <SafeImage src={item.coverImage} alt={item.storyTitle} fill className="object-cover" />
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="text-sm font-bold text-stone-900 dark:text-white truncate">
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <span className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-wider">
+                          Chapter {item.lastChapterNumber}
+                        </span>
+                        <h4 className="text-sm font-bold text-stone-900 dark:text-white truncate font-serif">
                           {item.storyTitle}
                         </h4>
-                        <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
-                          By {item.authorPenName} • Chapter {item.lastChapterNumber}
-                        </p>
-                        <div className="mt-2 flex items-center gap-2">
-                          <div className="flex-1 bg-stone-200 dark:bg-stone-800 rounded-full h-1.5 overflow-hidden">
-                            <div
-                              className="bg-[#D4AF37] h-full rounded-full transition-all"
-                              style={{ width: `${item.progressPercentage}%` }}
-                            />
-                          </div>
-                          <span className="text-[10px] text-[#D4AF37] font-semibold shrink-0">
-                            {item.progressPercentage}%
-                          </span>
+                        <div className="w-full h-1 bg-stone-200 dark:bg-stone-700 rounded-full overflow-hidden mt-2">
+                          <div
+                            className="h-full bg-[#D4AF37] rounded-full"
+                            style={{ width: `${item.progressPercentage}%` }}
+                          />
                         </div>
                       </div>
                     </Link>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12 px-4 bg-stone-50 dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 space-y-3">
-                  <div className="w-12 h-12 mx-auto rounded-full bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37]">
-                    <BookOpen className="w-6 h-6" />
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="text-sm font-bold text-stone-900 dark:text-white">
-                      Your Reading Archive is Empty
-                    </h4>
-                    <p className="text-xs text-stone-500 dark:text-stone-400 max-w-sm mx-auto">
-                      Discover captivating African folklore and oral traditions in the Explore library.
-                    </p>
-                  </div>
-                  <div className="pt-1">
-                    <Link href="/explore">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37]/10 text-xs rounded-full"
-                      >
-                        Explore Stories
-                      </Button>
-                    </Link>
-                  </div>
+                <div className="text-center py-12 text-stone-500 text-xs">
+                  No active reading books. Discover new folklore tales on Explore!
                 </div>
               )
             ) : (
-              <div className="text-center py-12 px-4 bg-stone-50 dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 space-y-2">
-                <BookOpen className="w-8 h-8 mx-auto text-stone-400" />
-                <h4 className="text-sm font-bold text-stone-900 dark:text-white">
-                  No Public Reading History
-                </h4>
-                <p className="text-xs text-stone-500 dark:text-stone-400">
-                  This storyteller hasn&apos;t shared their reading history.
-                </p>
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-center">
+                  <div className="p-4 bg-stone-50 dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800">
+                    <span className="text-xs text-stone-500 dark:text-stone-400 block font-medium">Stories Read</span>
+                    <strong className="text-2xl font-black text-[#D4AF37]">
+                      {profile.readingStats?.booksRead || 45}
+                    </strong>
+                  </div>
+                  <div className="p-4 bg-stone-50 dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800">
+                    <span className="text-xs text-stone-500 dark:text-stone-400 block font-medium">Chapters Read</span>
+                    <strong className="text-2xl font-black text-stone-900 dark:text-white">
+                      {profile.readingStats?.chaptersRead || 180}
+                    </strong>
+                  </div>
+                  <div className="p-4 bg-stone-50 dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 col-span-2 sm:col-span-1">
+                    <span className="text-xs text-stone-500 dark:text-stone-400 block font-medium">Reading Streak</span>
+                    <strong className="text-2xl font-black text-[#D4AF37]">
+                      {profile.readingStats?.readingStreakDays || 32} Days 🔥
+                    </strong>
+                  </div>
+                </div>
               </div>
             )}
           </div>
         )}
 
-        {/* TAB 3: ACHIEVEMENTS */}
+        {/* TAB 3: ACHIEVEMENTS & BADGES */}
         {activeTab === "achievements" && (
           <div className="space-y-4 bg-white dark:bg-[#141318] rounded-3xl border border-stone-200 dark:border-stone-800 p-6 shadow-sm animate-in fade-in duration-200">
             <h2 className="text-xl font-extrabold text-stone-900 dark:text-white font-serif">
-              Achievements & Badges
+              Storyteller Badges & Honors
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {profile.badges?.map((badge) => (
                 <div
                   key={badge.id}
-                  className="p-4 bg-stone-50 dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 flex items-start gap-3"
+                  className="flex items-center gap-4 p-4 rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900/40"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37] flex items-center justify-center shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30 flex items-center justify-center shrink-0">
                     <Trophy className="w-5 h-5" />
                   </div>
                   <div>
@@ -870,19 +921,19 @@ export default function UserProfilePage() {
               <div className="p-4 bg-stone-50 dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800">
                 <span className="text-xs text-stone-500 dark:text-stone-400 block font-medium">Total Reads</span>
                 <strong className="text-2xl font-black text-[#D4AF37]">
-                  {isOwnProfile ? totalReads.toLocaleString() : "312,000"}
+                  {totalReads.toLocaleString()}
                 </strong>
               </div>
               <div className="p-4 bg-stone-50 dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800">
                 <span className="text-xs text-stone-500 dark:text-stone-400 block font-medium">Monthly Active Readers</span>
                 <strong className="text-2xl font-black text-stone-900 dark:text-white">
-                  {isOwnProfile ? Math.round(totalReads * 0.4).toLocaleString() : "42,500"}
+                  {Math.round(totalReads * 0.4).toLocaleString()}
                 </strong>
               </div>
               <div className="p-4 bg-stone-50 dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800">
                 <span className="text-xs text-stone-500 dark:text-stone-400 block font-medium">Total Likes</span>
                 <strong className="text-2xl font-black text-[#D4AF37]">
-                  {isOwnProfile ? totalLikes.toLocaleString() : "312,000"}
+                  {totalLikes.toLocaleString()}
                 </strong>
               </div>
               <div className="p-4 bg-stone-50 dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800">
@@ -895,7 +946,7 @@ export default function UserProfilePage() {
           </div>
         )}
 
-        {/* Support Author Dialog Modal */}
+        {/* Support Author Dialog Modal (GET /api/v1/users/support/:userId) */}
         <SupportAuthorDialog
           authorProfile={profile}
           isOpen={showSupportModal}

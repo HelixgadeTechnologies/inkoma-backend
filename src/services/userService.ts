@@ -1,5 +1,5 @@
 import { apiClient } from "@/src/services/api";
-import { Story } from "@/types";
+import { Story, UserProfile, CreatorSupportDetails, LoreBadge } from "@/types";
 import { normalizeStory } from "@/src/services/storyService";
 
 export interface TopAuthor {
@@ -16,6 +16,92 @@ export interface TopAuthor {
   reads?: string;
   storiesCount?: number;
   bio?: string;
+}
+
+/**
+ * Normalizes raw storyteller user object into complete UserProfile interface
+ */
+export function normalizeUserProfile(rawUser: any): UserProfile {
+  if (!rawUser) return {} as UserProfile;
+  const id = String(rawUser._id || rawUser.id || "");
+  const username = rawUser.username || (rawUser.email ? rawUser.email.split("@")[0].toLowerCase() : "");
+  const displayName = rawUser.name || rawUser.displayName || rawUser.penName || username || "Storyteller";
+  const penName = rawUser.penName || rawUser.displayName || rawUser.name || displayName;
+  const avatarUrl =
+    rawUser.avatarUrl ||
+    rawUser.avatar ||
+    rawUser.photoURL ||
+    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop";
+
+  const followersCount = Number(rawUser.followersCount ?? (Array.isArray(rawUser.followers) ? rawUser.followers.length : 0));
+  const followingCount = Number(rawUser.followingCount ?? (Array.isArray(rawUser.following) ? rawUser.following.length : 0));
+
+  // writingStats
+  const ws = rawUser.writingStats || {};
+  const writingStats = {
+    storiesPublished: Number(ws.storiesPublished ?? rawUser.storiesPublished ?? rawUser.storiesCount ?? 0),
+    draftStories: Number(ws.draftStories ?? 0),
+    totalChaptersPublished: Number(ws.totalChaptersPublished ?? 0),
+    totalReads: Number(ws.totalReads ?? rawUser.totalReads ?? rawUser.readsCount ?? 0),
+    totalLikes: Number(ws.totalLikes ?? rawUser.totalLikes ?? rawUser.likesCount ?? 0),
+    totalComments: Number(ws.totalComments ?? 0),
+  };
+
+  // readingStats
+  const rs = rawUser.readingStats || {};
+  const readingStats = {
+    booksRead: Number(rs.booksRead ?? 0),
+    chaptersRead: Number(rs.chaptersRead ?? 0),
+    readingStreakDays: Number(rs.readingStreakDays ?? 0),
+    favoriteGenres: Array.isArray(rs.favoriteGenres) ? rs.favoriteGenres : ["Folklore", "Mythology"],
+    interests: Array.isArray(rs.interests) ? rs.interests : ["African Oral Traditions"],
+  };
+
+  // supportDetails
+  const sd = rawUser.supportDetails || rawUser.banking || {};
+  const supportDetails: CreatorSupportDetails = {
+    bankName: sd.bankName || "",
+    accountName: sd.accountHolderName || sd.accountName || displayName,
+    accountNumber: sd.accountNumber || "",
+    paystackLink: sd.paystackLink || "",
+    isAcceptingSupport: sd.isAcceptingSupport ?? Boolean(sd.bankName || sd.paystackLink),
+    totalTipsReceived: Number(sd.totalTipsReceived || 0),
+  };
+
+  // badges
+  const badges: LoreBadge[] = Array.isArray(rawUser.badges) && rawUser.badges.length > 0
+    ? rawUser.badges
+    : [
+        {
+          id: "badge-initiate",
+          name: "Storyteller Initiate",
+          description: "Entered the sacred Inkoma oral archive",
+          iconName: "Crown",
+          tier: "bronze",
+          unlockedAt: "Recently",
+        },
+      ];
+
+  return {
+    id,
+    username,
+    displayName,
+    penName,
+    bio: rawUser.bio || "Preserving ancestral lore through interactive storytelling.",
+    phone: rawUser.phone || "",
+    avatarUrl,
+    country: rawUser.country || "Pan-African",
+    role: rawUser.role || "storyteller",
+    traditionSpecialty: rawUser.traditionSpecialty || "Pan-African Folklore",
+    createdAt: rawUser.createdAt || new Date().toISOString(),
+    followersCount,
+    followingCount,
+    isFollowing: Boolean(rawUser.isFollowing),
+    badges,
+    writingStats,
+    readingStats,
+    supportDetails,
+  };
 }
 
 export interface BankingDetails {
@@ -305,6 +391,106 @@ export async function getTopAuthors(): Promise<TopAuthor[]> {
 }
 
 /**
- * 9. Library, Bookmarks, Favorites & Quotes Endpoints
+ * 9. Get Public Storyteller Profile (GET /api/v1/users/profile/:username) — Public
+ * Returns full storyteller public profile with writingStats, readingStats, badges, followers, and follow status
+ */
+export async function getUserPublicProfile(
+  username: string
+): Promise<{ profile: UserProfile; isFollowing: boolean } | null> {
+  if (!username) return null;
+  try {
+    const res = await apiClient.get<any>(`/users/profile/${encodeURIComponent(username.toLowerCase())}`);
+    const rawUser = res?.data?.profile || res?.data?.user || res?.data || res?.profile || res?.user;
+    if (rawUser && (rawUser._id || rawUser.id || rawUser.username || rawUser.displayName || rawUser.name)) {
+      const isFollowing = Boolean(res?.data?.isFollowing ?? rawUser.isFollowing);
+      return {
+        profile: normalizeUserProfile(rawUser),
+        isFollowing,
+      };
+    }
+    return null;
+  } catch (error: any) {
+    if (error?.response?.status === 404 || error?.statusCode === 404) {
+      return null;
+    }
+    console.warn(`[UserService] Error fetching public profile for ${username}:`, error);
+    return null;
+  }
+}
+
+/**
+ * 10. Follow a Storyteller (POST /api/v1/users/follow/:userId) — Protected
+ * Follows a storyteller and increments their followersCount
+ */
+export async function followStoryteller(
+  userId: string
+): Promise<{ isFollowing: boolean; followersCount?: number }> {
+  const res = await apiClient.post<any>(`/users/follow/${encodeURIComponent(userId)}`, {});
+  const data = res?.data || res || {};
+  return {
+    isFollowing: true,
+    followersCount: data.followersCount,
+  };
+}
+
+/**
+ * 11. Unfollow a Storyteller (DELETE /api/v1/users/follow/:userId) — Protected
+ * Unfollows a storyteller and decrements their followersCount
+ */
+export async function unfollowStoryteller(
+  userId: string
+): Promise<{ isFollowing: boolean; followersCount?: number }> {
+  const res = await apiClient.delete<any>(`/users/follow/${encodeURIComponent(userId)}`);
+  const data = res?.data || res || {};
+  return {
+    isFollowing: false,
+    followersCount: data.followersCount,
+  };
+}
+
+/**
+ * 12. Check Follow Status (GET /api/v1/users/follow/status/:userId) — Protected
+ * Checks whether the authenticated user follows the target storyteller
+ */
+export async function getFollowStatus(userId: string): Promise<boolean> {
+  if (!userId) return false;
+  try {
+    const res = await apiClient.get<any>(`/users/follow/status/${encodeURIComponent(userId)}`);
+    return Boolean(res?.data?.isFollowing ?? res?.isFollowing ?? false);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * 13. Get Author Support Details (GET /api/v1/users/support/:userIdOrUsername) — Public
+ * Returns author verified payout details or tipping links
+ */
+export async function getAuthorSupportDetails(
+  userIdOrUsername: string
+): Promise<CreatorSupportDetails | null> {
+  if (!userIdOrUsername) return null;
+  try {
+    const res = await apiClient.get<any>(`/users/support/${encodeURIComponent(userIdOrUsername)}`);
+    const data = res?.data?.supportDetails || res?.data?.support || res?.data || res;
+    if (data) {
+      return {
+        bankName: data.bankName || "",
+        accountName: data.accountHolderName || data.accountName || "",
+        accountNumber: data.accountNumber || "",
+        paystackLink: data.paystackLink || "",
+        isAcceptingSupport: data.isAcceptingSupport ?? Boolean(data.bankName || data.paystackLink),
+        totalTipsReceived: Number(data.totalTipsReceived || 0),
+      };
+    }
+    return null;
+  } catch (error) {
+    console.warn(`[UserService] Error fetching support details for ${userIdOrUsername}:`, error);
+    return null;
+  }
+}
+
+/**
+ * 14. Library, Bookmarks, Favorites & Quotes Endpoints
  */
 export * from "./libraryService";

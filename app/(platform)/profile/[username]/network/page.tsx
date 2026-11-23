@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { AuthGuard } from "@/components/shared/auth-guard";
 import { useAuth } from "@/hooks/useAuth";
+import { followStoryteller, unfollowStoryteller } from "@/src/services/userService";
 
 interface NetworkUser {
   id: string;
@@ -81,15 +82,41 @@ function UserNetworkContent() {
     router.replace(`${basePath}?tab=${tab}`, { scroll: false });
   };
 
-  const toggleFollow = (userId: string, isFollowingTab: boolean) => {
+  const toggleFollow = async (userId: string, isFollowingTab: boolean) => {
+    const list = isFollowingTab ? followingList : followersList;
+    const target = list.find((u) => u.id === userId);
+    if (!target) return;
+    const willFollow = !target.isFollowing;
+
+    // Optimistic update
     if (isFollowingTab) {
       setFollowingList((prev) =>
-        prev.map((u) => (u.id === userId ? { ...u, isFollowing: !u.isFollowing } : u))
+        prev.map((u) => (u.id === userId ? { ...u, isFollowing: willFollow } : u))
       );
     } else {
       setFollowersList((prev) =>
-        prev.map((u) => (u.id === userId ? { ...u, isFollowing: !u.isFollowing } : u))
+        prev.map((u) => (u.id === userId ? { ...u, isFollowing: willFollow } : u))
       );
+    }
+
+    try {
+      if (willFollow) {
+        await followStoryteller(userId);
+      } else {
+        await unfollowStoryteller(userId);
+      }
+    } catch (err) {
+      console.error("Failed to update follow status:", err);
+      // Revert on error
+      if (isFollowingTab) {
+        setFollowingList((prev) =>
+          prev.map((u) => (u.id === userId ? { ...u, isFollowing: !willFollow } : u))
+        );
+      } else {
+        setFollowersList((prev) =>
+          prev.map((u) => (u.id === userId ? { ...u, isFollowing: !willFollow } : u))
+        );
+      }
     }
   };
 

@@ -47,12 +47,13 @@ export interface ListStoriesOptions {
   storyLanguage?: string;
   status?: string;
   search?: string;
+  author?: string;
+  authorId?: string;
   hasAudioNarration?: boolean;
   audioOnly?: boolean;
   sortBy?: "newest" | "popular" | "readTime" | "most_read" | "most_liked" | "trending" | "highest_rated";
   page?: number;
   limit?: number;
-  authorId?: string;
 }
 
 export interface TraditionItem {
@@ -242,6 +243,8 @@ export async function listStories(options: ListStoriesOptions = {}): Promise<Pag
     storyLanguage,
     status,
     search,
+    author,
+    authorId,
     hasAudioNarration,
     audioOnly,
     sortBy,
@@ -258,6 +261,8 @@ export async function listStories(options: ListStoriesOptions = {}): Promise<Pag
   if (storyLanguage) params.storyLanguage = storyLanguage;
   if (status && status !== "all") params.status = status;
   if (search) params.search = search;
+  if (author) params.author = author;
+  if (authorId) params.authorId = authorId;
   if (hasAudioNarration !== undefined) params.hasAudioNarration = hasAudioNarration;
   else if (audioOnly !== undefined) params.hasAudioNarration = audioOnly;
   if (sortBy) params.sortBy = sortBy;
@@ -460,9 +465,9 @@ export async function deleteStory(id: string): Promise<boolean> {
 }
 
 /**
- * Fetches stories created by a specific author
+ * Fetches stories created by a specific author (GET /api/v1/stories?author=:username)
  */
-export async function getStoriesByAuthor(authorId: string): Promise<Story[]> {
+export async function getStoriesByAuthor(authorIdOrUsername: string): Promise<Story[]> {
   const localCustom: Story[] =
     typeof window !== "undefined"
       ? (() => {
@@ -477,7 +482,10 @@ export async function getStoriesByAuthor(authorId: string): Promise<Story[]> {
 
   try {
     const res = await apiClient.get<any>("/stories", {
-      params: { authorId },
+      params: {
+        author: authorIdOrUsername,
+        authorId: authorIdOrUsername,
+      },
     });
     const rawList = res?.data?.stories || res?.stories || (Array.isArray(res) ? res : []);
     if (Array.isArray(rawList)) {
@@ -487,7 +495,16 @@ export async function getStoriesByAuthor(authorId: string): Promise<Story[]> {
     console.warn("[StoryService] Error fetching author stories from backend:", error);
   }
 
-  return localCustom.filter((s: Story) => s.authorId === authorId || !s.authorId).map(normalizeStory);
+  const query = (authorIdOrUsername || "").toLowerCase();
+  return localCustom
+    .filter(
+      (s: Story) =>
+        s.authorId === authorIdOrUsername ||
+        (s.authorName && s.authorName.toLowerCase() === query) ||
+        (s.authorPenName && s.authorPenName.toLowerCase() === query) ||
+        !s.authorId
+    )
+    .map(normalizeStory);
 }
 
 /**

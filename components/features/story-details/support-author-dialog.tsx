@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Story, UserProfile } from "@/types";
+import { Story, UserProfile, CreatorSupportDetails } from "@/types";
+import { getAuthorSupportDetails } from "@/src/services/userService";
 import {
   Heart,
   Copy,
@@ -37,15 +38,49 @@ export function SupportAuthorDialog({
   onClose,
 }: SupportAuthorDialogProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [fetchedSupport, setFetchedSupport] = useState<CreatorSupportDetails | null>(null);
 
-  const penName = story?.authorPenName || authorProfile?.penName || authorProfile?.displayName || "Storyteller";
-  const avatar = story?.authorAvatar || authorProfile?.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop";
-  const bio = story?.authorBio || authorProfile?.bio || "Traditional African storyteller preserving oral mythology and branching folklore manuscripts.";
-  
-  const bankName = authorProfile?.supportDetails?.bankName || "Bank Transfer";
-  const accountName = authorProfile?.supportDetails?.accountName || authorProfile?.displayName || penName;
-  const accountNumber = authorProfile?.supportDetails?.accountNumber || "";
-  const paystackLink = authorProfile?.supportDetails?.paystackLink || "";
+  const targetIdentifier =
+    authorProfile?.username ||
+    authorProfile?.id ||
+    story?.authorId ||
+    story?.authorName;
+
+  useEffect(() => {
+    if (isOpen && targetIdentifier) {
+      if (
+        !authorProfile?.supportDetails?.bankName &&
+        !authorProfile?.supportDetails?.paystackLink
+      ) {
+        getAuthorSupportDetails(targetIdentifier)
+          .then((details) => {
+            if (details) setFetchedSupport(details);
+          })
+          .catch(() => {});
+      }
+    }
+  }, [isOpen, targetIdentifier, authorProfile]);
+
+  const activeSupport = authorProfile?.supportDetails || fetchedSupport;
+
+  const penName =
+    story?.authorPenName ||
+    authorProfile?.penName ||
+    authorProfile?.displayName ||
+    "Storyteller";
+  const avatar =
+    story?.authorAvatar ||
+    authorProfile?.avatarUrl ||
+    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop";
+  const bio =
+    story?.authorBio ||
+    authorProfile?.bio ||
+    "Traditional African storyteller preserving oral mythology and branching folklore manuscripts.";
+
+  const bankName = activeSupport?.bankName || "Bank Transfer";
+  const accountName = activeSupport?.accountName || authorProfile?.displayName || penName;
+  const accountNumber = activeSupport?.accountNumber || "";
+  const paystackLink = activeSupport?.paystackLink || "";
 
   const handleCopy = (text: string, fieldName: string) => {
     navigator.clipboard.writeText(text);
